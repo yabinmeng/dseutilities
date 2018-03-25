@@ -1,0 +1,12 @@
+#!/usr/bin/expect
+
+set strval [lindex $argv 0]
+
+spawn "./dseenctoolwrapper.sh"
+
+expect "Enter value to encrypt:"
+send "$strval\r"
+expect "Enter again to confirm: "
+send "$strval\r"
+
+interact
