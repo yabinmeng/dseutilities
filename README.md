@@ -1,2 +1,2 @@
 # dsetools
-Misc tools for working with DataStax Enterprise (DSE)
+Misc utilities to simplify working with DataStax Enterprise (DSE)
