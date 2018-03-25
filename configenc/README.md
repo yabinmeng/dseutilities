@@ -11,14 +11,14 @@ This [DSE Document Page](https://docs.datastax.com/en/dse/5.1/dse-admin/datastax
 
 Among the above steps, step 3 is a manual process that expects the user to manually enter inputs to the dsetool utility from command line window twice. From procedure automation perspective, e.g. through tools like Chef or Ansible, this step represents a bigger challenge compared with other steps. This utility aims to address this challenge by creating a wrapper facility around "dsetool encryptconfigvalue" that can simulate the twice-manual-entry behavior through "expect" script.
 
-The entry point of this utility is a bash script ***encryptdse.sh*** and its usage is as below:
+The entry point of this utility is a bash script ***encryptdse.sh***. It takes one single (text) parameter as the configuration property to be encrypted and returns the encrypted value. The usage and one example is listed below:
 
 ```bash
-   encryptdse.sh <value_to_be_encrypted>
+encryptdse.sh <value_to_be_encrypted>
    
  ### Example ###
-    $ ./encryptdse.sh cassandra
-    kGDDkOFO3YAtFQabiKXcNA==
+ $ ./encryptdse.sh cassandra
+ kGDDkOFO3YAtFQabiKXcNA==
 ```
 
 
