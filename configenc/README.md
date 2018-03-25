@@ -16,9 +16,9 @@ The entry point of this utility is a bash script ***encryptdse.sh***. It takes o
 ```bash
 encryptdse.sh <value_to_be_encrypted>
    
- ### Example ###
- $ ./encryptdse.sh cassandra
- kGDDkOFO3YAtFQabiKXcNA==
+### Example ###
+$ ./encryptdse.sh cassandra
+kGDDkOFO3YAtFQabiKXcNA==
 ```
 
 
