@@ -4,8 +4,12 @@ This repository contains a list of Misc. utilities that I developed in order to 
 
 The table below gives the full list:
 
-No. | Utility Description | Utility URL | Relevant Docment
---- | --- | --- | ---
-1 | Wrapper for DSE configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc | N/A
-2 | Wrapper for OpsCenter configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/opsconfenc | N/A
-3 | Cassandra Tombstone Counter | https://github.com/yabinmeng/tombstone_counter | https://drive.google.com/open?id=1te9pRyEGLFB7TL5TCq2WiYnMzjmfjYYZ
+1. Wrapper Utility for DSE configuration value encryption:
+   - URL: https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc
+
+2. Wrapper Utility for OpsCenter configuration value encryption:
+   - URL: https://github.com/yabinmeng/dseutilities/tree/master/opsconfenc
+   
+3. Cassandra Tombstone Counter:
+   - URL: https://github.com/yabinmeng/tombstone_counter
+   - Relevant Blog: https://drive.google.com/open?id=1te9pRyEGLFB7TL5TCq2WiYnMzjmfjYYZ
