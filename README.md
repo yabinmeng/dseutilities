@@ -8,3 +8,4 @@ No. | Utility Description | Utility URL | Relevant Docment
 --- | --- | --- | ---
 1 | Wrapper for DSE configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc | N/A
 2 | Wrapper for OpsCenter configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/opsconfenc | N/A
+3 | Cassandra Tombstone Counter | https://github.com/yabinmeng/tombstone_counter | https://drive.google.com/open?id=1te9pRyEGLFB7TL5TCq2WiYnMzjmfjYYZ
