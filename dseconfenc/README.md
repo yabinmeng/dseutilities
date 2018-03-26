@@ -12,7 +12,7 @@ NOTE: please refer to [document](https://docs.datastax.com/en/dse/5.1/dse-admin/
 
 ## Automation Challenge and Utility Overview
 
-After the local encryption key has been created and configuration encryption been activated, the next step is to call the actual confgituraion value encrpytion tool offered by DSE: "dsetool encryptconfigvalue". This tool doesn't take any input argument and requires manual entry (twice) of the to-be-encrypted value from the command-line console. 
+After the local encryption key has been created, you can execute the DSE encrpytion tool("dsetool encryptconfigvalue") to encrypt the configuration value of interest. This tool doesn't take any input argument and requires manual entry (twice) of the to-be-encrypted value from the command-line console. 
 
 From automation perspective (e.g. Chef or Ansible), this behavior represents a big challenge. The utility introduced here aims to address this challenge by creating a wrapper facility around the original DSE encryption tool "dsetool encryptconfigvalue". This utility takes one input parameter as the value to be encrpted and it automatically simulates the double-manual-entry behavior as required by the original tool, through linux "expect" script.
 
