@@ -1,0 +1,12 @@
+#!/usr/bin/expect
+
+set strval [lindex $argv 0]
+
+spawn "./opscenctoolwrapper.sh"
+
+expect "Enter value to encrypt:"
+send "$strval\r"
+expect "Confirm value to encrypt: "
+send "$strval\r"
+
+interact
