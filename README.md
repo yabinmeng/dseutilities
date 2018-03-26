@@ -5,29 +5,29 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 ---
 
 
-## Utilities
+## 1. Utilities
 
-1. Wrapper Utility for DSE configuration value encryption:
+### 1.1. Wrapper Utility for DSE configuration value encryption:
    - URL: https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc
-
-2. Wrapper Utility for OpsCenter configuration value encryption:
+   
+### 1.2. Wrapper Utility for OpsCenter configuration value encryption:
    - URL: https://github.com/yabinmeng/dseutilities/tree/master/opsconfenc
    
-3. Cassandra Tombstone Counter:
+#### 1.3. Cassandra Tombstone Counter:
    - URL: https://github.com/yabinmeng/tombstone_counter
 
 ---
 
 
-## Sample Codes
+## 2. Sample Codes
 
-1.  
+#### 2.1. 
 
 ---
 
 
-## Blog Posts
+## 3. Blog Posts
 
-1. Cassandra Tombstone In Depth
+#### 3.1. Cassandra Tombstone In Depth
    - URL: https://drive.google.com/open?id=1te9pRyEGLFB7TL5TCq2WiYnMzjmfjYYZ
    - Relevant Utility: 
