@@ -4,7 +4,7 @@ This repository contains a list of Misc. utilities that I developed in order to 
 
 The table below gives the full list:
 
-No. | Utility Description | Utility URL
---- | --- | --- 
-1 | Wrapper for DSE configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc
-2 | Wrapper for OpsCenter configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/opsconfenc
+No. | Utility Description | Utility URL | Relevant Docment
+--- | --- | --- | ---
+1 | Wrapper for DSE configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc | N/A
+2 | Wrapper for OpsCenter configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/opsconfenc | N/A
