@@ -7,3 +7,4 @@ The table below gives the full list:
 No. | Utility Description | Utility URL
 --- | --- | --- 
 1 | Wrapper for DSE configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc
+2 | Wrapper for OpsCenter configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/opsconfenc
