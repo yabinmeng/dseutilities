@@ -6,4 +6,4 @@ The table below gives the full list:
 
 No. | Utility Description | Utility URL
 --- | --- | --- 
-1 | Wrapper for DSE configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/configenc
+1 | Wrapper for DSE configuration property value encryption | https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc
