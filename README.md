@@ -1,4 +1,7 @@
-This repository contains a list of Misc. utilities and/or sample codes that I developed in order to simplify working with DataStax Enterprise (DSE). They are tested out with the latest DSE 5.1 version (5.1.7 as of writing). It should work with other minor versions of DSE 5.1; but I haven't tested them out with older DSE versions such as 5.0.x or 4.8.x, even if they're relevant in these versions. Please use them at your own discretion.
+This repository contains a list of Misc. utilities, sample codes, and blog posts that I wrote in order to ease the learning and working with DataStax Enterprise (DSE). 
+
+**Disclaimer**: Most, if not all, of the utilities/sample codes/blog posts are based on DSE 5.1.x version (the latest major DSE release as of writing). For older DSE versions such as 5.0.x or 4.8.x, please use at your own discretion and feel free to test out by yourself.
+
 
 ## List of Utilities
 
