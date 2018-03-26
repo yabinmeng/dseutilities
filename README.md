@@ -15,7 +15,6 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
    
 3. Cassandra Tombstone Counter:
    - URL: https://github.com/yabinmeng/tombstone_counter
-   - Relevant Blog Post: https://drive.google.com/open?id=1te9pRyEGLFB7TL5TCq2WiYnMzjmfjYYZ
 
 ---
 
@@ -29,4 +28,6 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 
 ## Blog Posts
 
-1. 
+1. Cassandra Tombstone In Depth
+   - URL: https://drive.google.com/open?id=1te9pRyEGLFB7TL5TCq2WiYnMzjmfjYYZ
+   - Relevant Utility: 
