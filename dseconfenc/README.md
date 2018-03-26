@@ -21,4 +21,15 @@ $ ./encryptdse.sh cassandra
 kGDDkOFO3YAtFQabiKXcNA==
 ```
 
+### Prerequisites 
+
+1. Linux "expect" utility is installed
+```bash
+$ sudo apt-get install expect
+$ sudo yum install expect
+```
+
+2. The local encryption key (e.g. /etc/dse/conf/system_key by default) has been created in advance 
+
+
 
