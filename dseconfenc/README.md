@@ -7,6 +7,17 @@ This [DSE Document Page](https://docs.datastax.com/en/dse/5.1/dse-admin/datastax
 4. Update *cassandr.yaml* and/or *dse.yaml* file and do rolling restart of the DSE cluster.
 
 
+## Prerequisites 
+
+1. Linux "expect" utility is installed
+```bash
+$ sudo apt-get install expect
+$ sudo yum install expect
+```
+
+2. The local encryption key (e.g. /etc/dse/conf/system_key by default) has been created in advance 
+
+
 ## Automation Challenge and Utility Overview
 
 Among the above steps, step 3 is a manual process that expects the user to manually enter inputs to the dsetool utility from command line window twice. From procedure automation perspective, e.g. through tools like Chef or Ansible, this step represents a bigger challenge compared with other steps. This utility aims to address this challenge by creating a wrapper facility around "dsetool encryptconfigvalue" that can simulate the twice-manual-entry behavior through "expect" script.
@@ -20,16 +31,3 @@ encryptdse.sh <value_to_be_encrypted>
 $ ./encryptdse.sh cassandra
 kGDDkOFO3YAtFQabiKXcNA==
 ```
-
-### Prerequisites 
-
-1. Linux "expect" utility is installed
-```bash
-$ sudo apt-get install expect
-$ sudo yum install expect
-```
-
-2. The local encryption key (e.g. /etc/dse/conf/system_key by default) has been created in advance 
-
-
-
