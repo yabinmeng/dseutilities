@@ -7,7 +7,7 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 ---
 
 ## 1. Utilities
-#### 1.1.[Wrapper Utility for DSE configuration value encryption](https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc)
+#### 1.1. [Wrapper Utility for DSE configuration value encryption](https://github.com/yabinmeng/dseutilities/tree/master/dseconfenc)
 
 #### 1.2. [Wrapper Utility for OpsCenter configuration value encryption](https://github.com/yabinmeng/dseutilities/tree/master/opsconfenc)
 
@@ -18,7 +18,7 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 
 ## 2. Sample Codes
 
-#### 2.1.[Gatling Stress Testing Scenario for DSE](https://github.com/yabinmeng/cassgatling)
+#### 2.1. [Gatling Stress Testing Scenario for DSE](https://github.com/yabinmeng/cassgatling)
 
 #### 2.2 [Writting UDT into Cassandra](https://github.com/yabinmeng/dseudt)
    
