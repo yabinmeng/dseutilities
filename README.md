@@ -21,8 +21,9 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 
 ## 2. Sample Codes
 
-#### 2.1. 
-
+#### 2.1. Gatling Stress Testing Scenario for DSE
+   - URL: https://github.com/yabinmeng/cassgatling
+   
 ---
 
 
