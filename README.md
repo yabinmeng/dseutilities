@@ -23,7 +23,7 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 
 #### 2.1. [Gatling Stress Testing Scenario for DSE](https://github.com/yabinmeng/cassgatling)
 
-#### 2.2 [Writting UDT into Cassandra](https://github.com/yabinmeng/dseudt)
+#### 2.2. [Writting UDT into Cassandra](https://github.com/yabinmeng/dseudt)
    
 ---
 
