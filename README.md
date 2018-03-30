@@ -13,8 +13,11 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 
 #### 1.3. [Cassandra Tombstone Counter](https://github.com/yabinmeng/tombstone_counter)
 
----
+#### 1.4. [Ansible Playbook for DSE Cluster Installation/Configuration](https://github.com/yabinmeng/dseansible)
 
+#### 1.5. [Terraform and Ansible Automation to Luanch and Configure DSE Cluster on AWS](https://github.com/yabinmeng/terradse)
+
+---
 
 ## 2. Sample Codes
 
@@ -23,7 +26,6 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 #### 2.2 [Writting UDT into Cassandra](https://github.com/yabinmeng/dseudt)
    
 ---
-
 
 ## 3. Blog Posts
 
