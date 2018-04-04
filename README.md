@@ -30,4 +30,4 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 ## 3. Blog Posts
 
 ### 3.1. [Cassandra Tombstone In Depth](https://drive.google.com/open?id=1te9pRyEGLFB7TL5TCq2WiYnMzjmfjYYZ)
-   - Relevant Utility: https://github.com/yabinmeng/dseutilities/blob/master/README.md#13-cassandra-tombstone-counter
+   - Relevant Utility (section 1.3 above): https://github.com/yabinmeng/dseutilities/blob/master/README.md#13-cassandra-tombstone-counter
