@@ -1,5 +1,5 @@
-# Using a custom jar to encrypt   
-example: 
+# Using the custom jar to encrypt   
+example to encrypt "test": 
 ```bash
 java -jar encrypt-1.0-SNAPSHOT.jar /etc/dse/conf/system_key test
 ```
