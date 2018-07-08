@@ -17,6 +17,8 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 
 #### 1.5. [Terraform and Ansible Automation to Luanch and Configure DSE Cluster on AWS](https://github.com/yabinmeng/terradse)
 
+#### 1.6. [Restore DSE data backed up to AWS S3 by OpsCenter Backup Service](https://github.com/yabinmeng/opscs3restore)
+
 ---
 
 ## 2. Sample Codes
