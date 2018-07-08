@@ -23,13 +23,14 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 
 ---
 
-## 2. Sample Codes
+## 2. Blog Posts
 
-#### 2.1. [Writting UDT into Cassandra](https://github.com/yabinmeng/dseudt)
-   
+### 2.1. [Cassandra Tombstone In Depth](https://drive.google.com/open?id=1te9pRyEGLFB7TL5TCq2WiYnMzjmfjYYZ)
+   - Relevant Utility (section 1.3 above): https://github.com/yabinmeng/dseutilities/blob/master/README.md#13-cassandra-tombstone-counter
+
 ---
 
-## 3. Blog Posts
+## 3. Sample Codes
 
-### 3.1. [Cassandra Tombstone In Depth](https://drive.google.com/open?id=1te9pRyEGLFB7TL5TCq2WiYnMzjmfjYYZ)
-   - Relevant Utility (section 1.3 above): https://github.com/yabinmeng/dseutilities/blob/master/README.md#13-cassandra-tombstone-counter
+#### 3.1. [Writting UDT into Cassandra](https://github.com/yabinmeng/dseudt)
+   
