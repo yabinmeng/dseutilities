@@ -26,7 +26,7 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 ## 2. Blog Posts
 
 | # | Blog Post | Relevant Utility | Notes / Keywords |
-| - | --------- | ---------------- |
+| - | --------- | ---------------- | ---------------- |
 | 1. | [Cassandra Tombstone In Depth](https://github.com/yabinmeng/dseutilities/blob/master/documents/Yabin.meng-CassandraTombstoneInDepth.pdf) | [Cassandra Tombstone Counter](https://github.com/yabinmeng/tombstone_counter) | TombStone |
 | 2. | [DSE Security HowTo - Enable SSL/TLS for DSE](https://github.com/yabinmeng/dseutilities/blob/master/documents/Yabin.meng-DseSecurity-Enable.SSL.pdf) | N/A | DSE Security |
 
