@@ -19,13 +19,13 @@ This repository contains a list of Misc. utilities, sample codes, and blog posts
 
 #### 1.6. [Restore DSE data backed up to AWS S3 by OpsCenter Backup Service](https://github.com/yabinmeng/opscs3restore)
 
+#### 1.7. [OSS Gatling Stress Testing Scenario for DSE](https://github.com/yabinmeng/cassgatling)
+
 ---
 
 ## 2. Sample Codes
 
-#### 2.1. [Gatling Stress Testing Scenario for DSE](https://github.com/yabinmeng/cassgatling)
-
-#### 2.2. [Writting UDT into Cassandra](https://github.com/yabinmeng/dseudt)
+#### 2.1. [Writting UDT into Cassandra](https://github.com/yabinmeng/dseudt)
    
 ---
 
