@@ -6,7 +6,7 @@ This document describes the procedure of how to use [Jupyter notebook](https://j
 
 In order to clearly describe the proceure, we set up a testing environment which includes: 
 
-* **One DSE (6.7.3) with DSE Analytics (Spark) enabled** 
+* **One DSE (6.7.3) cluster with DSE Analytics (Spark) enabled** 
 
 In this document, I'll skip the procedure of provisioning and configuring a DSE cluster. Please check official DSE document for more information. For simplicity purpose, the testing DSE cluster is a single-DC, 2-node cluster
 
