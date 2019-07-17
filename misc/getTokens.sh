@@ -9,6 +9,9 @@ if [[ $# -eq 2 ]]; then
   if [[ $2 -gt $1 ]]; then
     divider=$1
   fi
+else
+  echo "Usage: getTokens.sh <current_num_token> <divider_num>"
+  exit
 fi
 
 nodetool info -T | tail -n $num_tokens | awk -F": " '{print $2}' > /tmp/tokenlist.txt
