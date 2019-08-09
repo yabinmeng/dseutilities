@@ -1,3 +1,11 @@
+# Using the custom jar to encrypt   
+example to encrypt "test": 
+```bash
+java -jar encrypt-1.0-SNAPSHOT.jar /etc/dse/conf/system_key test
+```
+NOTE: this has been tested against 5.1 only and not supported/official. Subject to change. Please make sure the dsetool encryptconfig returns the same value before using it.
+
+# Using dsetool
 ## Prerequisites 
 
 1. Linux "expect" utility is installed
