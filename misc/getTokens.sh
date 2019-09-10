@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#
+# NOTE: this script was designed for in-place changing (lowering down) C* num_tokens values
+#       - the old and new num_tokens values must be both the expotential of 2
+#       - the new value needs to be less than the old value
+#       e.g. 64 to 32  (divider_number is 2), or
+#            64 to 8   (divider_number is 8)
+#
+
+
 num_tokens=$1
 divider=1
 
