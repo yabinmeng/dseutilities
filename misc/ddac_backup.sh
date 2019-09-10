@@ -1,5 +1,9 @@
 #! /bin/bash
 
+#
+# NOTE: 1) this is an example scirpt of how to do DDAC (OSS C*) backup that can be scheduled through a cron job
+#       2) setting up cron job based on this script can be achieved through "ansible cron" command 
+#
 
 usage() {
    echo
