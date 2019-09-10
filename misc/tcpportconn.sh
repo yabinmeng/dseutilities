@@ -1,6 +1,6 @@
 #!/bin/bash
 
-usage () {}
+usage () {
    echo "$0 <HOST_ADDRESS> <PORT_NUMBER>"
 }
 
