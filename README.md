@@ -1,3 +1,0 @@
-## Description
-
-This is the entry point to the documents/tutorials/sample codes/scripts that I developed related with DataStax Enterprise (DSE) and other relevant technologies. More details to be added ...
