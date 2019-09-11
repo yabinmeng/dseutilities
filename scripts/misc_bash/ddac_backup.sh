@@ -4,6 +4,9 @@
 # NOTE: 1) this is an example scirpt of how to do DDAC (OSS C*) backup that can be scheduled through a cron job
 #       2) setting up cron job based on this script can be achieved through "ansible cron" command 
 #
+# Please also note that this script only handles C* backup at most coarse level which is "full snapshot" level. It
+# doesn't handle backup at more granular level (like incremental backup or commitlog backup).
+#
 
 usage() {
    echo
