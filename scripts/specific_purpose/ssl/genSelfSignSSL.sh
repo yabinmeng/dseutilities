@@ -21,77 +21,92 @@ fi
 
 
 # Create desired folder structure under the current folder
-WORKING_HOMEDIR=./SelfSignedSSL
-ROOTCA_SUBDIR=$WORKING_HOMEDIR/root
-TRUSTSTORE_SUBDIR=$WORKING_HOMEDIR/truststore
-KEYSTORE_SUBDIR=$WORKING_HOMEDIR/keystore
+WORKING_HOMEDIR_VAR=./SelfSignedSSL
+ROOTCA_SUBDIR=$WORKING_HOMEDIR_VAR/rootca
+CQLSH_SUBDIR=$WORKING_HOMEDIR_VAR/cqlsh
+TRUSTSTORE_SUBDIR=$WORKING_HOMEDIR_VAR/truststore
+KEYSTORE_SUBDIR=$WORKING_HOMEDIR_VAR/keystore
 KEYSTORE_CSR_SUBDIR=$KEYSTORE_SUBDIR/csr
 
 mkdir -p $ROOTCA_SUBDIR
+mkdir -p $CQLSH_SUBDIR
 mkdir -p $TRUSTSTORE_SUBDIR
 mkdir -p $KEYSTORE_SUBDIR
 mkdir -p $KEYSTORE_CSR_SUBDIR
 
 
-# ROOT CA related constants
+# ROOT CA related constants and vrariables
 ROOTCA_KEY_FILE=$ROOTCA_SUBDIR/rootca.key
 ROOTCA_CERT_FILE=$ROOTCA_SUBDIR/rootca.crt
-ROOTCA_PASS=dse_rootpass
-ROOTCA_ALIAS=RootCa
+ROOTCA_PASS_VAR=dse_rootpass
+ROOTCA_ALIAS_VAR=RootCa
 
-# Other constants
-KEYSTORE_FILE_EXT=jks
-CSR_FILE_EXT=csr
-SIGNED_CRT_FILE_EXT=crt.signed
-TRUSTSTORE_NAME=dse-truststore.$KEYSTORE_FILE_EXT
-KEYSTORE_NAME_BASE=dse-keystore
+# Java KeyStore related constants and vairables
+# --------------------------------------
+# NOTE: Default storetype 'JKS' is not recommended.
+#       Otherwise, the following warning message will be gnerated for almost every keytool command:
+# --------------------------------------
+# Warning:
+# The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore <xxx> -destkeystore <yyy> -deststoretype pkcs12"
+KEYSTORE_TYPE_JKS=JKS
+KEYSTORE_TYPE_PKCS12=PKCS12
+
+KEYSTORE_TYPE_VAR=$KEYSTORE_TYPE_PKCS12
+KEYSTORE_FILE_EXT=$(echo "$KEYSTORE_TYPE_VAR" | tr '[:upper:]' '[:lower:]')
+
+
+# Misc variables
+CSR_FILE_EXT_VAR=csr
+SIGNED_CRT_FILE_EXT_VAR=crt.signed
+TRUSTSTORE_NAME_VAR=dse-truststore.$KEYSTORE_FILE_EXT
+KEYSTORE_NAME_BASE_VAR=dse-keystore
 
 # It is a current DSE limitation to use the same password for both keystore and key
-TRUSTSTORE_STORE_PASS="dse_storepss_trust"
-TRUSTSTORE_KEY_PASS=$TRUSTSTORE_STORE_PASS
-KEYSTORE_STORE_PASS="dse_storepass_key"
-KEYSTORE_KEY_PASS=$KEYSTORE_STORE_PASS
+TRUSTSTORE_STORE_PASS_VAR="dse_storepss_trust"
+TRUSTSTORE_KEY_PASS=$TRUSTSTORE_STORE_PASS_VAR
+KEYSTORE_STORE_PASS_VAR="dse_storepass_key"
+KEYSTORE_KEY_PASS=$KEYSTORE_STORE_PASS_VAR
 
 
 # Distinguished Name (DN) Fields
 #
 # - Country
-DN_C=US
+DN_C_VAR=US
 # - State
-DN_ST=TX
+DN_ST_VAR=TX
 # - Location
-DN_L=Dallas
+DN_L_VAR=Dallas
 # - Organization
-DN_O="Some Corp"
+DN_O_VAR="Some Corp"
 # - Organization Unit
-DN_OU="Some Dept"
+DN_OU_VAR="Some Dept"
 # - Common Name (by default, using local node's FQDN name)
-DN_CN=`hostname -A`
+DN_CN_VAR=`hostname -A`
 
 # By default, generate a certificate that expires in 2 years.
 # Change this value if needed
-ROOT_CA_EXPIRE_DAYS=3650
-PRIV_KEY_EXPIRE_DAYS=730
+ROOT_CA_EXPIRE_DAYS_VAR=3650
+PRIV_KEY_EXPIRE_DAYS_VAR=730
 
 
 echo
 echo "== Create a key/certificate pair for self-signing purposer =="
-openssl req -new -x509 -nodes          \
-        -keyout $ROOTCA_KEY_FILE       \
-        -out $ROOTCA_CERT_FILE         \
-        -days $ROOT_CA_EXPIRE_DAYS     \
-        -passout pass:$ROOT_CA_PASS    \
-        -subj "/C=$DN_C/ST=$DN_ST/L=$DN_L/O=$DN_O/OU=$DN_OU/CN=$DN_CN"
+openssl req -new -x509 -nodes             \
+        -keyout $ROOTCA_KEY_FILE          \
+        -out $ROOTCA_CERT_FILE            \
+        -days $ROOT_CA_EXPIRE_DAYS_VAR    \
+        -passout pass:$ROOT_CA_PASS_VAR   \
+        -subj "/C=$DN_C_VAR/ST=$DN_ST_VAR/L=$DN_L_VAR/O=$DN_O_VAR/OU=$DN_OU_VAR/CN=$DN_CN_VAR"
 
 echo
 echo "== Generate a common \"truststore\" to be shared for all DSE hosts and import self-signed root certificate =="
 keytool  -keystore "$TRUSTSTORE_SUBDIR/$TRUSTSTORE_NAME" \
-         -storetype JKS                                  \
-         -storepass $TRUSTSTORE_STORE_PASS               \
+         -storetype $KEYSTORE_TYPE_VAR                   \
+         -storepass $TRUSTSTORE_STORE_PASS_VAR           \
          -keypass $TRUSTSTORE_KEY_PASS                   \
          -importcert -file $ROOTCA_CERT_FILE             \
-         -alias $ROOTCA_ALIAS                            \
-         -noprompt 
+         -alias $ROOTCA_ALIAS_VAR                        \
+         -noprompt
 
 if [[ $1 == "-f" ]]; then
    if [[ -f "$2" ]]; then
@@ -102,29 +117,29 @@ if [[ $1 == "-f" ]]; then
       do
          line2=${line//./-}
 
-         KEYSTORE_FILE="$KEYSTORE_SUBDIR/$KEYSTORE_NAME_BASE""_${line2}"".$KEYSTORE_FILE_EXT"
-         CSR_FILE="$KEYSTORE_CSR_SUBDIR/$KEYSTORE_NAME_BASE""_${line2}"".$CSR_FILE_EXT"
-         SIGNED_CRT_FILE="$KEYSTORE_CSR_SUBDIR/$KEYSTORE_NAME_BASE""-${line2}"".$SIGNED_CRT_FILE_EXT"
+         KEYSTORE_FILE="$KEYSTORE_SUBDIR/$KEYSTORE_NAME_BASE_VAR""_${line2}"".$KEYSTORE_FILE_EXT"
+         CSR_FILE="$KEYSTORE_CSR_SUBDIR/$KEYSTORE_NAME_BASE_VAR""_${line2}"".$CSR_FILE_EXT_VAR"
+         SIGNED_CRT_FILE="$KEYSTORE_CSR_SUBDIR/$KEYSTORE_NAME_BASE_VAR""-${line2}"".$SIGNED_CRT_FILE_EXT_VAR"
 
          echo "  [Host:  $line]"
-         echo
-         echo "  -- create a keystore with a private key (algorithm: RSA, size: 2048)"
-         keytool -genkeypair                          \
-                 -keystore "$KEYSTORE_FILE"           \
-                 -storepass "$KEYSTORE_STORE_PASS"    \
-                 -keypass "$KEYSTORE_KEY_PASS"        \
-                 -alias "$line"                       \
-                 -keyalg RSA                          \
-                 -keysize 2048                        \
-                 -validity $PRIV_KEY_EXPIRE_DAYS      \
-                 -dname "CN=$line, OU=$DN_OU, O=$DN_O, ST=$DN_ST, C=$DN_C"
+         echo "  -- create a keystore with a private key (algorithm: RSA, size: 2048) for DSE server"
+         keytool -genkeypair                             \
+                 -storetype $KEYSTORE_TYPE_VAR           \
+                 -keystore "$KEYSTORE_FILE"              \
+                 -storepass "$KEYSTORE_STORE_PASS_VAR"   \
+                 -keypass "$KEYSTORE_KEY_PASS"           \
+                 -alias "$line"                          \
+                 -keyalg RSA                             \
+                 -keysize 2048                           \
+                 -validity $PRIV_KEY_EXPIRE_DAYS_VAR     \
+                 -dname "CN=$line, OU=$DN_OU_VAR, O=$DN_O_VAR, ST=$DN_ST_VAR, C=$DN_C_VAR"
 
          echo
          echo "  -- create a CSR"
-         keytool -certreq -file "$CSR_FILE"           \
-                 -keystore "$KEYSTORE_FILE"           \
-                 -storepass "$KEYSTORE_STORE_PASS"    \
-                 -keypass "$KEYSTORE_KEY_PASS"        \
+         keytool -certreq -file "$CSR_FILE"              \
+                 -keystore "$KEYSTORE_FILE"              \
+                 -storepass "$KEYSTORE_STORE_PASS_VAR"   \
+                 -keypass "$KEYSTORE_KEY_PASS"           \
                  -alias $line
 
          echo
@@ -134,27 +149,30 @@ if [[ $1 == "-f" ]]; then
                  -CA $ROOTCA_CERT_FILE                \
                  -in $CSR_FILE                        \
                  -out $SIGNED_CRT_FILE                \
-                 -days $PRIV_KEY_EXPIRE_DAYS          \
+                 -days $PRIV_KEY_EXPIRE_DAYS_VAR      \
                  -CAcreateserial                      \
-                 -passin pass:$ROOT_CA_PASS
+                 -passin pass:$ROOT_CA_PASS_VAR
 
          echo
          echo "  -- import RootCA certificate to the keystore"
          keytool -importcert -file "$ROOTCA_CERT_FILE"   \
                  -keystore "$KEYSTORE_FILE"              \
-                 -storepass "$KEYSTORE_STORE_PASS"       \
+                 -storepass "$KEYSTORE_STORE_PASS_VAR"   \
                  -keypass "$KEYSTORE_KEY_PASS"           \
-                 -alias "$ROOTCA_ALIAS"                  \
-                 -noprompt 
+                 -alias "$ROOTCA_ALIAS_VAR"              \
+                 -noprompt
 
          echo
          echo "  -- import signed certificate to the keystore"
          keytool -importcert -file "$SIGNED_CRT_FILE"    \
                  -keystore "$KEYSTORE_FILE"              \
-                 -storepass "$KEYSTORE_STORE_PASS"       \
+                 -storepass "$KEYSTORE_STORE_PASS_VAR"   \
                  -keypass "$KEYSTORE_KEY_PASS"           \
                  -alias "$line"                          \
                  -noprompt
+
+         echo
+         echo "  -- create a pair of key (algorithm: RSA, size: 2048) and CSR for CQLSH client"
 
          echo
          echo
