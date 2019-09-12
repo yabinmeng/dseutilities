@@ -115,12 +115,12 @@ openssl req -new -x509 -nodes             \
 
 echo
 echo "== Generate a common \"truststore\" to be shared for all DSE hosts and import self-signed root certificate =="
-keytool  -keystore "$TRUSTSTORE_SUBDIR/$TRUSTSTORE_NAME" \
-         -storetype $KEYSTORE_TYPE_VAR                   \
-         -storepass $TRUSTSTORE_STORE_PASS_VAR           \
-         -keypass $TRUSTSTORE_KEY_PASS                   \
-         -importcert -file $ROOTCA_CERT_FILE             \
-         -alias $ROOTCA_ALIAS_VAR                        \
+keytool  -keystore "$TRUSTSTORE_SUBDIR/$TRUSTSTORE_NAME_VAR"   \
+         -storetype $KEYSTORE_TYPE_VAR                         \
+         -storepass $TRUSTSTORE_STORE_PASS_VAR                 \
+         -keypass $TRUSTSTORE_KEY_PASS                         \
+         -importcert -file $ROOTCA_CERT_FILE                   \
+         -alias $ROOTCA_ALIAS_VAR                              \
          -noprompt
 
 if [[ $1 == "-f" ]]; then
