@@ -20,6 +20,7 @@ if [[ $# -eq 0 || $# -gt 2 || $1 == "-h" ]]; then
 fi
 
 
+###
 # Create desired folder structure under the current folder
 WORKING_HOMEDIR_VAR=./SelfSignedSSL
 ROOTCA_SUBDIR=$WORKING_HOMEDIR_VAR/rootca
@@ -35,12 +36,17 @@ mkdir -p $KEYSTORE_SUBDIR
 mkdir -p $KEYSTORE_CSR_SUBDIR
 
 
+###
 # ROOT CA related constants and vrariables
 ROOTCA_KEY_FILE=$ROOTCA_SUBDIR/rootca.key
 ROOTCA_CERT_FILE=$ROOTCA_SUBDIR/rootca.crt
 ROOTCA_PASS_VAR=dse_rootpass
 ROOTCA_ALIAS_VAR=RootCa
 
+ROOT_CA_EXPIRE_DAYS_VAR=3650
+
+
+###
 # Java KeyStore related constants and vairables
 # --------------------------------------
 # NOTE: Default storetype 'JKS' is not recommended.
@@ -54,20 +60,31 @@ KEYSTORE_TYPE_PKCS12=PKCS12
 KEYSTORE_TYPE_VAR=$KEYSTORE_TYPE_PKCS12
 KEYSTORE_FILE_EXT=$(echo "$KEYSTORE_TYPE_VAR" | tr '[:upper:]' '[:lower:]')
 
-
-# Misc variables
-CSR_FILE_EXT_VAR=csr
-SIGNED_CRT_FILE_EXT_VAR=crt.signed
-TRUSTSTORE_NAME_VAR=dse-truststore.$KEYSTORE_FILE_EXT
-KEYSTORE_NAME_BASE_VAR=dse-keystore
-
 # It is a current DSE limitation to use the same password for both keystore and key
 TRUSTSTORE_STORE_PASS_VAR="dse_storepss_trust"
 TRUSTSTORE_KEY_PASS=$TRUSTSTORE_STORE_PASS_VAR
 KEYSTORE_STORE_PASS_VAR="dse_storepass_key"
 KEYSTORE_KEY_PASS=$KEYSTORE_STORE_PASS_VAR
 
+TRUSTSTORE_NAME_VAR=dse-truststore.$KEYSTORE_FILE_EXT
+KEYSTORE_NAME_BASE_VAR=dse-keystore
 
+PRIV_KEY_EXPIRE_DAYS_VAR=730
+
+
+### 
+# CQLSH Key/Certificate related
+CQLSH_KEY_EXPIRE_DAYS_VAR=730
+
+
+###
+# Misc variables
+KEY_FILE_EXT_VAR=key
+CSR_FILE_EXT_VAR=csr
+SIGNED_CRT_FILE_EXT_VAR=crt.signed
+
+
+###
 # Distinguished Name (DN) Fields
 #
 # - Country
@@ -83,12 +100,10 @@ DN_OU_VAR="Some Dept"
 # - Common Name (by default, using local node's FQDN name)
 DN_CN_VAR=`hostname -A`
 
-# By default, generate a certificate that expires in 2 years.
-# Change this value if needed
-ROOT_CA_EXPIRE_DAYS_VAR=3650
-PRIV_KEY_EXPIRE_DAYS_VAR=730
 
 
+###
+# Main script logic starts ...
 echo
 echo "== Create a key/certificate pair for self-signing purposer =="
 openssl req -new -x509 -nodes             \
@@ -132,7 +147,7 @@ if [[ $1 == "-f" ]]; then
                  -keyalg RSA                             \
                  -keysize 2048                           \
                  -validity $PRIV_KEY_EXPIRE_DAYS_VAR     \
-                 -dname "CN=$line, OU=$DN_OU_VAR, O=$DN_O_VAR, ST=$DN_ST_VAR, C=$DN_C_VAR"
+                 -dname "C=$DN_C_VAR, C=$DN_C_VAR, O=$DN_O_VAR, O=$DN_O_VAR, CN=$line"
 
          echo
          echo "  -- create a CSR"
@@ -173,6 +188,24 @@ if [[ $1 == "-f" ]]; then
 
          echo
          echo "  -- create a pair of key (algorithm: RSA, size: 2048) and CSR for CQLSH client"
+         openssl req -new -nodes                      \
+                 -newkey rsa:2048                     \
+                 -keyout "$CQLSH_SUBDIR/cqlsh_$line2"".$KEY_FILE_EXT_VAR"  \
+                 -out "$CQLSH_SUBDIR/cqlsh_$line2"".$CSR_FILE_EXT_VAR"     \
+                 -days $CQLSH_KEY_EXPIRE_DAYS_VAR     \
+                 -subj "/C=$DN_C_VAR/ST=$DN_ST_VAR/L=$DN_L_VAR/O=$DN_O_VAR/OU=$DN_OU_VAR/CN=cqlsh_$line"
+
+         echo
+         echo "  -- sign CQLSH certificate"
+         openssl x509 -req                            \
+                 -CAkey $ROOTCA_KEY_FILE              \
+                 -CA $ROOTCA_CERT_FILE                \
+                 -in "$CQLSH_SUBDIR/cqlsh_$line2"".$CSR_FILE_EXT_VAR"         \
+                 -out "$CQLSH_SUBDIR/cqlsh_$line2"".$SIGNED_CRT_FILE_EXT_VAR" \
+                 -days $CQLSH_KEY_EXPIRE_DAYS_VAR     \
+                 -CAcreateserial                      \
+                 -passin pass:$ROOT_CA_PASS_VAR
+
 
          echo
          echo
@@ -185,5 +218,5 @@ if [[ $1 == "-f" ]]; then
    fi
 else
    usage
-   exit 20
+   exit 30
 fi
