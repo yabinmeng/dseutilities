@@ -193,7 +193,7 @@ if [[ $1 == "-f" ]]; then
                  -keyout "$CQLSH_SUBDIR/cqlsh_$line2"".$KEY_FILE_EXT_VAR"  \
                  -out "$CQLSH_SUBDIR/cqlsh_$line2"".$CSR_FILE_EXT_VAR"     \
                  -days $CQLSH_KEY_EXPIRE_DAYS_VAR     \
-                 -subj "/C=$DN_C_VAR/ST=$DN_ST_VAR/L=$DN_L_VAR/O=$DN_O_VAR/OU=$DN_OU_VAR/CN=cqlsh_$line"
+                 -subj "/C=$DN_C_VAR/ST=$DN_ST_VAR/L=$DN_L_VAR/O=$DN_O_VAR/OU=$DN_OU_VAR/CN=$line"
 
          echo
          echo "  -- sign CQLSH certificate"
