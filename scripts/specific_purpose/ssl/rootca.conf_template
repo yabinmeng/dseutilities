@@ -1,0 +1,12 @@
+[ req ]
+distinguished_name  = req_distinguished_name
+prompt              = no
+default_bits        = 2048
+
+[ req_distinguished_name ]
+C                   = US
+ST                  = TX 
+L                   = Dallas
+O                   = DataStax
+OU                  = MyTestCluster
+CN                  = RootCa
