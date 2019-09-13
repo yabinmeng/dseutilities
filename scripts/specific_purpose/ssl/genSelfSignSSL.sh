@@ -130,13 +130,13 @@ openssl req -new -x509 -nodes             \
 
 echo
 echo "== STEP 2 :: Generate a common \"truststore\" to be shared for all DSE hosts and import self-signed root certificate =="
-keytool  -keystore "$TRUSTSTORE_SUBDIR/$TRUSTSTORE_NAME_VAR"   \
-         -storetype "$KEYSTORE_TYPE_VAR"                       \
-         -storepass $TRUSTSTORE_STORE_PASS_VAR                 \
-         -keypass $TRUSTSTORE_KEY_PASS                         \
-         -import -trustcacerts -file $ROOTCA_CERT_FILE         \
-         -alias $ROOTCA_ALIAS_VAR                              \
-         -noprompt
+keytool -import -trustcacerts -file $ROOTCA_CERT_FILE         \
+        -keystore "$TRUSTSTORE_SUBDIR/$TRUSTSTORE_NAME_VAR"   \
+        -storetype "$KEYSTORE_TYPE_VAR"                       \
+        -storepass $TRUSTSTORE_STORE_PASS_VAR                 \
+        -keypass $TRUSTSTORE_KEY_PASS                         \
+        -alias $ROOTCA_ALIAS_VAR                              \
+        -noprompt
 
 
 if [[ $1 == "-f" ]]; then
@@ -154,11 +154,11 @@ if [[ $1 == "-f" ]]; then
 
          echo "   [Host:  $line]"
          echo "   >> (3.1) create a keystore with a private key (algorithm: RSA, size: 2048) for DSE server"
-         keytool -keystore "$KEYSTORE_FILE"              \
+         keytool -genkeypair                             \
+                 -keystore "$KEYSTORE_FILE"              \
                  -storetype "$KEYSTORE_TYPE_VAR"         \
                  -storepass "$KEYSTORE_STORE_PASS_VAR"   \
                  -keypass "$KEYSTORE_KEY_PASS"           \
-                 -genkeypair                             \
                  -alias "$line"                          \
                  -keysize 2048                           \
                  -validity $PRIV_KEY_EXPIRE_DAYS_VAR     \
@@ -186,19 +186,19 @@ if [[ $1 == "-f" ]]; then
 
          echo
          echo "   >> (3.4) import RootCA certificate to the keystore"
-         keytool -keystore "$KEYSTORE_FILE"              \
+         keytool -import -trustcacerts -file "$ROOTCA_CERT_FILE" \
+                 -keystore "$KEYSTORE_FILE"              \
                  -storepass "$KEYSTORE_STORE_PASS_VAR"   \
                  -keypass "$KEYSTORE_KEY_PASS"           \
-                 -import -trustcacerts -file "$ROOTCA_CERT_FILE" \
                  -alias "$ROOTCA_ALIAS_VAR"              \
                  -noprompt
 
          echo
          echo "   >> (3.5) import signed certificate to the keystore"
-         keytool -keystore "$KEYSTORE_FILE"              \
+         keytool -import -trustcacerts -file "$SIGNED_CRT_FILE" \
+                 -keystore "$KEYSTORE_FILE"              \
                  -storepass "$KEYSTORE_STORE_PASS_VAR"   \
                  -keypass "$KEYSTORE_KEY_PASS"           \
-                 -import -trustcacerts -file "$SIGNED_CRT_FILE" \
                  -alias "$line"                          \
                  -noprompt
 
