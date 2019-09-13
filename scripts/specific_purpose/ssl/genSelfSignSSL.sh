@@ -126,7 +126,7 @@ openssl req -new -x509 -nodes             \
         -out $ROOTCA_CERT_FILE            \
         -days $ROOT_CA_EXPIRE_DAYS_VAR    \
         -passout pass:$ROOT_CA_PASS_VAR 
-
+        #-subj "/C=$DN_C_VAR/ST=$DN_ST_VAR/L=$DN_L_VAR/O=$DN_O_VAR/OU=$DN_OU_VAR/CN=$DN_CN_VAR"
 
 echo
 echo "== STEP 2 :: Generate a common \"truststore\" to be shared for all DSE hosts and import self-signed root certificate =="
