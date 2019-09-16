@@ -55,7 +55,8 @@ ROOT_CA_EXPIRE_DAYS_VAR=3650
 # --------------------------------------
 # Warning:
 # The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore <xxx> -destkeystore <yyy> -deststoretype pkcs12"
-KEYSTORE_TYPE_VAR=PKCS12
+#KEYSTORE_TYPE_VAR=PKCS12
+KEYSTORE_TYPE_VAR=JKS
 KEYSTORE_FILE_EXT=$(echo "$KEYSTORE_TYPE_VAR" | tr '[:upper:]' '[:lower:]')
 
 # It is a current DSE limitation to use the same password for both keystore and key
@@ -101,12 +102,11 @@ genRootCAConf() {
    echo "[ req ]" > $ROOTCA_CONFIG_FILE_NAME
    echo "distinguished_name  = req_distinguished_name" >> $ROOTCA_CONFIG_FILE_NAME
    echo "prompt              = no" >> $ROOTCA_CONFIG_FILE_NAME
+   echo "output_password     = $ROOTCA_PASS_VAR" >> $ROOTCA_CONFIG_FILE_NAME
    echo "default_bits        = 2048" >> $ROOTCA_CONFIG_FILE_NAME
    echo "" >> $ROOTCA_CONFIG_FILE_NAME
    echo "[ req_distinguished_name ]" >> $ROOTCA_CONFIG_FILE_NAME
    echo "C                   = $DN_C_VAR" >> $ROOTCA_CONFIG_FILE_NAME
-   echo "ST                  = $DN_ST_VAR" >> $ROOTCA_CONFIG_FILE_NAME 
-   echo "L                   = $DN_L_VAR" >> $ROOTCA_CONFIG_FILE_NAME
    echo "O                   = $DN_O_VAR" >> $ROOTCA_CONFIG_FILE_NAME
    echo "OU                  = $DN_OU_VAR" >> $ROOTCA_CONFIG_FILE_NAME
    echo "CN                  = $1" >> $ROOTCA_CONFIG_FILE_NAME
@@ -120,12 +120,11 @@ echo
 echo "== STEP 1 :: Create a key/certificate pair for self-signing purpose =="
 # - generate the required config file
 genRootCAConf $ROOTCA_ALIAS_VAR
-openssl req -new -x509 -nodes             \
-        -config $ROOTCA_CONFIG_FILE_NAME  \
-        -keyout $ROOTCA_KEY_FILE          \
-        -out $ROOTCA_CERT_FILE            \
-        -days $ROOT_CA_EXPIRE_DAYS_VAR    \
-        -passout pass:$ROOT_CA_PASS_VAR 
+openssl req -config $ROOTCA_CONFIG_FILE_NAME \
+        -new -x509 -nodes                    \
+        -keyout $ROOTCA_KEY_FILE             \
+        -out $ROOTCA_CERT_FILE               \
+        -days $ROOT_CA_EXPIRE_DAYS_VAR
         #-subj "/C=$DN_C_VAR/ST=$DN_ST_VAR/L=$DN_L_VAR/O=$DN_O_VAR/OU=$DN_OU_VAR/CN=$DN_CN_VAR"
 
 echo
@@ -155,16 +154,14 @@ if [[ $1 == "-f" ]]; then
 
          echo "   [Host:  $line]"
          echo "   >> (3.1) create a keystore with a private key (algorithm: RSA, size: 2048) for DSE server"
-         keytool -genkeypair                          \
+         keytool -genkeypair -keyalg RSA -keysize 2048 \
                  -keystore "$KEYSTORE_FILE"           \
                  -storetype "$KEYSTORE_TYPE_VAR"      \
                  -storepass "$KEYSTORE_STOREPASS_VAR" \
                  -keypass "$KEYSTORE_KEYPASS"         \
                  -alias "$line"                       \
-                 -keysize 2048                        \
                  -validity $PRIV_KEY_EXPIRE_DAYS_VAR  \
-                 -keyalg RSA                          \
-                 -dname "C=$DN_C_VAR, ST=$DN_T_VAR, L=$DN_L_VAR, O=$DN_O_VAR, OU=$DN_OU_VAR, CN=$line"
+                 -dname "C=$DN_C_VAR, O=$DN_O_VAR, OU=$DN_OU_VAR, CN=$line"
 
          echo
          echo "   >> (3.2) create a CSR"
@@ -177,8 +174,8 @@ if [[ $1 == "-f" ]]; then
          echo
          echo "   >> (3.3) sign the certificate"
          openssl x509 -req                         \
-                 -CAkey $ROOTCA_KEY_FILE           \
                  -CA $ROOTCA_CERT_FILE             \
+                 -CAkey $ROOTCA_KEY_FILE           \
                  -in $CSR_FILE                     \
                  -out $SIGNED_CRT_FILE             \
                  -days $PRIV_KEY_EXPIRE_DAYS_VAR   \
