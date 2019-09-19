@@ -35,7 +35,7 @@ DataStax OpsCenter repair service is based on sub-range repair and handles the s
 
 # Cassandra Reaper 
 
-[Cassandra Reaper](http://cassandra-reaper.io/) { GitHub Code [here]](https://github.com/thelastpickle/cassandra-reaper) } was an open source effort that tries to simplify and automate C* repair. It was originally developed by [Spotify](https://www.spotify.com/us/) and is now taken over by [The Last Pickle](https://thelastpickle.com/) for active development and/or maintainence. 
+[Cassandra Reaper](http://cassandra-reaper.io/) { GitHub Code [here](https://github.com/thelastpickle/cassandra-reaper) } was an open source effort that tries to simplify and automate C* repair. It was originally developed by [Spotify](https://www.spotify.com/us/) and is now taken over by [The Last Pickle](https://thelastpickle.com/) for active development and/or maintainence. 
 
 
 ## Install 
