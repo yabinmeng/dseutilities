@@ -33,9 +33,18 @@ Sub-range repair is achieved by executing "nodetool repair -st <starting_token> 
 DataStax OpsCenter repair service is based on sub-range repair and handles the sub-range management and scheduling automatically.
 
 
-# Cassandra Reaper 
+# Cassandra Reaper (Reaper)
 
-[Cassandra Reaper](http://cassandra-reaper.io/) { GitHub Code [here](https://github.com/thelastpickle/cassandra-reaper) } was an open source effort that tries to simplify and automate C* repair. It was originally developed by [Spotify](https://www.spotify.com/us/) and is now taken over by [The Last Pickle](https://thelastpickle.com/) for active development and/or maintainence. 
+[Cassandra Reaper](http://cassandra-reaper.io/) { GitHub Code [here](https://github.com/thelastpickle/cassandra-reaper) } is an open source effort that tries to simplify and automate C* repair, providing a functionality that is similar to what DataStax OpsCenter repair service offers. It was originally developed by [Spotify](https://www.spotify.com/us/) and is now taken over by [The Last Pickle](https://thelastpickle.com/) for active development and/or maintainence.
 
+Please note that compared with Cassandra Reaper, DataStax OpsCenter is a far more advanced product for many tasks of different purposes such as metrics monitoring, dashboarding, alerting, cluster management and operation like node start/stop, token balance, backup/restore, repair, performance tuning, and so on. 
 
-## Install 
+The sole purpose of Cassandra Reaper is for C* data repair mangement and automation. Like DataStax OpsCenter repair service, it is also based on sub-range repair. 
+
+## Install
+
+This section describes the method of how to install Reaper on Debian based Linux systems like Ubuntu). For other installation methods, please refer to Reaper's official document.
+
+```
+```
+
