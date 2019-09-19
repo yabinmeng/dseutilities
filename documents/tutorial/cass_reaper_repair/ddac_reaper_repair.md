@@ -43,8 +43,32 @@ The sole purpose of Cassandra Reaper is for C* data repair mangement and automat
 
 ## Install
 
-This section describes the method of how to install Reaper on Debian based Linux systems like Ubuntu). For other installation methods, please refer to Reaper's official document.
+This section describes the method of how to install Reaper (as a service) on Debian based Linux systems like Ubuntu). For other installation methods, please refer to Reaper's official document.
 
 ```
+echo "deb https://dl.bintray.com/thelastpickle/reaper-deb wheezy main" | sudo tee -a /etc/apt/sources.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 2895100917357435
+sudo apt-get update
+sudo apt-get install reaper
 ```
+
+The APT package installation creates a service named **cassandra-reaper** and an OS service user, **reaper**. We can start, stop, or check status of this service using the following commands:
+
+```
+sudo service cassandra-reaper [start|stop|status]
+```
+
+Reaper server program is java based and by default it is allocated with 2GB heap size. If it is needed to increase the heap size, we can modify the following JVM options (in particular -Xms and -Xmx options) in file **/usr/local/bin/cassandra-reaper**.
+```
+JVM_OPTS=(
+    -ea
+    -Xms2G
+    -Xmx2G
+    # Prefer binding to IPv4 network intefaces (when net.ipv6.bindv6only=1). See
+    # http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6342561 (short version:
+    # comment out this entry to enable IPv6 support).
+    -Djava.net.preferIPv4Stack=true
+    )
+```
+
 
