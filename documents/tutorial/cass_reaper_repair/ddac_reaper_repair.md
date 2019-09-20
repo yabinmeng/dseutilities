@@ -33,7 +33,7 @@ Sub-range repair is achieved by executing "nodetool repair -st <starting_token> 
 DataStax OpsCenter repair service is based on sub-range repair and handles the sub-range management and scheduling automatically.
 
 
-# Cassandra Reaper (Reaper)
+# Introduction to Cassandra Reaper (Reaper)
 
 [Cassandra Reaper](http://cassandra-reaper.io/) { GitHub Code [here](https://github.com/thelastpickle/cassandra-reaper) } is an open source effort that tries to simplify and automate C* repair, providing a functionality that is similar to what DataStax OpsCenter repair service offers. It was originally developed by [Spotify](https://www.spotify.com/us/) and is now taken over by [The Last Pickle](https://thelastpickle.com/) for active development and/or maintainence.
 
@@ -41,7 +41,7 @@ Please note that compared with Cassandra Reaper, DataStax OpsCenter is a far mor
 
 The sole purpose of Cassandra Reaper is for C* data repair mangement and automation. Like DataStax OpsCenter repair service, it is also based on sub-range repair. 
 
-## Install
+## Installation
 
 This section describes the method of how to install Reaper (as a service) on Debian based Linux systems like Ubuntu). For other installation methods, please refer to Reaper's official document.
 
@@ -71,7 +71,7 @@ JVM_OPTS=(
     )
 ```
 
-## Access Reaper
+## Access
 
 ### Web UI
 
@@ -89,3 +89,19 @@ Please NOTE that Reaper authentication is based on [Apache Shiro](https://shiro.
 All functionalities as exposed by Reaper Web UI can also be accessed via a CLI tool, **spreaper** (e.g. /usr/local/bin/spreaper), as provided out of the box of Reaper installaiton.
 
 **spreaper** utility is a python wrapper program around Reaper's Rest APIs. The detailed description of the APIs can be found [here](http://cassandra-reaper.io/docs/api/).
+
+## Backend Storage
+
+The main configuration file for Reaper is file **cassandra-reaper.yaml** (/etc/cassandra-reaper/cassandra-reaper.yaml). There are several templates of this file that are provided out of the box (that can be found under folder /etc/cassandra-reaper/configs/). The templates are based on Reaper's backend storage type. 
+
+Reaper can use the following storage types as its backend mechanism:
+* In-memory (default)
+* H2
+* Postgres
+* Cassandra
+
+In this document, we'll focus on how to use Cassandra as the backend storage. 
+
+
+# Configure Cassandra Backend for Reaper
+
