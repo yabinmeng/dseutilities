@@ -58,7 +58,7 @@ The APT package installation creates a service named **cassandra-reaper** and an
 sudo service cassandra-reaper [start|stop|status]
 ```
 
-Reaper server program is java based and by default it is allocated with 2GB heap size. If it is needed to increase the heap size, we can modify the following JVM options (in particular -Xms and -Xmx options) in file **/usr/local/bin/cassandra-reaper**.
+Reaper server program is java based and by default it is allocated with 2GB heap size. If it is needed to increase the heap size, we can modify the following JVM options (in particular -Xms and -Xmx options) in file ***/usr/local/bin/cassandra-reaper***.
 ```
 JVM_OPTS=(
     -ea
@@ -71,4 +71,11 @@ JVM_OPTS=(
     )
 ```
 
+Once the service is started, we can access Reaper web UI from the following url:
+```
+http://<IP_address>:8080/webui/
+```
 
+By default Reaper has authentication enabled. So when we access the above web UI first time, the landing page of the  web UI is the login page. A default username/password combination, ***admin/admin*** or ***user/user*** can be used for login purpose.
+
+Please NOTE that Reaper authentication is based on [Apache Shiro](https://shiro.apache.org/). So more advanced security features like LDAP integration, password encryption, and etc. are also possible with Reaper. Simply speaking, for production deployment and/or for more advanced security features, we should customize **shiro.ini** file (and put it under folder /etc/cassandra-reaper). A template file can be found from Reaper Github repo [here](https://github.com/thelastpickle/cassandra-reaper/blob/master/src/server/src/main/resources/shiro.ini). The detailed discussion of these features, however, is beyond the scope of this document. Please refer to [Shiro's documentation](https://shiro.apache.org/documentation.html) for more info.
