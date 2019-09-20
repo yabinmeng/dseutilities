@@ -92,7 +92,7 @@ All functionalities as exposed by Reaper Web UI can also be accessed via a CLI t
 
 ## Backend Storage
 
-The main configuration file for Reaper is file **cassandra-reaper.yaml** (/etc/cassandra-reaper/cassandra-reaper.yaml). There are several templates of this file that are provided out of the box (that can be found under folder /etc/cassandra-reaper/configs/). The templates are based on Reaper's backend storage type. 
+The main configuration file for Reaper is file **cassandra-reaper.yaml** (*/etc/cassandra-reaper/cassandra-reaper.yaml*). There are several templates of this file that are provided out of the box (that can be found under folder ***/etc/cassandra-reaper/configs/***). The templates are based on Reaper's backend storage type. 
 
 Reaper can use the following storage types as its backend mechanism:
 * In-memory (default)
@@ -103,5 +103,17 @@ Reaper can use the following storage types as its backend mechanism:
 In this document, we'll focus on how to use Cassandra as the backend storage. 
 
 
-# Configure Cassandra Backend for Reaper
+# Reaper and Cassandra 
 
+For simplicity purpose, in my test, I'm using the same DDAC (C*) cluster that Reaper is going to manage for repair as Reaper's own backend C* storage cluster. Practically speaking, it is recommended to use a separate DDAC (C*) cluster.
+
+The DDAC(C*) cluster used in my test has the following security features enabled:
+* JMX authentication 
+* C* (internal) authentication
+* Client-to-server encryption
+
+These security features are purposely chosen in order to test the connection between Reaper and C*, both as a storage backend storage cluster and a managed cluster.
+
+## C* Cluster Configuration 
+
+### JMX Configuration
