@@ -103,20 +103,88 @@ Reaper can use the following storage types as its backend mechanism:
 In this document, we'll focus on how to use Cassandra as the backend storage. 
 
 
-# Reaper and Cassandra 
+# DDAC(C*) Cluster Configuration
 
 For simplicity purpose, in my test, I'm using the same DDAC (C*) cluster that Reaper is going to manage for repair as Reaper's own backend C* storage cluster. Practically speaking, it is recommended to use a separate DDAC (C*) cluster.
 
 The DDAC(C*) cluster used in my test has the following security features enabled:
 * JMX authentication 
+* JMX SSL
 * C* (internal) authentication
-* Client-to-server encryption
+* C* client-to-server and server-to-server SSL encryption
 
 These security features are purposely chosen in order to test the connection between Reaper and DDAC(C*), both as a storage backend storage cluster and a managed cluster.
 
-## DDAC(C*) Cluster Configuration 
+### Cassandra Authentication, Client-to-Server SSL, and Server-to-Sever SSL
 
-### JMX Configuration
+The following security features in **cassandra.yaml** file have been enabled for the DDAC (C*) cluster:
+
+```
+# Authentication
+authenticator: PasswordAuthenticator
+
+# Client-to-Server SSL
+client_encryption_options:
+    enabled: true
+    optional: false
+    keystore: <keystore_file_path>
+    keystore_password: <keystore_password>
+
+# Server-to-Server SSL
+server_encryption_options:
+    internode_encryption: all
+    keystore: <keystore_file_path>
+    keystore_password: <keystore_password>
+    truststore: <turststore_file_path>
+    truststore_password: <truststore_password>
+    require_client_auth: true
+```
+
+When Reaper chooses to use this DDAC(C*) cluster as its backend storage, its connection to the cluster is enforced by the above security settings (esp. Authentication and Client-to-Server SSL)
+
+
+### JMX Authentication and SSL Configuration (as a monitored cluster)
 
 Reaper uses JMX to manage DDAC(C*) clusters for repair. Because of this, each DDAC(C*) cluster needs to have remote JMX enabled, which in turn has JMX authentication enabled by default. It is also recommended to have JMX SSL enabled in order to encrypt in-flight JMX communiction.
+
+The JMX security settings are enabled in **cassandra-envs.sh** file, as below:
+
+```
+LOCAL_JMX=no
+
+if [ "x$LOCAL_JMX" = "x" ]; then
+    LOCAL_JMX=yes
+fi
+
+# Specifies the default port over which Cassandra will be available for
+# JMX connections.
+# For security reasons, you should not expose this port to the internet.  Firewall it if needed.
+JMX_PORT="7199"
+
+if [ "$LOCAL_JMX" = "yes" ]; then
+  JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.local.port=$JMX_PORT"
+  JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.authenticate=false"
+else
+  JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.remote.port=$JMX_PORT"
+  # if ssl is enabled the same port cannot be used for both jmx and rmi so either
+  # pick another value for this property or comment out to use a random port (though see CASSANDRA-7087 for origins)
+  JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT"
+
+  # turn on JMX authentication. See below for further options
+  JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.authenticate=true"
+
+  # jmx ssl options
+  JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl=true"
+  #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.need.client.auth=true"
+  #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.enabled.protocols=<enabled-protocols>"
+  #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.enabled.cipher.suites=<enabled-cipher-suites>"
+  JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStore=/opt/ddac-5.1.16/security/dseKeystore_172-31-66-133.jks"
+  JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStorePassword=MyKeyStorePass"
+  JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStore=/opt/ddac-5.1.16/security/dseTruststore.jks"
+  JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStorePassword=MyTrustStorePass"
+fi
+
+JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.remote.login.config=CassandraLogin"
+JVM_OPTS="$JVM_OPTS -Djava.security.auth.login.config=$CASSANDRA_HOME/conf/cassandra-jaas.config" 
+```
 
