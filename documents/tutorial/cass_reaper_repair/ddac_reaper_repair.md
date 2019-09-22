@@ -12,21 +12,21 @@ Because of this, for DDAC users, they need to fall back to the basic, command-li
 
 **Full Repair** 
 
-When running "nodetool repair" command, by default it is running a full repair, which means on the node where the command runs, it will repair both primary-range data and secondary-range data. Primary-range data means the data this is owned by this node by the calculation of the partitioning hash function. Secondary-range data means the replica data that is replicated from other nodes.
+When running "nodetool repair" command, by default it is running a full repair, which means on the node where the command runs, it will repair both primary-range data and secondary-range data. Primary-range data means the data is owned by this node by the calculation of the partitioning hash function. Secondary-range data means the replica data that is replicated from other nodes.
 
-When executing the full repair on each node of the cluster (an entire repair cycle), it means that the same data has been repaired RF times (RF means the replication factor). This makes full repair especially resource heavy and time consuming.
+When executing the full repair on each node of the cluster (an entire repair cycle), it means that the same data has been repaired RF times (RF means the replication factor). This makes full repair resource heavy and time consuming.
 
 **Primary-Range Repair**
 
 In order to reduce the impact of a full repair, we can run the repair via "nodetool repair -pr" command. The "-pr" option means when doing repair on a node, it is only going to focus on primary-range data, but not on secondary-range data. Because of this, when we execute an entire repair cycle (on each node of the cluster), there is no "duplicate" repair of data; and is therefore faster and less resource consuming as compared to the full repair. 
 
-The only thing that needs to pay attention to here is when taking this approach. Primary-range repair command has to be executed on every node of the cluster in order to make sure the entire data set is repaired. 
+One thing that needs to pay attention to here is when taking this approach, primary-range repair command has to be executed on every node of the cluster in order to make sure the entire data set is repaired. 
 
-For full repair, technically speaking as long as the command is executed on (N - RF + 1) nodes (N is the number of nodes in the cluster and RF is the replciation factor), the entire data set is repaired. 
+For full repair, technically speaking, as long as the command is executed on (N - RF + 1) nodes (N is the number of nodes in the cluster and RF is the replciation factor), the entire data set is repaired. 
 
 **Sub-Range Repair**
 
-Sub-range repair is achieved by executing "nodetool repair -st <starting_token> -et <ending_token>". Using sub-range repair can further limit the scope of each repair session by providing a much smaller range of tokens as compared to the whole (primary) range of data tokens that one node owns. Because of the small scope of the data to be repaired, the resource usage and impact on the cluster is small as well for each repair session. But meanwhile, in order to complete the repair on the entire data set, a schedule needs to be established in order to divide the data into a complete list of sub-ranges and make sure each sub-range is repaired. 
+Sub-range repair is achieved by executing "nodetool repair -st <starting_token> -et <ending_token>". Using sub-range repair can further limit the scope of each repair session by providing a smaller range of tokens as compared to the whole (primary) range of data. Concurrent repair on different sub-ranges of data is also possible. Because of this, sub-range repair can be less resource consuming and more flexible. But meanwhile, in order to complete the repair on the entire data set, a schedule needs to be established to divide the data into a complete list of sub-ranges and make sure each sub-range is repaired. 
 
 ---
 
@@ -82,7 +82,7 @@ http://<IP_address>:8080/webui/
 
 By default Reaper has authentication enabled. So when we access the above web UI first time, the landing page of the  web UI is the login page. A default username/password combination, ***admin/admin*** or ***user/user*** can be used for login purpose.
 
-Please NOTE that Reaper authentication is based on [Apache Shiro](https://shiro.apache.org/). So more advanced security features like LDAP integration, password encryption, and etc. are also possible with Reaper. Simply speaking, for production deployment and/or for more advanced security features, we should customize **shiro.ini** file (and put it under folder /etc/cassandra-reaper). A template file can be found from Reaper Github repo [here](https://github.com/thelastpickle/cassandra-reaper/blob/master/src/server/src/main/resources/shiro.ini). The detailed discussion of these features, however, is beyond the scope of this document. Please refer to [Shiro's documentation](https://shiro.apache.org/documentation.html) for more info.
+Please NOTE that Reaper authentication is based on [Apache Shiro](https://shiro.apache.org/). So more advanced security features like LDAP integration, password encryption, and etc. are also possible with Reaper. For production deployment and/or for more advanced security features, we should customize **shiro.ini** file (and put it under folder /etc/cassandra-reaper). A template file can be found from Reaper Github repo [here](https://github.com/thelastpickle/cassandra-reaper/blob/master/src/server/src/main/resources/shiro.ini). The detailed discussion of these features, however, is beyond the scope of this document. Please refer to [Shiro's documentation](https://shiro.apache.org/documentation.html) for more info.
 
 ### CLI and Rest API
 
@@ -112,8 +112,11 @@ The DDAC(C*) cluster used in my test has the following security features enabled
 * C* (internal) authentication
 * Client-to-server encryption
 
-These security features are purposely chosen in order to test the connection between Reaper and C*, both as a storage backend storage cluster and a managed cluster.
+These security features are purposely chosen in order to test the connection between Reaper and DDAC(C*), both as a storage backend storage cluster and a managed cluster.
 
-## C* Cluster Configuration 
+## DDAC(C*) Cluster Configuration 
 
 ### JMX Configuration
+
+Reaper uses JMX to manage DDAC(C*) clusters for repair. Because of this, each DDAC(C*) cluster needs to have remote JMX enabled, which in turn has JMX authentication enabled by default. It is also recommended to have JMX SSL enabled in order to encrypt in-flight JMX communiction.
+
