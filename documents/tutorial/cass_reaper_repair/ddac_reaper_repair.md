@@ -214,7 +214,7 @@ $ cd /etc/cassandra-reaper
 $ cp configs/cassandra-reaper-cassandra-ssl.yaml cassandra-reaper.yaml
 ```
 
-2) Make the following changes in "cassandra-reaper.yaml"
+2) Make corresponding changes in the following sections in "cassandra-reaper.yaml"
 ```
 jmxAuth:
   username: <jmx_user_name>
@@ -239,6 +239,28 @@ cassandra:
   ssl:
     type: jdk
 ```
+
+3) Since the DDAC(C*) clsuter has client-to-server SSL and JMX SSL enabled, we also need to specify the keystore/truststore file and password for proper connection. Unfortunately, at the moment, there is no way to specify these information in the main configuration file. They have to be specified as JVM options directly.
+
+Edit **/usr/local/bin/cassandra-reaper** file and add the following SSL related JVM options.
+```
+JVM_OPTS=(
+    -ea
+    -Xms2G
+    -Xmx2G
+    # Prefer binding to IPv4 network intefaces (when net.ipv6.bindv6only=1). See
+    # http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6342561 (short version:
+    # comment out this entry to enable IPv6 support).
+    -Djava.net.preferIPv4Stack=true
+
+    # SSL
+    -Dssl.enable=true
+    -Djavax.net.ssl.trustStore=<truststore_file_path>
+    -Djavax.net.ssl.trustStorePassword=<truststore_password>
+    )
+```
+
+
 
 
 
