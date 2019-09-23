@@ -202,5 +202,46 @@ $ nodetool -h <node_name_or_ip> --ssl -u <C*_user_name> -pw <C*_user_password> s
 Please NOTE that in the above command, C* username/password is used. This is because our JMX authentication is delegated to using DDA(C*) authentication.
 
 
-# Configure to Use a DDAC(C*) Cluster as Reaper Storage Backend
+# Configure Reaper with DDAC(C*)
+
+## Main Configuration File : **cassandra-reaper.yaml**
+
+As mentioned earlier, the main Reaper configuration file is **cassandra-reaper.yaml** (e.g. /etc/cassandra-reaper/cassandra-reaper.yaml) and the default one is for using memory as the backend storage type. For our case, since we're using DDAC(C*) as the storage backend with SSL enabled, we should change the main configuration file accordingly. 
+
+1) Copy the configuration template file for C* backend (with SSL)
+```
+$ cd /etc/cassandra-reaper
+$ cp configs/cassandra-reaper-cassandra-ssl.yaml cassandra-reaper.yaml
+```
+
+2) Make the following changes in "cassandra-reaper.yaml"
+```
+jmxAuth:
+  username: <jmx_user_name>
+  password: <jmx_user_password>
+
+cassandra:
+  clusterName: "<storage_C*_cluster_name>"
+  contactPoints: ["<storage_node1_ip>", "<storage_node2_ip>", ....]
+  keyspace: reaper_db
+  loadBalancingPolicy:
+    type: tokenAware
+    shuffleReplicas: true
+    subPolicy:
+      type: dcAwareRoundRobin
+      localDC: <local_DC_name>
+      usedHostsPerRemoteDC: 0
+      allowRemoteDCsForLocalConsistencyLevel: false
+  authProvider:
+    type: plainText
+    username: <C*_user_name>
+    password: <C*_user_password>
+  ssl:
+    type: jdk
+```
+
+
+
+
+
 
