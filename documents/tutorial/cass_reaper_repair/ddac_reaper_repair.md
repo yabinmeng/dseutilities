@@ -111,11 +111,11 @@ The DDAC(C*) cluster used in my test has the following security features enabled
 * JMX authentication 
 * JMX SSL
 * C* (internal) authentication
-* C* client-to-server and server-to-server SSL encryption
+* C* client-to-server SSL encryption
 
 These security features are purposely chosen in order to test the connection between Reaper and DDAC(C*), both as a storage backend storage cluster and a managed cluster.
 
-### Cassandra Authentication, Client-to-Server SSL, and Server-to-Sever SSL
+## Cassandra Authentication and Client-to-Server SSL (as both storage cluster and monitored clsuter)
 
 The following security features in **cassandra.yaml** file have been enabled for the DDAC (C*) cluster:
 
@@ -129,38 +129,24 @@ client_encryption_options:
     optional: false
     keystore: <keystore_file_path>
     keystore_password: <keystore_password>
-
-# Server-to-Server SSL
-server_encryption_options:
-    internode_encryption: all
-    keystore: <keystore_file_path>
-    keystore_password: <keystore_password>
-    truststore: <turststore_file_path>
-    truststore_password: <truststore_password>
-    require_client_auth: true
 ```
 
 When Reaper chooses to use this DDAC(C*) cluster as its backend storage, its connection to the cluster is enforced by the above security settings (esp. Authentication and Client-to-Server SSL)
 
 
-### JMX Authentication and SSL Configuration (as a monitored cluster)
+## JMX Authentication and SSL Configuration (as monitored cluster)
 
 Reaper uses JMX to manage DDAC(C*) clusters for repair. Because of this, each DDAC(C*) cluster needs to have remote JMX enabled, which in turn has JMX authentication enabled by default. It is also recommended to have JMX SSL enabled in order to encrypt in-flight JMX communiction.
 
 The JMX security settings are enabled in **cassandra-envs.sh** file, as below:
 
-
-
 ```
 ### Remote JMX
 LOCAL_JMX=no
 JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.remote.port=$JMX_PORT"
-# if ssl is enabled the same port cannot be used for both jmx and rmi so either
-# pick another value for this property or comment out to use a random port (though see CASSANDRA-7087 for origins)
 JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT"
 
 ### JMX Authentication (via C* Auth.)
-# turn on JMX authentication. See below for further options
 JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.authenticate=true"
 JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.remote.login.config=CassandraLogin"
 JVM_OPTS="$JVM_OPTS -Djava.security.auth.login.config=$CASSANDRA_HOME/conf/cassandra-jaas.config" 
@@ -170,9 +156,51 @@ JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl=true"
 #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.need.client.auth=true"
 #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.enabled.protocols=<enabled-protocols>"
 #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.enabled.cipher.suites=<enabled-cipher-suites>"
-JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStore=/opt/ddac-5.1.16/security/dseKeystore_172-31-66-133.jks"
-JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStorePassword=MyKeyStorePass"
-JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStore=/opt/ddac-5.1.16/security/dseTruststore.jks"
-JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStorePassword=MyTrustStorePass"
+JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStore=<keystore_file_path>"
+JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStorePassword=<keystore_password>"
+JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStore=<truststore_file_path>"
+JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStorePassword=<truststore_password>"
 ```
+
+Please **NOTE** that the above setting achieves JMX authentication NOT through regular file based JMX authentication; but instead it is through DDAC (C*)'s internal authentication.  
+
+## DDAC (C*) Connection Verification via "cqlsh" and "nodetool"
+
+Before using Reaper to connect (and monitor) the DDAC (C*) cluster with the above settings, let's first use **cqlsh** and **nodetool** utilities (against a remote C* node) first for connection verification purpose. 
+
+1) Verify **cqlsh** connection to the DDAC(C*) cluster
+
+First, add the following section in ***~/.cassandra/cqlshrc*** file.
+```
+[ssl]
+certfile = <file_path_of_self_singed_rootca_certificate>
+validate = true
+```
+
+Then, verify CQLSH connection via the following command. If connected succesfully, CQLSH command line will show up, an example of which is as below.
+```
+$ cqlsh <node_name_or_ip> --ssl -u <C*_user_name> -p <C*_user_password>
+Connected to MyTestCluster at node0:9042.
+[cqlsh 5.0.1 | Cassandra 3.11.3.5116 | CQL spec 3.4.4 | Native protocol v4]
+Use HELP for help.
+cassandra@cqlsh>
+```
+
+2) Verify **nodetool** connection to the DDAC(C*) cluster
+
+First, create a file **~/.cassandra/nodetool-ssl.properties** with the following content
+```
+-Djavax.net.ssl.trustStore=<file_path_to_truststore>"
+-Djavax.net.ssl.trustStorePassword=<truststore_password>"
+```
+
+Then, verify "nodetool status" command (JMX connection) via the following command. If connected successfully, the proper DDAC(C*) cluster status is returned.
+```
+$ nodetool -h <node_name_or_ip> --ssl -u <C*_user_name> -pw <C*_user_password> status
+```
+
+Please NOTE that in the above command, C* username/password is used. This is because our JMX authentication is delegated to using DDA(C*) authentication.
+
+
+# Configure to Use a DDAC(C*) Cluster as Reaper Storage Backend
 
