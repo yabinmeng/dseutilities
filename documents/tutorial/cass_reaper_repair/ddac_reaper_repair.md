@@ -240,9 +240,7 @@ cassandra:
     type: jdk
 ```
 
-3) Since the DDAC(C*) clsuter has client-to-server SSL and JMX SSL enabled, we also need to specify the keystore/truststore file and password for proper connection. Unfortunately, at the moment, there is no way to specify these information in the main configuration file. They have to be specified as JVM options directly.
-
-Edit **/usr/local/bin/cassandra-reaper** file and add the following SSL related JVM options.
+3) Since the DDAC(C*) clsuter has client-to-server SSL and JMX SSL enabled, we also need to specify the keystore/truststore file and password for proper connection. Unfortunately, at the moment, there is no way to specify these information in the main configuration file. They have to be specified as JVM options directly, by modifying  **/usr/local/bin/cassandra-reaper** file and adding the following SSL related JVM options.
 ```
 JVM_OPTS=(
     -ea
