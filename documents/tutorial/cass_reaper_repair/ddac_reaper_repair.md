@@ -240,7 +240,14 @@ cassandra:
     type: jdk
 ```
 
-Please NOTE that the above 
+## Create Dedicated C* Keyspace for Reaper
+
+In the above settings, a dedicated C* keyspace, **reapder_db**, has been specified to hold Reaper data in C* tables. In order to make Reaper connecting to DDAC(C*) cluster properly, this keyspace needs to be specified in advance.
+
+Log into the CQLSH command line on any DDAC(C*) node (as Reaper storage backend) and execute a command similar to the below:
+```
+CREATE KEYSPACE reaper_db WITH replication = {'class': 'NetworkTopologyStrategy', '<DC_name>': '<RF_num>', ...}  AND durable_writes = true;
+```
 
 ## SSL Configuration for JMX and DDAC(C*) Connection
 
@@ -262,12 +269,22 @@ JVM_OPTS=(
     )
 ```
 
-# Using Reaper for DDAC (C*) Repair 
+## Verify Reaper (Native CQL) Connection to Backend Storage DDAC(C*) Cluster
 
-## Add a Cluster
+Once the above settings have been made, restart **cassandra-reaper** service and make sure the OS process is indeed started up and running. Please note that if the Reaper connection to the backend DDAC(C*) cluster is somehow NOT successful (e.g. wrong C* username/password), the OS process for **cassandra-reaper** service will not start and you won't see any error message in Reaper's log file (e.g. /var/log/cassandra-reaper/reaper.log). So a convenient way to check the connection between Reaper and the backend storage DDAC(C*) cluster is to see whether the OS process for Reaper service is up and running via "ps" command.
 
-The first step 
+In order to further verify Reaper connection to the backend storage DDAC(C*) cluster, we can also log in to a DDAC (C*) node and run the following CQLSH command to see if various C* tables are created successfully under **reaper_db** keyspace. If the connection is good, starting Reaper service for the first time will create these tables.
+```
+DESCRIBE KEYSPACE reaper_db;
+```
 
+## Verify Reaper (JMX) Connection to Monitored DDAC(C*) Cluster for Repair
+
+In order to verify Reaper (JMX) connection to the managed DDAC(C*) cluster, we can try adding a managed cluster from Reaper WebUI. This is because as I mentioned earlier, Reaper achieves its functionality of cluster management, repair, and etc. through JMX functions as exposed by the managed DDAC(C*) cluster.
+
+The screenshot below shows how to add a managed C* cluster from the Reaper WebUI. If we can successfully add a managed cluster, that means JMX connection is good.
+
+![Adding a Cluster](resources/ading_cluster.png)
 
 
 
