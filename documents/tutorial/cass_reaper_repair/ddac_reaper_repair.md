@@ -284,7 +284,7 @@ In order to verify Reaper (JMX) connection to the managed DDAC(C*) cluster, we c
 
 The screenshot below shows how to add a managed C* cluster from the Reaper WebUI. If we can successfully add a managed cluster, that means JMX connection is good.
 
-![Adding a Cluster](resources/ading_cluster.png)
+![Adding a Cluster](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/cass_reaper_repair/resources/adding_cluster.png)
 
 
 
