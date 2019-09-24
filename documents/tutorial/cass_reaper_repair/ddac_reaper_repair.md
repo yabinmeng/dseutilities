@@ -4,7 +4,7 @@
 
 DataStax has announced DDAC (DataStax Distribution of Apache Cassandra) in late 2018 as a "a new subscription offering designed for running a certified version of open source Apache Cassandra (C*) for development and production use cases that do not have the higher enterprise demands better served by [DataStax Enterprise](https://www.datastax.com/products/datastax-enterprise).
 
-Since DDAC is designed as a "supported **OSS** C*", it doesn't have the enterprise features as offered in DSE. It also can't utilize other enterprise-oriented DSE tools like [DataStax OpsCenter](https://www.datastax.com/products/datastax-opscenter). This means that when using DDAC, we can't utilize all features as provided by OpsCenter for cluster operation management, metrics monitoring and dashboarding, advanced services like for backup or repair, and and so on. 
+Since DDAC is designed as a "supported **OSS** C*", it doesn't have the enterprise features as offered in DSE. It also can't utilize other enterprise-oriented DSE tools like [DataStax OpsCenter](https://www.datastax.com/products/datastax-opscenter). This means that when using DDAC, we can't utilize all features as provided by OpsCenter for cluster operation management, metrics monitoring and dashboarding, advanced services like for backup or repair, and so on. 
 
 Because of this, for DDAC users, they need to fall back to the basic, command-line based features as provided out of the box of OSS C*. For example, if they want to run a repair against the cluster, they have to run "nodetool repair" command somehow on each of the node in the cluster. This is a manual process and usually it can take a long time to finish repairing the entire cluster when the data size is not small.
 
@@ -22,7 +22,7 @@ In order to reduce the impact of a full repair, we can run the repair via "nodet
 
 One thing that needs to pay attention to here is when taking this approach, primary-range repair command has to be executed on every node of the cluster in order to make sure the entire data set is repaired. 
 
-For full repair, technically speaking, as long as the command is executed on (N - RF + 1) nodes (N is the number of nodes in the cluster and RF is the replciation factor), the entire data set is repaired. 
+For full repair, technically speaking, as long as the command is executed on (N - RF + 1) nodes (N is the number of nodes in the cluster and RF is the replication factor), the entire data set is repaired. 
 
 **Sub-Range Repair**
 
@@ -35,11 +35,11 @@ DataStax OpsCenter repair service is based on sub-range repair and handles the s
 
 # Introduction to Cassandra Reaper (Reaper)
 
-[Cassandra Reaper](http://cassandra-reaper.io/) { GitHub Code [here](https://github.com/thelastpickle/cassandra-reaper) } is an open source effort that tries to simplify and automate C* repair, providing a functionality that is similar to what DataStax OpsCenter repair service offers. It was originally developed by [Spotify](https://www.spotify.com/us/) and is now taken over by [The Last Pickle](https://thelastpickle.com/) for active development and/or maintainence.
+[Cassandra Reaper](http://cassandra-reaper.io/) { GitHub Code [here](https://github.com/thelastpickle/cassandra-reaper) } is an open source effort that tries to simplify and automate C* repair, providing a functionality that is similar to what DataStax OpsCenter repair service offers. It was originally developed by [Spotify](https://www.spotify.com/us/) and is now taken over by [The Last Pickle](https://thelastpickle.com/) for active development and/or maintenance.
 
 Please note that compared with Cassandra Reaper, DataStax OpsCenter is a far more advanced product for many tasks of different purposes such as metrics monitoring, dashboarding, alerting, cluster management and operation like node start/stop, token balance, backup/restore, repair, performance tuning, and so on. 
 
-The sole purpose of Cassandra Reaper is for C* data repair mangement and automation. Like DataStax OpsCenter repair service, it is also based on sub-range repair. 
+The sole purpose of Cassandra Reaper is for C* data repair management and automation. Like DataStax OpsCenter repair service, it is also based on sub-range repair. 
 
 ## Installation
 
@@ -64,7 +64,7 @@ JVM_OPTS=(
     -ea
     -Xms2G
     -Xmx2G
-    # Prefer binding to IPv4 network intefaces (when net.ipv6.bindv6only=1). See
+    # Prefer binding to IPv4 network interfaces (when net.ipv6.bindv6only=1). See
     # http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6342561 (short version:
     # comment out this entry to enable IPv6 support).
     -Djava.net.preferIPv4Stack=true
@@ -75,18 +75,18 @@ JVM_OPTS=(
 
 ### Web UI
 
-Once the service is started, we can access Reaper web UI from the following url:
+Once the service is started, we can access Reaper web UI from the following URL:
 ```
 http://<IP_address>:8080/webui/
 ```
 
-By default Reaper has authentication enabled. So when we access the above web UI first time, the landing page of the  web UI is the login page. A default username/password combination, ***admin/admin*** or ***user/user*** can be used for login purpose.
+By default, Reaper has authentication enabled. So when we access the above web UI first time, the landing page of the  web UI is the login page. A default username/password combination, ***admin/admin*** or ***user/user*** can be used for login purpose.
 
-Please NOTE that Reaper authentication is based on [Apache Shiro](https://shiro.apache.org/). So more advanced security features like LDAP integration, password encryption, and etc. are also possible with Reaper. For production deployment and/or for more advanced security features, we should customize **shiro.ini** file (and put it under folder /etc/cassandra-reaper). A template file can be found from Reaper Github repo [here](https://github.com/thelastpickle/cassandra-reaper/blob/master/src/server/src/main/resources/shiro.ini). The detailed discussion of these features, however, is beyond the scope of this document. Please refer to [Shiro's documentation](https://shiro.apache.org/documentation.html) for more info.
+Please NOTE that Reaper authentication is based on [Apache Shiro](https://shiro.apache.org/). So more advanced security features like LDAP integration, password encryption, and etc. are also possible with Reaper. For production deployment and/or for more advanced security features, we should customize **shiro.ini** file (and put it under folder /etc/cassandra-reaper). A template file can be found from Reaper GitHub repo [here](https://github.com/thelastpickle/cassandra-reaper/blob/master/src/server/src/main/resources/shiro.ini). The detailed discussion of these features, however, is beyond the scope of this document. Please refer to [Shiro's documentation](https://shiro.apache.org/documentation.html) for more info.
 
 ### CLI and Rest API
 
-All functionalities as exposed by Reaper Web UI can also be accessed via a CLI tool, **spreaper** (e.g. /usr/local/bin/spreaper), as provided out of the box of Reaper installaiton.
+All functionalities as exposed by Reaper Web UI can also be accessed via a CLI tool, **spreaper** (e.g. /usr/local/bin/spreaper), as provided out of the box of Reaper installation.
 
 **spreaper** utility is a python wrapper program around Reaper's Rest APIs. The detailed description of the APIs can be found [here](http://cassandra-reaper.io/docs/api/).
 
@@ -115,7 +115,7 @@ The DDAC(C*) cluster used in my test has the following security features enabled
 
 These security features are purposely chosen in order to test the connection between Reaper and DDAC(C*), both as a storage backend storage cluster and a managed cluster.
 
-## Cassandra Authentication and Client-to-Server SSL (as both storage cluster and monitored clsuter)
+## Cassandra Authentication and Client-to-Server SSL (as both storage cluster and monitored cluster)
 
 The following security features in **cassandra.yaml** file have been enabled for the DDAC (C*) cluster:
 
@@ -136,7 +136,7 @@ When Reaper chooses to use this DDAC(C*) cluster as its backend storage, its con
 
 ## JMX Authentication and SSL Configuration (as monitored cluster)
 
-Reaper uses JMX to manage DDAC(C*) clusters for repair. Because of this, each DDAC(C*) cluster needs to have remote JMX enabled, which in turn has JMX authentication enabled by default. It is also recommended to have JMX SSL enabled in order to encrypt in-flight JMX communiction.
+Reaper uses JMX to manage DDAC(C*) clusters for repair. Because of this, each DDAC(C*) cluster needs to have remote JMX enabled, which in turn has JMX authentication enabled by default. It is also recommended to have JMX SSL enabled in order to encrypt in-flight JMX communication.
 
 The JMX security settings are enabled in **cassandra-envs.sh** file, as below:
 
@@ -177,7 +177,7 @@ certfile = <file_path_of_self_singed_rootca_certificate>
 validate = true
 ```
 
-Then, verify CQLSH connection via the following command. If connected succesfully, CQLSH command line will show up, an example of which is as below.
+Then, verify CQLSH connection via the following command. If connected successfully, CQLSH command line will show up, an example of which is as below.
 ```
 $ cqlsh <node_name_or_ip> --ssl -u <C*_user_name> -p <C*_user_password>
 Connected to MyTestCluster at node0:9042.
@@ -251,7 +251,7 @@ CREATE KEYSPACE reaper_db WITH replication = {'class': 'NetworkTopologyStrategy'
 
 ## SSL Configuration for JMX and DDAC(C*) Connection
 
-Since the DDAC(C*) clsuter has client-to-server SSL and JMX SSL enabled, we also need to specify the keystore/truststore file and password for proper connection. Unfortunately, at the moment, there is no way to specify these information in the main configuration file. They have to be specified as JVM options directly, by modifying  **/usr/local/bin/cassandra-reaper** file and adding the following SSL related JVM options.
+Since the DDAC(C*) cluster has client-to-server SSL and JMX SSL enabled, we also need to specify the keystore/truststore file and password for proper connection. Unfortunately, at the moment, there is no way to specify this information in the main configuration file. They have to be specified as JVM options directly, by modifying  **/usr/local/bin/cassandra-reaper** file and adding the following SSL related JVM options.
 ```
 JVM_OPTS=(
     -ea
@@ -271,7 +271,7 @@ JVM_OPTS=(
 
 ## Verify Reaper (Native CQL) Connection to the Backend Storage DDAC(C*) Cluster
 
-Once the above settings have been made, restart **cassandra-reaper** service and make sure the OS process is indeed started up and running. Please note that if the Reaper connection to the backend DDAC(C*) cluster is somehow NOT successful (e.g. wrong C* username/password), the OS process for **cassandra-reaper** service will not start and you won't see any error message in Reaper's log file (e.g. /var/log/cassandra-reaper/reaper.log). So a convenient way to check the connection between Reaper and the backend storage DDAC(C*) cluster is to see whether the OS process for Reaper service is up and running via "ps" command.
+Once the above settings have been made, restart **cassandra-reaper** service and make sure the OS process is indeed started up and running. Please note that if the Reaper connection to the backend DDAC(C*) cluster is somehow NOT successful (e.g. wrong C* username/password), the OS process for **cassandra-reaper** service will not start, and you won't see any error message in Reaper's log file (e.g. /var/log/cassandra-reaper/reaper.log). So a convenient way to check the connection between Reaper and the backend storage DDAC(C*) cluster is to see whether the OS process for Reaper service is up and running via "ps" command.
 
 In order to further verify Reaper connection to the backend storage DDAC(C*) cluster, we can also log in to a DDAC (C*) node and run the following CQLSH command to see if various C* tables are created successfully under **reaper_db** keyspace. If the connection is good, starting Reaper service for the first time will create these tables.
 ```
