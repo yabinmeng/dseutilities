@@ -269,7 +269,7 @@ JVM_OPTS=(
     )
 ```
 
-## Verify Reaper (Native CQL) Connection to Backend Storage DDAC(C*) Cluster
+## Verify Reaper (Native CQL) Connection to the Backend Storage DDAC(C*) Cluster
 
 Once the above settings have been made, restart **cassandra-reaper** service and make sure the OS process is indeed started up and running. Please note that if the Reaper connection to the backend DDAC(C*) cluster is somehow NOT successful (e.g. wrong C* username/password), the OS process for **cassandra-reaper** service will not start and you won't see any error message in Reaper's log file (e.g. /var/log/cassandra-reaper/reaper.log). So a convenient way to check the connection between Reaper and the backend storage DDAC(C*) cluster is to see whether the OS process for Reaper service is up and running via "ps" command.
 
@@ -278,7 +278,7 @@ In order to further verify Reaper connection to the backend storage DDAC(C*) clu
 DESCRIBE KEYSPACE reaper_db;
 ```
 
-## Verify Reaper (JMX) Connection to Monitored DDAC(C*) Cluster for Repair
+## Verify Reaper (JMX) Connection to a Monitored DDAC(C*) Cluster
 
 In order to verify Reaper (JMX) connection to the managed DDAC(C*) cluster, we can try adding a managed cluster from Reaper WebUI. This is because as I mentioned earlier, Reaper achieves its functionality of cluster management, repair, and etc. through JMX functions as exposed by the managed DDAC(C*) cluster.
 
