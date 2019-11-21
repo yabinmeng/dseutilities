@@ -179,8 +179,7 @@ if [[ $1 == "-f" ]]; then
                  -in $CSR_FILE                     \
                  -out $SIGNED_CRT_FILE             \
                  -days $PRIV_KEY_EXPIRE_DAYS_VAR   \
-                 -CAcreateserial                   \
-                 -passin pass:$ROOT_CA_PASS_VAR
+                 -CAcreateserial
 
          echo
          echo "   >> (3.4) import RootCA certificate to the keystore"
@@ -217,8 +216,7 @@ if [[ $1 == "-f" ]]; then
                  -in "$CQLSH_SUBDIR/cqlsh_$line2"".$CSR_FILE_EXT_VAR"         \
                  -out "$CQLSH_SUBDIR/cqlsh_$line2"".$SIGNED_CRT_FILE_EXT_VAR" \
                  -days $CQLSH_KEY_EXPIRE_DAYS_VAR     \
-                 -CAcreateserial                      \
-                 -passin pass:$ROOT_CA_PASS_VAR
+                 -CAcreateserial
 
 
          echo
