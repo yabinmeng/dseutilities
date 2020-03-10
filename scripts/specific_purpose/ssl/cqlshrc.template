@@ -1,0 +1,11 @@
+[ssl]
+certfile = ~/SelfSignedSSL/jks/rootca/rootca.crt
+; Optional, true by default.
+validate = false
+userkey = ~/SelfSignedSSL/jks/cqlsh/cqlsh_10-101-35-178.key
+usercert = ~/SelfSignedSSL/jks/cqlsh/cqlsh_10-101-35-178.crt.signed
+
+[certfiles]
+; Optional section, overrides the default certfile in the [ssl] section.
+10.101.33.162 = ~/SelfSignedSSL/jks/cqlsh/cqlsh_10-101-33-162.crt.signed
+10.101.35.178 = ~/SelfSignedSSL/jks/cqlsh/cqlsh_10-101-35-178.crt.signed
