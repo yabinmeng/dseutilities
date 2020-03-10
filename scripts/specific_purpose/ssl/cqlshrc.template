@@ -2,10 +2,10 @@
 certfile = ~/SelfSignedSSL/jks/rootca/rootca.crt
 ; Optional, true by default.
 validate = false
-userkey = ~/SelfSignedSSL/jks/cqlsh/cqlsh_10-101-35-178.key
-usercert = ~/SelfSignedSSL/jks/cqlsh/cqlsh_10-101-35-178.crt.signed
+userkey = ~/SelfSignedSSL/jks/cqlsh/cqlsh_<Node.IP.with.Hyphen>.key
+usercert = ~/SelfSignedSSL/jks/cqlsh/cqlsh_<Node.IP.with.Hyphen>.crt.signed
 
 [certfiles]
 ; Optional section, overrides the default certfile in the [ssl] section.
-10.101.33.162 = ~/SelfSignedSSL/jks/cqlsh/cqlsh_10-101-33-162.crt.signed
-10.101.35.178 = ~/SelfSignedSSL/jks/cqlsh/cqlsh_10-101-35-178.crt.signed
+<Node1.IP> = ~/SelfSignedSSL/jks/cqlsh/cqlsh_<Node1.IP.with.Hyphen>.crt.signed
+<Node2.IP> = ~/SelfSignedSSL/jks/cqlsh/cqlsh_<Node2.IP.with.Hyphen>.crt.signed
