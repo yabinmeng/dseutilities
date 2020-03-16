@@ -1,0 +1,5 @@
+ADDR_API=<vault_addr_api>
+TOKEN=<vault_token>
+PKI_CERT_ROLE=<vault_pki_role>
+ALLOWED_DOMAIN=<vault_pki_role_parent_domain>
+TTL_IN_HOUR=<valut_certificate_ttl_value>
