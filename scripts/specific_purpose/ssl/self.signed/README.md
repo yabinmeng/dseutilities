@@ -16,7 +16,12 @@ Usage: genSelfSignSSL.sh [-h | <hostname_or_ip_list_file> <JKS|PKCS12>]
 ```
 
 There are 2 mandatory parameters for this script:
-1. The first is a text file name and the content of the file is a simple list of the hostname or IP address for all DSE nodes we want to create the keystore and truststore for in-transit SSL/TLS encryption.
+1. The first is a text file name and the content of the file is a simple list of the hostname or IP address for all DSE nodes we want to create the keystore and truststore for in-transit SSL/TLS encryption. An example is as below (for a 3-node DSE cluster):
+```
+192.168.0.1
+192.168.0.2
+192.168.0.3
+```
 2. The second parameter specifies the certificate format to be used. The only options are JKS and PKCS12 which are both file-based certificate format types.
 
 
