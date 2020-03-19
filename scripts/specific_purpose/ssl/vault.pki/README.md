@@ -1,4 +1,7 @@
 ## Vault Server Precondition
+
+In order to use this script to call Vault PKI API, the Vault server needs to be in some preconditions as below:
+
 1. Vault server is initialized and unsealed
 ```
 $ vault operator init
