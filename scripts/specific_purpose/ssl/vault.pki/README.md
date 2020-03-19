@@ -12,8 +12,8 @@ $ vault operator unseal
 $ vault secrets enable pki
 
 $ vault write pki/config/urls \
-     issuing_certificates="http://10.101.36.12:8200/v1/pki/ca" \
-     crl_distribution_points="http://10.101.36.12:8200/v1/pki/crl"
+     issuing_certificates="http://<VAULT_API_ADDR_IP>:<VAULT_API_ADDR_PORT>/v1/pki/ca" \
+     crl_distribution_points="http://<VAULT_API_ADDR_IP>:<VAULT_API_ADDR_PORT>/v1/pki/crl"
 ```
 3. A self-signed CA certificate (and key) is generated for an allowed common name (CN) (e.g. mydomain.com)
 ```
