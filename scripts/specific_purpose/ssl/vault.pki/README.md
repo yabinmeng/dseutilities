@@ -8,7 +8,9 @@ ALLOWED_DOMAIN=<vault_pki_role_parent_domain>     (e.g. mydomain.com)
 TTL_IN_HOUR=<valut_certificate_ttl_value>         (e.g. 72h)
 ```
 
-The PKI_CERT_ROLE, ALLOWED_DOMAIN, TTL_IN_HOUR need to match the atual Vault PKI role that is created on the Vault server
+**NOTE** that:
+* The TOKEN must one Vault token that has the enough priviledge for Vault PKI API call
+* The PKI_CERT_ROLE, ALLOWED_DOMAIN, TTL_IN_HOUR need to match the atual Vault PKI role that is created on the Vault server
 ```
 $ vault write pki/roles/dseCluster1CA \
 >     allowed_domains=mydomain.com \
