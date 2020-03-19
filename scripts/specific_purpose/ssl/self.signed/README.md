@@ -8,7 +8,7 @@ When DSE client-to-server and server-to-server encryption (aka, in-transit SSL/T
 
 The purpose of this script is to automate the procedure as described in the above DataStax documentation for the creation of the keystore and truststore files as needed for every node in a DSE cluster. 
 
-## Usage
+## Usage Description
 
 The general script usage is as below:
 ```
@@ -72,3 +72,13 @@ SelfSignedSSL/
     └── truststore
         └── dseTruststore.pkcs12
 ```
+
+Please **NOTE** that you can execute this script on any computer. Once the files are generated, you can copy the files to all the nodes in cluster:
+* Copy the common truststore file to each DSE node
+* Copy each keystore file to the corresponding DSE node
+* Copy each pair of CQLSH certificate and key files to the corresponding DSE node. 
+
+## About the Certificate Format JKS and PKCS12
+
+For DSE version before 6.7.7, JKS is the ONLY format that works for DSE in-transit SSL/TLS encryption. 
+For DSE verion 6.7.7 and above, both formats are working but PKCS12 is recommended.
