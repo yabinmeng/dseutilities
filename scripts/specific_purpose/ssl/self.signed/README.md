@@ -33,9 +33,12 @@ $./genSelfSignedSSL.sh nodelist PKCS12
 
 With the execution of this command, a folder called **SelfSignedSSL** is created under the current folder where the command is executed. Under this folder, there are subfolders that match the specified certificate format type ("pkcs12" in this example). Below this folder, the folder structure is as this:
 * **.../cqlsh/**: the generated CQLSH client certificate (.csr) and private key (.key) for each DSE node
+
 * **...keystore/**: the keystore file of the specified certificate format type (e.g. pkcs12) for each DSE node
-** **.../keystore/csr/**: the CSR (.csr) and signed certificate (.crt.signed) for each DSE node.
+  * **.../keystore/csr/**: the CSR (.csr) and signed certificate (.crt.signed) for each DSE node.
+
 * **rootca**: the self-signed root ca certificate (.crt) and private key (.key)
+
 * **truststore**: the one (and only one) trsustore file of the specified certificate format type (e.g. pkcs12) that is shared by all DSE nodes.
 
 ```
