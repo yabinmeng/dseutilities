@@ -32,6 +32,6 @@ if [[ $1 == "yes" ]]; then
       sudo rm -rf $DSE_DATA_HOME/$DATA_DIR/$file
    done
 else
-   echo "Exit with on action!"
+   echo "Exit with no action!"
    exit
 fi
