@@ -7,6 +7,10 @@ $ vault operator unseal
 2. Vault PKI secrets engine is enabled and configured for Certificate Revocation List (CRL) and Issuing Certificates Location
 ```
 $ vault secrets enable pki
+
+$ vault write pki/config/urls \
+     issuing_certificates="http://10.101.36.12:8200/v1/pki/ca" \
+     crl_distribution_points="http://10.101.36.12:8200/v1/pki/crl"
 ```
 3. A self-signed CA certificate (and key) is generated for an allowed common name (CN) (e.g. mydomain.com)
 ```
