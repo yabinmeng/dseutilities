@@ -24,4 +24,48 @@ There are 2 mandatory parameters for this script:
 ```
 2. The second parameter specifies the certificate format to be used. The only options are JKS and PKCS12 which are both file-based certificate format types.
 
+## Output
 
+For the above 3-node DSE cluster, the DSE node list file is simply called **nodelist**. The command to generate PKCS12 based keystore and trustore files is as below. Please note that the execution of the command is generating a lot of command line messages describing each step involved.
+```
+$./genSelfSignedSSL.sh nodelist PKCS12
+```
+
+With the execution of this command, a folder called **SelfSignedSSL** is created under the current folder where the command is executed. Under this folder, there are subfolders that match the specified certificate format type ("pkcs12" in this example). Below this folder, the folder structure is as this:
+* **.../cqlsh/**: the generated CQLSH client certificate (.csr) and private key (.key) for each DSE node
+* **...keystore/**: the keystore file of the specified certificate format type (e.g. pkcs12) for each DSE node
+** **.../keystore/csr/**: the CSR (.csr) and signed certificate (.crt.signed) for each DSE node.
+* **rootca**: the self-signed root ca certificate (.crt) and private key (.key)
+* **truststore**: the one (and only one) trsustore file of the specified certificate format type (e.g. pkcs12) that is shared by all DSE nodes.
+
+```
+$ tree SelfSignedSSL/
+SelfSignedSSL/
+└── pkcs12
+    ├── cqlsh
+    │   ├── cqlsh_192-168-0-1.crt.signed
+    │   ├── cqlsh_192-168-0-1.csr
+    │   ├── cqlsh_192-168-0-1.key
+    │   ├── cqlsh_192-168-0-2.crt.signed
+    │   ├── cqlsh_192-168-0-2.csr
+    │   ├── cqlsh_192-168-0-2.key
+    │   ├── cqlsh_192-168-0-3.crt.signed
+    │   ├── cqlsh_192-168-0-3.csr
+    │   └── cqlsh_192-168-0-3.key
+    ├── keystore
+    │   ├── csr
+    │   │   ├── dseKeystore-192-168-0-1.crt.signed
+    │   │   ├── dseKeystore-192-168-0-2.crt.signed
+    │   │   ├── dseKeystore-192-168-0-3.crt.signed
+    │   │   ├── dseKeystore_192-168-0-1.csr
+    │   │   ├── dseKeystore_192-168-0-2.csr
+    │   │   └── dseKeystore_192-168-0-3.csr
+    │   ├── dseKeystore_192-168-0-1.pkcs12
+    │   ├── dseKeystore_192-168-0-2.pkcs12
+    │   └── dseKeystore_192-168-0-3.pkcs12
+    ├── rootca
+    │   ├── rootca.crt
+    │   └── rootca.key
+    └── truststore
+        └── dseTruststore.pkcs12
+```
