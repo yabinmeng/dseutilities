@@ -11,7 +11,7 @@
 usage() {
    echo
    echo "Usage: genVaultPKICert.sh [-h | "
-   echo "                           -nlf <dsenode_hostname_or_ip_list> -vcfgf <vault_configuration"
+   echo "                           -nlf <dsenode_hostname_or_ip_list> -vcfgf <vault_configuration>"
    echo "       -h : display command usage"
    echo "       -nlf: A file that specifies DSE ndoe list (hostname or IP)"
    echo "       -vcfgf: A file that specifies Vault server connection for PKI certificate generation"
