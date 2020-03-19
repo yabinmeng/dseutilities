@@ -80,5 +80,5 @@ Please **NOTE** that you can execute this script on any computer. Once the files
 
 ## About the Certificate Format JKS and PKCS12
 
-For DSE version before 6.7.7, JKS is the ONLY format that works for DSE in-transit SSL/TLS encryption. 
-For DSE verion 6.7.7 and above, both formats are working but PKCS12 is recommended.
+* For DSE version before 6.7.7, JKS is the ONLY format that works for DSE in-transit SSL/TLS encryption. 
+* For DSE verion 6.7.7 and above, both formats are working but PKCS12 is recommended.
