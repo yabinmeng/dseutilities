@@ -1,11 +1,11 @@
 # Overview
 
-In some cases, when using a centralized, enterprise-level certificate management tool/utility, the tool/utility is able to generate a single combined (private) key and certificate chain file for a particular server node. Most likely, such a single combined file has the following component:
+In some cases, when using a centralized, enterprise-level certificate management tool/utility, the tool/utility is able to generate a single combined (private) key and certificate chain file for a particular server node. Most likely, such a single combined file has the following components:
 
-* Private key for the requested node
-* Singed certificate for the requested node
-* The (public) intermeidate CA certificate that signs the node-specific certificate
-* The (public) root CA certificate that signs the intermediate CA certificate
+* The Private key for the requested node
+* The Singed certificate for the requested node
+* The intermeidate CA certificate that signs the node-specific certificate
+* The root CA certificate that signs the intermediate CA certificate
 
 Also for readability purpose, such a file also contains relevant bag attributes for each of the above components. An example of such a file (with key information removed) is provided in the section below.
 
