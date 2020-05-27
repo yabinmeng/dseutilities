@@ -78,6 +78,8 @@ Please **NOTE** that you can execute this script on any computer. Once the files
 * Copy each keystore file to the corresponding DSE node
 * Copy each pair of CQLSH certificate and key files to the corresponding DSE node. 
 
+Please also **NOTE** that the generated keystore and truststore passwords are "MyKeyStorePass" and "MyTrustStorePass" respectively. These are hard-coded in the script. Please change them accordingly for your own use case.
+
 ## About the Certificate Format JKS and PKCS12
 
 * For DSE version before 6.7.7, JKS is the ONLY format that works for DSE in-transit SSL/TLS encryption. 
