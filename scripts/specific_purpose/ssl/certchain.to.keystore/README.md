@@ -1,9 +1,9 @@
 ## Usage
-
+```
 ./splitCertChainRawFile <raw_crt_chain_file> <node_name>
 
 e.g. ./splitCertChainRawFile exampleRawCrtChain.pem testnode1
-
+```
 
 ## Example Raw Cert Chain PEM file structure
 ```
