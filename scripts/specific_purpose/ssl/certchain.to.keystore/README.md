@@ -1,13 +1,5 @@
 # Overview
 
-## Usage
-
-```bash
-./splitCertChainRawFile <raw_crt_chain_file> <node_name>
-
-e.g. ./splitCertChainRawFile exampleRawCrtChain.pem testnode1
-```
-
 ## Example Raw Cert Chain PEM File Structure
 
 ```bash
@@ -48,3 +40,14 @@ subject=/DC=com/DC=abccorp/DC=dc1/CN=DC1IntermediateCA01
 issuer=/DC=com/DC=abccorp/DC=dc1/CN=DC1RootCA01
 -----BEGIN CERTIFICATE-----
 ```
+
+## Usage
+
+```bash
+./splitCertChainRawFile <raw_crt_chain_file> <node_name>
+
+e.g. ./splitCertChainRawFile exampleRawCrtChain.pem testnode1
+```
+
+### Output
+
