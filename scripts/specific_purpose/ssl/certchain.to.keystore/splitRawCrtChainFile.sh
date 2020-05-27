@@ -1,5 +1,16 @@
 #! /bin/bash
 
+usage() {
+   echo
+   echo "Usage: splitRawCrtFile.sh [-h | <example_raw_cert_chain_file> <node_name>]"
+   echo
+}
+
+if [[ $1 == "-h" || $# -ne 2 ]]; then
+   usage
+   exit 10
+fi
+
 # Node key
 cat $1 | awk '/BEGIN PRIVATE KEY/,/END PRIVATE KEY/' > $2.key
 
