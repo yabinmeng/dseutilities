@@ -57,7 +57,7 @@ e.g. ./splitCertChainRawFile exampleRawCrtChain.pem testnode1
 
 ### Output
 
-Executing the above example is going to create a subfolder named "zzOutput" under the script execution folder. The target keystore and truststore files are generated under a subfolder on level down at "zzOutput/zzKeystore".
+Executing the above example command is going to create a subfolder named "zzOutput" under the script execution folder. The target keystore and truststore files are generated under a subfolder one level down at "zzOutput/zzKeystore".
 
 ```bash
 ├── exampleRawCrtChain.pem
