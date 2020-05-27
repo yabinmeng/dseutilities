@@ -1,5 +1,16 @@
 # Overview
 
+In some cases, when we use a centralized, enterprise-level certificate management tool/utility, the tool/utility is able to generate a single combined (private) key and certificate chain file for a particular server node. Most likely, such a single combined file has the following component:
+
+* Private key for the requested node
+* Singed certificate for the requested node
+* The (public) intermeidate CA certificate that signs the node-specific certificate
+* The (public) root CA certificate that signs the intermediate CA certificate
+
+Also for readability purpose, such a file also contains relevant bag attributes for each of the above components. An example of such a file (with key information removed) is provided in the section below.
+
+Unfortunately this file format can't be utilized by DSE server directly which right now can only deal with Java keystore files ("keystore" and "truststore"). This utility gives a demo of how to handle such a file and generate the keystore and truststore files that are readable by a DSE server.
+
 ## Example Raw Cert Chain PEM File Structure
 
 ```bash
@@ -51,3 +62,19 @@ e.g. ./splitCertChainRawFile exampleRawCrtChain.pem testnode1
 
 ### Output
 
+Executing the above example is going to create a subfolder named "zzOutput" under the script execution folder. The target keystore and truststore files are generated under a subfolder on level down at "zzOutput/zzKeystore".
+
+```bash
+├── exampleRawCrtChain.pem
+├── splitRawCrtFile.sh
+└── zzOutput
+    ├── intermediate_single.crt
+    ├── rootca_single.crt
+    ├── testnode1_chain.crt
+    ├── testnode1.key
+    ├── testnode1_single.crt
+    ├── trustca_chain.crt
+    └── zzKeystore
+        ├── testnode1.keystore.pkcs12
+        └── truststore.pkcs12
+```
