@@ -5,7 +5,7 @@
 e.g. ./splitCertChainRawFile exampleRawCrtChain.pem testnode1
 ```
 
-## Example Raw Cert Chain PEM file structure
+## Example Raw Cert Chain PEM File Structure
 ```
 Bag Attributes
     Microsoft Local Key set: <No Values>
