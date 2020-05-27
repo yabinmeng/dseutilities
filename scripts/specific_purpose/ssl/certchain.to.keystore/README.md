@@ -13,7 +13,7 @@ e.g. ./splitCertChainRawFile exampleRawCrtChain.pem testnode1
 ```bash
 Bag Attributes
     Microsoft Local Key set: <No Values>
-    localKeyID: xxx 
+    localKeyID: xxx
     Microsoft CSP Name: Microsoft RSA SChannel Cryptographic Provider
     friendlyName: xxx
 Key Attributes
