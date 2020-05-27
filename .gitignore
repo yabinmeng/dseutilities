@@ -1,2 +1,3 @@
 dseutilities.code-workspace
 scripts/specific_purpose/ssl/genSelfSignSSL.sh.bkup
+scripts/specific_purpose/ssl/certchain.to.keystore/exampleRawCrtChain.pem
