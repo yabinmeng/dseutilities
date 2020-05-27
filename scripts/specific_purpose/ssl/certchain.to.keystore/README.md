@@ -1,6 +1,6 @@
 # Overview
 
-In some cases, when we use a centralized, enterprise-level certificate management tool/utility, the tool/utility is able to generate a single combined (private) key and certificate chain file for a particular server node. Most likely, such a single combined file has the following component:
+In some cases, when using a centralized, enterprise-level certificate management tool/utility, the tool/utility is able to generate a single combined (private) key and certificate chain file for a particular server node. Most likely, such a single combined file has the following component:
 
 * Private key for the requested node
 * Singed certificate for the requested node
