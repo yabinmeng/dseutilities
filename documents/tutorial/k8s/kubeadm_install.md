@@ -8,7 +8,7 @@ In this tutorial, a step-by-step procedure is presented regarding how to use kub
 *Ubuntu Xenial (16.04.6 LTS) OS is installed
 *4 vCPU and 16GB total system
 
-# Prerequisites
+## Prerequisite Check and Settings
 
 There are a few prerequisite checks/operations that need to be done on each of the hosting machine before we start provisioning a k8s cluster.
 
@@ -17,24 +17,24 @@ There are a few prerequisite checks/operations that need to be done on each of t
 * Verify ***MAC address*** is unique each instance (NOTE: replace "eth0" with the right network adaptor name)
 
 ```bash
-ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}', or
-ip link show eth0 | awk '/ether/ {print $2}'
+$ ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}', or
+$ ip link show eth0 | awk '/ether/ {print $2}'
 ```
 
 * Verify ***product_uuid*** is unique on each instance
 
 ```bash
-sudo cat /sys/class/dmi/id/product_uuid
+$ sudo cat /sys/class/dmi/id/product_uuid
 ```
 
 * Check if Linux module ***br_netfilter*** is enabled. Enable it if not. This is required for the next step.
 
 ```bash
 // check if "br_netfilter" module is enabled (enabled if value is returned)
-lsmod | grep br_netfilter
+$ lsmod | grep br_netfilter
 
 // Enable "br_netfilter" module
-sudo modprobe br_netfilter
+$ sudo modprobe br_netfilter
 ```
 
 * Make sure each instance's iptables can see bridged traffic
@@ -66,4 +66,40 @@ sudo sysctl --system
 | Kubelet API | TCP/10250 | Kubelet on the worker node |
 | NodePort Services | TCP/30000-32767 ||
 
-# Install "kubeadm"
+## Install container runtime
+
+K8s can work with different container runtimes (docker, containerd, CRI-O) via [K8s container runtime interface](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/container-runtime-interface.md).
+
+In this tutorial, docker container runtime is used. The procedure to install the latest Docker on Ubuntu is as follows:
+
+```bash
+# Instll prerequisites packages for Docker
+$ sudo apt-get update
+$ sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+
+# Add Docker's official GPG key
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+# Set up Docker stable repository
+$ sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
+# Install Docker engine 
+$ sudo apt-get update
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io
+## Install specific version of Docker
+#$ sudo apt-get install docker-ce=<version_string> docker-ce-cli=<version_string> containerd.io
+
+# Use Docker as a non-root user
+$ sudo usermod -aG docker your-user
+```
+
+## Install "kubeadm", "kubelet", and "kubectl"
+
