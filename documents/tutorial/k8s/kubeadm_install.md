@@ -5,27 +5,49 @@
 Please note that "kubeadm" utility only does cluster bootstrapping, but not provisisoning. Therefore, this installation method requires the underlying machines to be prepared in advance. It also doesn't include other nice-to-have "add-ons"/features such as k8s dashboard.
 
 In this tutorial, a step-by-step procedure is presented regarding how to use kubeadm to install and configure a vanilla k8s cluster with a single control-plane node. For the demonstration purpose, 3 VM instances are provisioned in advance with the following specs and configurations on each instance
-* Ubuntu Xenial (16.04.6 LTS) OS is installed. 
-* 4 vCPU and 16GB total system
+*Ubuntu Xenial (16.04.6 LTS) OS is installed
+*4 vCPU and 16GB total system
 
-#  Prerequisites
+# Prerequisites
 
 There are a few prerequisite checks/operations that need to be done on each of the hosting machine before we start provisioning a k8s cluster.
 
 * Disable SWAP
 
-* Verify MAC address and product_uuid are unique on each node. 
-
-  * Use the following command to check each node's MAC address (replacing "eth0" with your network interface name)
+*Verify ***MAC address*** is unique each instance (NOTE: replace "eth0" with the right network adaptor name)
 
 ```bash
 ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'
 ```
+
 ```bash
 ip link show eth0 | awk '/ether/ {print $2}'
 ```
 
-  * Verify product_uuid 
+*Verify ***product_uuid*** is unique on each instance
 
+```bash
+sudo cat /sys/class/dmi/id/product_uuid
+```
+
+*Check if Linux module ***br_netfilter*** is enabled. Enable it if not. This is required for the next step.
+
+```bash
+// check if "br_netfilter" module is enabled (enabled if value is returned)
+lsmod | grep br_netfilter
+
+// Enable "br_netfilter" module
+sudo modprobe br_netfilter
+```
+
+*Make sure each instance's iptables can see bridged traffic
+
+```bash
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sudo sysctl --system
+```
 
 # Install "kubeadm"
