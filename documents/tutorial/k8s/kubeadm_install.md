@@ -8,7 +8,7 @@ In this tutorial, a step-by-step procedure is presented regarding how to use kub
 *Ubuntu Xenial (16.04.6 LTS) OS is installed
 *4 vCPU and 16GB total system
 
-# Install "kubeadm"
+# Install **kubeadm**
 
 ## Prerequisite Check and Settings
 
@@ -107,7 +107,7 @@ $ sudo usermod -aG docker your-user
 
 ```bash
 # Set up Docker dameon
-$  cat > /etc/docker/daemon.json <<EOF
+$ cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -155,15 +155,21 @@ $ sudo systemctl restart kubelet
 
 **NOTE**: this is only needed when K8s is using a container runtime other than Docker. For Docker runtime, K8s will automatically detect the cgroup driver used by ***kubelet*** and set it in ***/var/lib/kubelet/config.yaml*** file.
 
+Add "cgroupDriver" setting in Kubelete config file (***/var/lib/kubelet/config.yaml***), as below:
+
 ```bash
-$ cat > kubeletConfig.yaml <<EOF
-cat <<EOF | apiVersion: kubelet.config.k8s.io/v1beta1
+apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
+...
 cgroupDriver: <value>
-EOF
-
-$ kubectl apply -f kubeletConfig.yaml
-
 ```
 
-# 
+After making the above change, restart kubelet:
+
+```bash
+$ systemctl daemon-reload
+$ systemctl restart kubelet
+```
+
+# Provision a K8s cluster
+
