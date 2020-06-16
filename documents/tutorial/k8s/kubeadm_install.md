@@ -47,7 +47,7 @@ EOF
 sudo sysctl --system
 ```
 
-* Make sure the following ports are open on the control-plan instance/node and the worker instances/nodes
+* Make sure the following ports are open on the control-plan instance/node and the worker instances/nodes. All traffic for the following ports are inbound.
 
 **Control-plane Instance/Node**
 
@@ -59,6 +59,11 @@ sudo sysctl --system
 | kube-scheduler | TCP/10251 ||
 | kube-controller-manager | TCP/10252 ||
 
+**Worker Instance/Node**
 
+| Description        | Protocol/Port       | Note              |
+| ------------------ | ------------------- | ------------------|
+| Kubelet API | TCP/10250 | Kubelet on the worker node |
+| NodePort Services | TCP/30000-32767 ||
 
 # Install "kubeadm"
