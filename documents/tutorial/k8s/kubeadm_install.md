@@ -16,7 +16,7 @@ There are a few prerequisite checks/operations that need to be done on each of t
 
 * Verify MAC address and product_uuid are unique on each node. 
 
-..* Use the following command to check each node's MAC address (replacing "eth0" with your network interface name)
+  * Use the following command to check each node's MAC address (replacing "eth0" with your network interface name)
 
 ```bash
 ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'
@@ -25,7 +25,7 @@ ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'
 ip link show eth0 | awk '/ether/ {print $2}'
 ```
 
-..* Verify product_uuid 
+  * Verify product_uuid 
 
 
 # Install "kubeadm"
