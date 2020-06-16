@@ -14,23 +14,20 @@ There are a few prerequisite checks/operations that need to be done on each of t
 
 * Disable SWAP
 
-*Verify ***MAC address*** is unique each instance (NOTE: replace "eth0" with the right network adaptor name)
+* Verify ***MAC address*** is unique each instance (NOTE: replace "eth0" with the right network adaptor name)
 
 ```bash
-ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'
-```
-
-```bash
+ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}', or
 ip link show eth0 | awk '/ether/ {print $2}'
 ```
 
-*Verify ***product_uuid*** is unique on each instance
+* Verify ***product_uuid*** is unique on each instance
 
 ```bash
 sudo cat /sys/class/dmi/id/product_uuid
 ```
 
-*Check if Linux module ***br_netfilter*** is enabled. Enable it if not. This is required for the next step.
+* Check if Linux module ***br_netfilter*** is enabled. Enable it if not. This is required for the next step.
 
 ```bash
 // check if "br_netfilter" module is enabled (enabled if value is returned)
@@ -40,7 +37,7 @@ lsmod | grep br_netfilter
 sudo modprobe br_netfilter
 ```
 
-*Make sure each instance's iptables can see bridged traffic
+* Make sure each instance's iptables can see bridged traffic
 
 ```bash
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
@@ -49,5 +46,19 @@ net.bridge.bridge-nf-call-iptables = 1
 EOF
 sudo sysctl --system
 ```
+
+* Make sure the following ports are open on the control-plan instance/node and the worker instances/nodes
+
+**Control-plane Instance/Node**
+
+| Description        | Protocol/Port       | Note              |
+| ------------------ | ------------------- | ------------------|
+| Kubernetes API server | TCP/6443 ||
+| etcd server client API | TCP/2379-2380 | Used by kube-apiserver, etcd |
+| Kubelet API | TCP/10250 | Kubelet on the control-plane node |
+| kube-scheduler | TCP/10251 ||
+| kube-controller-manager | TCP/10252 ||
+
+
 
 # Install "kubeadm"
