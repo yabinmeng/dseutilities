@@ -129,7 +129,7 @@ Please **NOTE** that it is highly NOT recommended to change cgroup driver of a n
 
 ## Install "kubeadm", "kubelet", and "kubectl"
 
-We need to install the matching versions of "kubeadm", "kubelet", and "kubectl" commands on all of the provisioned VM instances. In this tutorial, K8s version 1.17.6 is installed (**NOTE**: please do NOT install K8s version 1.18.x, which has some issues with DataStax Cassandra K8s operator).
+We need to install the matching versions of "kubeadm", "kubelet", and "kubectl" commands on all of the provisioned VM instances. In this tutorial, **K8s version 1.17.6 is installed** (***NOTE***: please do NOT install K8s version 1.18.x, which has some issues with DataStax Cassandra K8s operator).
 
 ```bash
 $ sudo apt-get update
@@ -172,4 +172,41 @@ $ systemctl restart kubelet
 ```
 
 # Set up a K8s cluster
+
+## Initialze K8s Control-plane Node
+
+Pick one VM instance as the K8s control-plane node and run ***kubeadm init <args>*** command to initialize it. In my example, I'm using the command with ***--pod-network-cidr*** argument for customized Pod network IP CIDR range.
+
+```bash
+$ sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+```
+
+Please **NOTE** that above command must run with root privilege. Pay attention to the command line output. If the control plane is successfully initialized, we'll see the following messages at the end.
+
+```bash
+...
+[kubelet-finalize] Updating "/etc/kubernetes/kubelet.conf" to point to a rotatable kubelet client certificate and key
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join <ip_address>:6443 --token vjkwe5.wx2j154narn0h2b9 \
+    --discovery-token-ca-cert-hash sha256:ba53ab56af4beb621cf88106f8b040fa154f25dc9aa704da84d947b051fc9cc2
+```
+
+
+## Install a Pod Network Add-on
 
