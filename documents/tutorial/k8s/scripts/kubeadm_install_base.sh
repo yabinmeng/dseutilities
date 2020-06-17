@@ -13,10 +13,10 @@ PRODUCT_UUID=`sudo cat /sys/class/dmi/id/product_uuid`
 echo "product_uuid: $MAC_ADDR"
 
 # Enable check "br_netfilter" module
-MOD_ENABLED=`sudo modprobe br_netfilte`
-if [[ -z "$MOD_ENABLED" ]] then;
+MOD_ENABLED=`sudo modprobe br_netfilter`
+if [[ -z "$MOD_ENABLED" ]]; then
    sudo modprobe br_netfilter
-fi;
+fi
 
 # Make sure the node's iptable can see bridged traffic
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf

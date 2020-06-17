@@ -32,10 +32,10 @@ $ sudo cat /sys/class/dmi/id/product_uuid
 * Check if Linux module ***br_netfilter*** is enabled. Enable it if not. This is required for the next step.
 
 ```bash
-// check if "br_netfilter" module is enabled (enabled if value is returned)
+# check if "br_netfilter" module is enabled (enabled if value is returned)
 $ lsmod | grep br_netfilter
 
-// Enable "br_netfilter" module
+# Enable "br_netfilter" module
 $ sudo modprobe br_netfilter
 ```
 
@@ -100,14 +100,14 @@ $ sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 #$ sudo apt-get install -y docker-ce=<version_string> docker-ce-cli=<version_string> containerd.io
 
 # Use Docker as a non-root user
-$ sudo usermod -aG docker your-user
+$ sudo usermod -aG docker <non_root_user>
 ```
 
 ### Make sure "systemd" is used as the cgroup driver for Docker (for improved system stability) 
 
 ```bash
 # Set up Docker dameon
-$ cat > /etc/docker/daemon.json <<EOF
+$ cat <<EOF | sudo tee /etc/docker/daemon.json
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -118,11 +118,11 @@ $ cat > /etc/docker/daemon.json <<EOF
 }
 EOF
 
-$ mkdir -p /etc/systemd/system/docker.service.d
+$ sudo mkdir -p /etc/systemd/system/docker.service.d
 
 # Restart Docker
-$ systemctl daemon-reload
-$ systemctl restart docker
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart docker
 ```
 
 Please **NOTE** that it is highly NOT recommended to change cgroup driver of a node that has joined a K8s cluster. The best approach is to drain the node; remove it from the cluster; and re-join it.
@@ -171,5 +171,5 @@ $ systemctl daemon-reload
 $ systemctl restart kubelet
 ```
 
-# Provision a K8s cluster
+# Set up a K8s cluster
 
