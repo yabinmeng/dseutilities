@@ -10,7 +10,7 @@ In this tutorial, a step-by-step procedure is presented regarding how to use kub
 
 # Install **kubeadm**
 
-## Prerequisite Check and Settings
+## Prerequisite Checks and Settings
 
 There are a few prerequisite checks/operations that need to be done on each of the hosting machine before we start provisioning a k8s cluster.
 
