@@ -181,7 +181,7 @@ Pick one VM instance as the K8s control-plane node and run ***kubeadm init <args
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 ```
 
-Please **NOTE** that above command must run with root privilege. Pay attention to the command line output. If the control plane is successfully initialized, we'll see the following messages at the end.
+Please **NOTE** that above command must run with root privilege. Pay attention to the command line output. If the control plane is successfully initialized, we'll see some messages similar to the following at the end.
 
 ```bash
 ...
@@ -190,23 +190,79 @@ Please **NOTE** that above command must run with root privilege. Pay attention t
 [addons] Applied essential addon: kube-proxy
 
 Your Kubernetes control-plane has initialized successfully!
-
-To start using your cluster, you need to run the following as a regular user:
-
-  mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
-You should now deploy a pod network to the cluster.
-Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
-  https://kubernetes.io/docs/concepts/cluster-administration/addons/
-
-Then you can join any number of worker nodes by running the following on each as root:
-
-kubeadm join <ip_address>:6443 --token vjkwe5.wx2j154narn0h2b9 \
-    --discovery-token-ca-cert-hash sha256:ba53ab56af4beb621cf88106f8b040fa154f25dc9aa704da84d947b051fc9cc2
+...
 ```
 
+The command output also contains the messages that describe the future steps that need to take in order to use the K8s cluster properly.
 
-## Install a Pod Network Add-on
+### Make kubectl working for root and regular users
 
+In order to make ***kubectl*** working, we need some extra settings which are different between the root and the regular users.
+
+For the **root** user, run the following commands:
+
+```bash
+$ export KUBECONFIG=/etc/kubernetes/admin.conf
+```
+
+For a **regular** user, run the following commands:
+
+```bash
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+### Install a Pod Network
+
+At this point, if we check the status of K8s CoreDNS, we'll see that it stays at the status of "ContainerCreating" instead of "Running", as below:
+
+```bash
+$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                                                             READY   STATUS              RESTARTS   AGE
+kube-system   coredns-6955765f44-jvd7t                                         0/1     ContainerCreating   0          8m40s
+kube-system   coredns-6955765f44-wgxwv                                         0/1     ContainerCreating   0          8m40s
+kube-system   etcd-ip-10-101-36-132.srv101.dsinternal.org                      1/1     Running             0          8m49s
+kube-system   kube-apiserver-ip-10-101-36-132.srv101.dsinternal.org            1/1     Running             0          8m49s
+kube-system   kube-controller-manager-ip-10-101-36-132.srv101.dsinternal.org   1/1     Running             0          8m49s
+kube-system   kube-proxy-wvthg                                                 1/1     Running             0          8m40s
+kube-system   kube-scheduler-ip-10-101-36-132.srv101.dsinternal.org            1/1     Running             0          8m49s
+```
+
+This is an indication that K8s Pod networking is not in place yet. In K8s, Pod networking is implmented through [CNI (Container Networking Interface)](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni) and there many different CNI providers available out there. In my testing, I'm using [ProjectCalico](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni). The command to execute is as this:
+
+```bash
+$ kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+```
+
+During the installation, **Calico** will determine the available Pos IP address range in the network based on the ***--pod-network-cidr*** flag value as provided in the ***kubeadm init*** command.
+
+After the Pod network CNI is installed, run ***kubectl get pods --all-namespaces*** command again to verify CoreDNS status is changed to "running".
+
+```bash
+$ kubectl get pod --all-namespaces
+NAMESPACE     NAME                                                             READY   STATUS    RESTARTS   AGE
+kube-system   calico-kube-controllers-77d6cbc65f-xvgn8                         1/1     Running   0          28m
+kube-system   calico-node-gspn2                                                1/1     Running   0          28m
+kube-system   coredns-6955765f44-7kz5w                                         1/1     Running   0          4h9m
+kube-system   coredns-6955765f44-tqkkg                                         1/1     Running   0          4h9m
+...
+```
+
+## Join Worker Nodes in the K8s Clsuter
+
+Now since the Control-Plane node is ready, we're ready to join worker nodes in the K8s cluster. The ***kubeadm init*** command output shows the command to execute on the VM instances that are intended as worker nodes. The command is in the following format:
+
+```bash
+$ kubeadm join <control_plane_ip_address>:6443 --token <token_value> --discovery-token-ca-cert-hash <ca_cert_hash_value>
+```
+
+If it is forgotten to record the command line output message, we can always get the "<token_value>" and "<ca_cert_hash_value>" from the following commands:
+
+```bash
+## token value
+$ kubeadm token list | tail -n +2 | awk '{print $1}'
+
+## ca_cert hash value
+$ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+```
