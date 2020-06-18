@@ -251,10 +251,10 @@ kube-system   coredns-6955765f44-tqkkg                                         1
 
 ## Join Worker Nodes in the K8s Clsuter
 
-Now since the Control-Plane node is ready, we're ready to join worker nodes in the K8s cluster. The ***kubeadm init*** command output shows the command to execute on the VM instances that are intended as worker nodes. The command is in the following format:
+Now since the Control-Plane node is ready, we're ready to join worker nodes in the K8s cluster. The ***kubeadm init*** command output shows the command to execute on the VM instances that are intended as worker nodes. The command is in the following format and needs to run on each of the woker node instances.
 
 ```bash
-$ kubeadm join <control_plane_ip_address>:6443 --token <token_value> --discovery-token-ca-cert-hash <ca_cert_hash_value>
+$ sudo kubeadm join <control_plane_ip_address>:6443 --token <token_value> --discovery-token-ca-cert-hash <ca_cert_hash_value>
 ```
 
 If it is forgotten to record the command line output message, we can always get the "<token_value>" and "<ca_cert_hash_value>" from the following commands:
@@ -265,4 +265,36 @@ $ kubeadm token list | tail -n +2 | awk '{print $1}'
 
 ## ca_cert hash value
 $ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+```
+
+After the above command is executed on all worker node instances, check the K8s cluster status from the Control-plan node by running the following command:
+
+```bash
+$ kubectl get nodes
+NAME                                     STATUS   ROLES    AGE     VERSION
+ip-10-101-32-187.srv101.dsinternal.org   Ready    <none>   13s     v1.17.6
+ip-10-101-35-135.srv101.dsinternal.org   Ready    <none>   66s     v1.17.6
+ip-10-101-36-132.srv101.dsinternal.org   Ready    master   4h32m   v1.17.6
+```
+
+# Appendix. Find out Pod Network IP Range Using "calicoctl"
+
+When we initalize the Control-plane node using ***kubeadm init*** command, we provide a customized CIDR range for the network through ***--pod-network-cidr*** flag. But how could we find the K8s network IP range for a running K8s cluster? The procedure depends on the actual CNI being used by the K8s cluster. For Calico CNI as used in my example, we can get this through **calicocli** utiity.
+
+The easiest way of using this utility is to install it as a K8s Pod, as below:
+
+```bash
+$ kubectl apply -f https://docs.projectcalico.org/manifests/calicoctl-etcd.yaml
+$ kubectl apply -f https://docs.projectcalico.org/manifests/calicoctl.yaml
+```
+
+After the "calicocli" Pod is installed, we can run the following command to check the K8s network IP range
+
+```bash
+$ alias calicoctl="kubectl exec -i -n kube-system calicoctl -- /calicoctl"
+
+## An example output is provide
+$ calicoctl get ippool -o wide
+NAME                  CIDR             NAT    IPIPMODE   VXLANMODE   DISABLED   SELECTOR
+default-ipv4-ippool   192.168.0.0/16   true   Always     Never       false      all()
 ```
