@@ -17,3 +17,15 @@ But there do have cases when local storage is preferred, such as for better perf
 Please note that a *Local PV* is by nature still static; but there are some **external static provisioners** that can help make the *Local PV* creation and management process semi-dynamic. In this tutorial, I'm using one popular external static provisioner from [K8s SIGs](https://github.com/kubernetes-sigs) called [sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner). 
 
 Another common external static provisioner is from [Rancher company](https://rancher.com/)'s [local-path-provisioner](https://github.com/rancher/local-path-provisioner) and it is not the focus of this tutorial.
+
+## K8s Cluster Overview
+
+The tutorial has been tested against a K8s cluster that was created using **kubeadm** (see [procedure](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/kubeadm_install.md)). This cluster has 3 VM instances and the control-plane/master node is configured to allow launching Pods on it. 
+
+```bash
+$ kubectl get nodes
+NAME                                     STATUS   ROLES    AGE   VERSION
+ip-10-101-32-187.srv101.dsinternal.org   Ready    <none>   42h   v1.17.6
+ip-10-101-35-135.srv101.dsinternal.org   Ready    <none>   42h   v1.17.6
+ip-10-101-36-132.srv101.dsinternal.org   Ready    master   47h   v1.17.6
+```
