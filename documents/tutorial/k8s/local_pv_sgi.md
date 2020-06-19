@@ -16,6 +16,6 @@ But there do have cases where storage is preferred, such as for better performan
 
 Since K8s 1.14, K8s has introduced the concept of ***Local PV*** ([GA announcement](https://kubernetes.io/blog/2019/04/04/kubernetes-1.14-local-persistent-volumes-ga/)) in order to oversome the limitations of *HostPath* volume. 
 
-Please note that a *Local PV* is by nature still static. However, there are some **external static provisioners** that can help make the *Local PV* creation and management process semi-dynamic. In this tutorial, I'm using one popular external static provisioner from [K8s SIGs](https://github.com/kubernetes-sigs) called **[sig-storage-local-static-provisioner]**(https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner). 
+Please note that a *Local PV* is by nature still static. However, there are some **external static provisioners** that can help make the *Local PV* creation and management process semi-dynamic. In this tutorial, I'm using one popular external static provisioner from [K8s SIGs](https://github.com/kubernetes-sigs) called [sig-storage-local-static-provisioner]**(https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner). 
 
 Another common external static provisioner is from [Rancher company](https://rancher.com/)'s [local-path-provisioner](https://github.com/rancher/local-path-provisioner) and it is not the focus of this tutorial.
