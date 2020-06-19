@@ -12,7 +12,7 @@ There are 2 ways to provision a PV:
 
 PV types are implemented through plug-ins ([list](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#types-of-persistent-volumes)). Many of the PV types are "remote" by nature and can be dynamically provisioned. 
 
-But there do have cases when local storage is preferred, such as for better performance. Traditionally, K8s offers the local storage option of [HostPath Volume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath). This option, though, has quite some limitations, the biggest of which is it can't participate in K8s's resource-aware scheduling and there is no node affinity associated with it. 
+But there do have cases when local storage is preferred, such as for better performance. Traditionally, K8s offers the local storage option of [HostPath Volume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath). This option, however, has quite some limitations, the biggest of which is it can't participate in K8s's resource-aware scheduling and there is no node affinity associated with it. 
 
 Since K8s 1.14, K8s has introduced the concept of ***Local PV*** ([GA announcement](https://kubernetes.io/blog/2019/04/04/kubernetes-1.14-local-persistent-volumes-ga/)) in order to oversome the limitations of *HostPath* volume. 
 
