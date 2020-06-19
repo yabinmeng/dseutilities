@@ -20,34 +20,34 @@ There are a few prerequisite checks/operations that need to be done on each of t
 * Verify *MAC address* is unique each instance (NOTE: replace "eth0" with the right network adaptor name)
 
 ```bash
-ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}', or
-ip link show eth0 | awk '/ether/ {print $2}'
+$ ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}', or
+$ ip link show eth0 | awk '/ether/ {print $2}'
 ```
 
 * Verify *product_uuid* is unique on each instance
 
 ```bash
-sudo cat /sys/class/dmi/id/product_uuid
+$ sudo cat /sys/class/dmi/id/product_uuid
 ```
 
 * Check if Linux module *br_netfilter* is enabled. Enable it if not. This is required for the next step.
 
 ```bash
 # check if "br_netfilter" module is enabled (enabled if value is returned)
-lsmod | grep br_netfilter
+$ lsmod | grep br_netfilter
 
 # Enable "br_netfilter" module
-sudo modprobe br_netfilter
+$ sudo modprobe br_netfilter
 ```
 
 * Make sure each instance's iptable can see bridged traffic
 
 ```bash
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+$ cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 EOF
-sudo sysctl --system
+$ sudo sysctl --system
 ```
 
 * Make sure the following ports are open on the control-plan instance/node and the worker instances/nodes. All traffic for the following ports are inbound.
@@ -77,8 +77,8 @@ In this tutorial, docker container runtime is used. The procedure to install the
 
 ```bash
 # Instll prerequisites packages for Docker
-sudo apt-get update
-sudo apt-get install -y \
+$ sudo apt-get update
+$ sudo apt-get install -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -86,29 +86,29 @@ sudo apt-get install -y \
     software-properties-common
 
 # Add Docker's official GPG key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
 # Set up Docker stable repository
-sudo add-apt-repository \
+$ sudo add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable"
 
 # Install Docker engine
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+$ sudo apt-get update
+$ sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 ## Install specific version of Docker
-#sudo apt-get install -y docker-ce=<version_string> docker-ce-cli=<version_string> containerd.io
+#$ sudo apt-get install -y docker-ce=<version_string> docker-ce-cli=<version_string> containerd.io
 
 # Use Docker as a non-root user
-sudo usermod -aG docker <non_root_user>
+$ sudo usermod -aG docker <non_root_user>
 ```
 
 ### 2.2.1. Make sure "systemd" is used as the cgroup driver for Docker (for improved system stability) 
 
 ```bash
 # Set up Docker dameon
-cat <<EOF | sudo tee /etc/docker/daemon.json
+$ cat <<EOF | sudo tee /etc/docker/daemon.json
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -119,11 +119,11 @@ cat <<EOF | sudo tee /etc/docker/daemon.json
 }
 EOF
 
-sudo mkdir -p /etc/systemd/system/docker.service.d
+$ sudo mkdir -p /etc/systemd/system/docker.service.d
 
 # Restart Docker
-sudo systemctl daemon-reload
-sudo systemctl restart docker
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart docker
 ```
 
 Please **NOTE** that it is highly NOT recommended to change cgroup driver of a node that has joined a K8s cluster. The best approach is to drain the node; remove it from the cluster; and re-join it.
@@ -133,23 +133,23 @@ Please **NOTE** that it is highly NOT recommended to change cgroup driver of a n
 We need to install the matching versions of "kubeadm", "kubelet", and "kubectl" commands on all of the provisioned VM instances. In this tutorial, **K8s version 1.17.6 is installed**.
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y apt-transport-https curl
+$ sudo apt-get update
+$ sudo apt-get install -y apt-transport-https curl
 
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
 $cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 
-sudo apt-get update
-export K8S_VER="1.17.6-00"
-sudo apt-get install -y kubelet=$K8S_VER kubeadm=$K8S_VER kubectl=$K8S_VER
+$ sudo apt-get update
+$ export K8S_VER="1.17.6-00"
+$ sudo apt-get install -y kubelet=$K8S_VER kubeadm=$K8S_VER kubectl=$K8S_VER
 
-sudo apt-mark hold kubelet kubeadm kubectl
+$ sudo apt-mark hold kubelet kubeadm kubectl
 
-sudo systemctl daemon-reload
-sudo systemctl restart kubelet
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart kubelet
 ```
 
 ## 2.4. Configure cgroup driver used by "kubelet" on control-plane node
@@ -168,8 +168,8 @@ cgroupDriver: <value>
 After making the above change, restart kubelet:
 
 ```bash
-systemctl daemon-reload
-systemctl restart kubelet
+$ systemctl daemon-reload
+$ systemctl restart kubelet
 ```
 
 # 3. Set up a K8s cluster
@@ -179,7 +179,7 @@ systemctl restart kubelet
 Pick one VM instance as the K8s control-plane node and run *kubeadm init <args>* command to initialize it. In my example, I'm using the command with *--pod-network-cidr* argument for customized Pod network IP CIDR range.
 
 ```bash
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+$ sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 ```
 
 Please **NOTE** that above command must run with root privilege. Pay attention to the command line output. If the control plane is successfully initialized, we'll see some messages similar to the following at the end.
@@ -203,15 +203,15 @@ In order to make *kubectl* working, we need some extra settings which are differ
 For the **root** user, run the following commands:
 
 ```bash
-export KUBECONFIG=/etc/kubernetes/admin.conf
+$ export KUBECONFIG=/etc/kubernetes/admin.conf
 ```
 
 For a **regular** user, run the following commands:
 
 ```bash
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 ### 3.1.2. Install a Pod Network
@@ -219,7 +219,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 At this point, if we check the status of K8s CoreDNS, we'll see that it stays at the status of "ContainerCreating" instead of "Running", as below:
 
 ```bash
-kubectl get pods --all-namespaces
+$ kubectl get pods --all-namespaces
 NAMESPACE     NAME                                                             READY   STATUS              RESTARTS   AGE
 kube-system   coredns-6955765f44-jvd7t                                         0/1     ContainerCreating   0          8m40s
 kube-system   coredns-6955765f44-wgxwv                                         0/1     ContainerCreating   0          8m40s
@@ -233,7 +233,7 @@ kube-system   kube-scheduler-ip-10-101-36-132.srv101.dsinternal.org            1
 This is an indication that K8s Pod networking is not in place yet. In K8s, Pod networking is implmented through [CNI (Container Networking Interface)](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni) and there many different CNI providers available out there. In my testing, I'm using [ProjectCalico](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni). The command to execute is as this:
 
 ```bash
-kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+$ kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
 ```
 
 During the installation, **Calico** will determine the available Pos IP address range in the network based on the *--pod-network-cidr* flag value as provided in the *kubeadm init* command.
@@ -241,7 +241,7 @@ During the installation, **Calico** will determine the available Pos IP address 
 After the Pod network CNI is installed, run *kubectl get pods --all-namespaces* command again to verify CoreDNS status is changed to "running".
 
 ```bash
-kubectl get pod --all-namespaces
+$ kubectl get pod --all-namespaces
 NAMESPACE     NAME                                                             READY   STATUS    RESTARTS   AGE
 kube-system   calico-kube-controllers-77d6cbc65f-xvgn8                         1/1     Running   0          28m
 kube-system   calico-node-gspn2                                                1/1     Running   0          28m
@@ -255,23 +255,23 @@ kube-system   coredns-6955765f44-tqkkg                                         1
 Now since the Control-Plane node is ready, we're ready to join worker nodes in the K8s cluster. The *kubeadm init* command output shows the command to execute on the VM instances that are intended as worker nodes. The command is in the following format and needs to run on each of the woker node instances.
 
 ```bash
-sudo kubeadm join <control_plane_ip_address>:6443 --token <token_value> --discovery-token-ca-cert-hash <ca_cert_hash_value>
+$ sudo kubeadm join <control_plane_ip_address>:6443 --token <token_value> --discovery-token-ca-cert-hash <ca_cert_hash_value>
 ```
 
 If it is forgotten to record the command line output message, we can always get the "<token_value>" and "<ca_cert_hash_value>" from the following commands:
 
 ```bash
 ## token value
-kubeadm token list | tail -n +2 | awk '{print $1}'
+$ kubeadm token list | tail -n +2 | awk '{print $1}'
 
 ## ca_cert hash value
-openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+$ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
 ```
 
 After the above command is executed on all worker node instances, check the K8s cluster status from the Control-plan node by running the following command:
 
 ```bash
-kubectl get nodes
+$ kubectl get nodes
 NAME                                     STATUS   ROLES    AGE     VERSION
 ip-10-101-32-187.srv101.dsinternal.org   Ready    <none>   13s     v1.17.6
 ip-10-101-35-135.srv101.dsinternal.org   Ready    <none>   66s     v1.17.6
@@ -283,7 +283,7 @@ ip-10-101-36-132.srv101.dsinternal.org   Ready    master   4h32m   v1.17.6
 By default for security reasons, K8s cluster doesn't provision Pods on the control-plane node. If this restrication needs to be lifted, e.g. in a development environment, it can be done by executing the following command, which will *remove the node-role.kubernetes.io/master* taint from any nodes that have it, including the control-plane node.
 
 ```bash
-kubectl taint nodes --all node-role.kubernetes.io/master-
+$ kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
 The output of the above command is something like below:
@@ -302,17 +302,17 @@ When we initalize the Control-plane node using *kubeadm init* command, we provid
 The easiest way of using this utility is to install it as a K8s Pod, as below:
 
 ```bash
-kubectl apply -f https://docs.projectcalico.org/manifests/calicoctl-etcd.yaml
-kubectl apply -f https://docs.projectcalico.org/manifests/calicoctl.yaml
+$ kubectl apply -f https://docs.projectcalico.org/manifests/calicoctl-etcd.yaml
+$ kubectl apply -f https://docs.projectcalico.org/manifests/calicoctl.yaml
 ```
 
 After the "calicocli" Pod is installed, we can run the following command to check the K8s network IP range
 
 ```bash
-alias calicoctl="kubectl exec -i -n kube-system calicoctl -- /calicoctl"
+$ alias calicoctl="kubectl exec -i -n kube-system calicoctl -- /calicoctl"
 
 ## An example output is provide
-calicoctl get ippool -o wide
+$ calicoctl get ippool -o wide
 NAME                  CIDR             NAT    IPIPMODE   VXLANMODE   DISABLED   SELECTOR
 default-ipv4-ippool   192.168.0.0/16   true   Always     Never       false      all()
 ```
