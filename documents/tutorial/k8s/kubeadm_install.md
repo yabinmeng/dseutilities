@@ -277,7 +277,7 @@ ip-10-101-36-132.srv101.dsinternal.org   Ready    master   4h32m   v1.17.6
 
 ### (Optional) Lift Control Plane Node Isolation
 
-By default for security reasons, K8s cluster doesn't provision Pods on the control-plane node. If this restrication needs to be lifted, e.g. in a development environment, it can be done by executing the following command, which will *remove the node-role.kubernetes.io/master* taint from any nodes that have it, including the control-plane node
+By default for security reasons, K8s cluster doesn't provision Pods on the control-plane node. If this restrication needs to be lifted, e.g. in a development environment, it can be done by executing the following command, which will *remove the node-role.kubernetes.io/master* taint from any nodes that have it, including the control-plane node.
 
 ```bash
 $ kubectl taint nodes --all node-role.kubernetes.io/master-
