@@ -1,6 +1,6 @@
 # Overview
 
-***kubeadm*** is [Kubernetes](https://kubernetes.io/)'s own utility/tool to install and configure a minumum viable k8s cluster. ***kubeadm*** utility only does cluster bootstrapping, but not provisisoning. Therefore, this installation method requires the underlying machines to be prepared in advance. It also doesn't include other nice-to-have "add-ons"/features such as k8s dashboard.
+*kubeadm* is [Kubernetes](https://kubernetes.io/)'s own utility/tool to install and configure a minumum viable k8s cluster. *kubeadm* utility only does cluster bootstrapping, but not provisisoning. Therefore, this installation method requires the underlying machines to be prepared in advance. It also doesn't include other nice-to-have "add-ons"/features such as k8s dashboard.
 
 In this tutorial, a step-by-step procedure is presented regarding how to use kubeadm to install and configure a vanilla k8s cluster with a single control-plane node. For the demonstration purpose, 3 VM instances are provisioned in advance with the following specs and configurations on each instance
 *Ubuntu Xenial (16.04.6 LTS) OS is installed
@@ -14,20 +14,20 @@ There are a few prerequisite checks/operations that need to be done on each of t
 
 * Disable SWAP
 
-* Verify ***MAC address*** is unique each instance (NOTE: replace "eth0" with the right network adaptor name)
+* Verify *MAC address* is unique each instance (NOTE: replace "eth0" with the right network adaptor name)
 
 ```bash
 $ ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}', or
 $ ip link show eth0 | awk '/ether/ {print $2}'
 ```
 
-* Verify ***product_uuid*** is unique on each instance
+* Verify *product_uuid* is unique on each instance
 
 ```bash
 $ sudo cat /sys/class/dmi/id/product_uuid
 ```
 
-* Check if Linux module ***br_netfilter*** is enabled. Enable it if not. This is required for the next step.
+* Check if Linux module *br_netfilter* is enabled. Enable it if not. This is required for the next step.
 
 ```bash
 # check if "br_netfilter" module is enabled (enabled if value is returned)
@@ -127,7 +127,7 @@ Please **NOTE** that it is highly NOT recommended to change cgroup driver of a n
 
 ## Install "kubeadm", "kubelet", and "kubectl"
 
-We need to install the matching versions of "kubeadm", "kubelet", and "kubectl" commands on all of the provisioned VM instances. In this tutorial, **K8s version 1.17.6 is installed** (***NOTE***: please do NOT install K8s version 1.18.x, which has some issues with DataStax Cassandra K8s operator).
+We need to install the matching versions of "kubeadm", "kubelet", and "kubectl" commands on all of the provisioned VM instances. In this tutorial, **K8s version 1.17.6 is installed**.
 
 ```bash
 $ sudo apt-get update
@@ -151,9 +151,9 @@ $ sudo systemctl restart kubelet
 
 ## Configure cgroup driver used by "kubelet" on control-plane node
 
-**NOTE**: this is only needed when K8s is using a container runtime other than Docker. For Docker runtime, K8s will automatically detect the cgroup driver used by ***kubelet*** and set it in ***/var/lib/kubelet/config.yaml*** file.
+**NOTE**: this is only needed when K8s is using a container runtime other than Docker. For Docker runtime, K8s will automatically detect the cgroup driver used by *kubelet* and set it in */var/lib/kubelet/config.yaml* file.
 
-Add "cgroupDriver" setting in Kubelete config file (***/var/lib/kubelet/config.yaml***), as below:
+Add "cgroupDriver" setting in Kubelete config file (*/var/lib/kubelet/config.yaml*), as below:
 
 ```bash
 apiVersion: kubelet.config.k8s.io/v1beta1
@@ -173,7 +173,7 @@ $ systemctl restart kubelet
 
 ## Initialze K8s Control-plane Node
 
-Pick one VM instance as the K8s control-plane node and run ***kubeadm init <args>*** command to initialize it. In my example, I'm using the command with ***--pod-network-cidr*** argument for customized Pod network IP CIDR range.
+Pick one VM instance as the K8s control-plane node and run *kubeadm init <args>* command to initialize it. In my example, I'm using the command with *--pod-network-cidr* argument for customized Pod network IP CIDR range.
 
 ```bash
 $ sudo kubeadm init --pod-network-cidr=192.168.0.0/16
@@ -195,7 +195,7 @@ The command output also contains the messages that describe the future steps tha
 
 ### Make kubectl working for root and regular users
 
-In order to make ***kubectl*** working, we need some extra settings which are different between the root and the regular users.
+In order to make *kubectl* working, we need some extra settings which are different between the root and the regular users.
 
 For the **root** user, run the following commands:
 
@@ -233,9 +233,9 @@ This is an indication that K8s Pod networking is not in place yet. In K8s, Pod n
 $ kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
 ```
 
-During the installation, **Calico** will determine the available Pos IP address range in the network based on the ***--pod-network-cidr*** flag value as provided in the ***kubeadm init*** command.
+During the installation, **Calico** will determine the available Pos IP address range in the network based on the *--pod-network-cidr* flag value as provided in the *kubeadm init* command.
 
-After the Pod network CNI is installed, run ***kubectl get pods --all-namespaces*** command again to verify CoreDNS status is changed to "running".
+After the Pod network CNI is installed, run *kubectl get pods --all-namespaces* command again to verify CoreDNS status is changed to "running".
 
 ```bash
 $ kubectl get pod --all-namespaces
@@ -249,7 +249,7 @@ kube-system   coredns-6955765f44-tqkkg                                         1
 
 ## Join Worker Nodes in the K8s Clsuter
 
-Now since the Control-Plane node is ready, we're ready to join worker nodes in the K8s cluster. The ***kubeadm init*** command output shows the command to execute on the VM instances that are intended as worker nodes. The command is in the following format and needs to run on each of the woker node instances.
+Now since the Control-Plane node is ready, we're ready to join worker nodes in the K8s cluster. The *kubeadm init* command output shows the command to execute on the VM instances that are intended as worker nodes. The command is in the following format and needs to run on each of the woker node instances.
 
 ```bash
 $ sudo kubeadm join <control_plane_ip_address>:6443 --token <token_value> --discovery-token-ca-cert-hash <ca_cert_hash_value>
@@ -275,9 +275,26 @@ ip-10-101-35-135.srv101.dsinternal.org   Ready    <none>   66s     v1.17.6
 ip-10-101-36-132.srv101.dsinternal.org   Ready    master   4h32m   v1.17.6
 ```
 
+### (Optional) Lift Control Plane Node Isolation
+
+By default for security reasons, K8s cluster doesn't provision Pods on the control-plane node. If this restrication needs to be lifted, e.g. in a development environment, it can be done by executing the following command, which will *remove the node-role.kubernetes.io/master* taint from any nodes that have it, including the control-plane node
+
+```bash
+$ kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+The output of the above command is something like below:
+
+```bash
+node/ip-10-101-36-132.srv101.dsinternal.org untainted
+taint "node-role.kubernetes.io/master" not found
+taint "node-role.kubernetes.io/master" not found
+```
+
+
 # Appendix. Find out Pod Network IP Range Using "calicoctl"
 
-When we initalize the Control-plane node using ***kubeadm init*** command, we provide a customized CIDR range for the network through ***--pod-network-cidr*** flag. But how could we find the K8s network IP range for a running K8s cluster? The procedure depends on the actual CNI being used by the K8s cluster. For Calico CNI as used in my example, we can get this through **calicocli** utiity.
+When we initalize the Control-plane node using *kubeadm init* command, we provide a customized CIDR range for the network through *--pod-network-cidr* flag. But how could we find the K8s network IP range for a running K8s cluster? The procedure depends on the actual CNI being used by the K8s cluster. For Calico CNI as used in my example, we can get this through **calicocli** utiity.
 
 The easiest way of using this utility is to install it as a K8s Pod, as below:
 
