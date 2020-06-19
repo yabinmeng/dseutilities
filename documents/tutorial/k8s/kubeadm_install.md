@@ -1,4 +1,8 @@
-# Overview
+
+<!-- TOC -->autoauto- [1. Overview](#1-overview)auto- [2. Install **kubeadm**](#2-install-kubeadm)auto    - [2.1. Prerequisite Checks and Settings](#21-prerequisite-checks-and-settings)auto    - [2.2. Install container runtime](#22-install-container-runtime)auto        - [2.2.1. Make sure "systemd" is used as the cgroup driver for Docker (for improved system stability)](#221-make-sure-systemd-is-used-as-the-cgroup-driver-for-docker-for-improved-system-stability)auto    - [2.3. Install "kubeadm", "kubelet", and "kubectl"](#23-install-kubeadm-kubelet-and-kubectl)auto    - [2.4. Configure cgroup driver used by "kubelet" on control-plane node](#24-configure-cgroup-driver-used-by-kubelet-on-control-plane-node)auto- [3. Set up a K8s cluster](#3-set-up-a-k8s-cluster)auto    - [3.1. Initialze K8s Control-plane Node](#31-initialze-k8s-control-plane-node)auto        - [3.1.1. Make kubectl working for root and regular users](#311-make-kubectl-working-for-root-and-regular-users)auto        - [3.1.2. Install a Pod Network](#312-install-a-pod-network)auto    - [3.2. Join Worker Nodes in the K8s Clsuter](#32-join-worker-nodes-in-the-k8s-clsuter)auto        - [3.2.1. (Optional) Lift Control Plane Node Isolation](#321-optional-lift-control-plane-node-isolation)auto- [4. Appendix. Find out Pod Network IP Range Using "calicoctl"](#4-appendix-find-out-pod-network-ip-range-using-calicoctl)autoauto<!-- /TOC -->
+
+
+# 1. Overview
 
 In this tutorial, a step-by-step procedure is presented regarding how to use ***kubeadm*** to install and configure a vanilla k8s cluster with a single control-plane node. 
 
@@ -6,11 +10,11 @@ For the demonstration purpose, 3 VM instances are provisioned in advance with th
 *Ubuntu Xenial (16.04.6 LTS) OS is installed
 *4 vCPU and 16GB total system
 
-# Install **kubeadm**
+# 2. Install **kubeadm**
 
 *kubeadm* is [Kubernetes](https://kubernetes.io/)'s own utility to install and configure a minumum viable k8s cluster. *kubeadm* utility only does cluster bootstrapping, but not provisisoning. Therefore, this installation method requires the underlying machines to be prepared in advance. It also doesn't include other nice-to-have "add-ons"/features such as k8s dashboard.
 
-## Prerequisite Checks and Settings
+## 2.1. Prerequisite Checks and Settings
 
 There are a few prerequisite checks/operations that need to be done on each of the hosting machine before we start provisioning a k8s cluster.
 
@@ -68,7 +72,7 @@ $ sudo sysctl --system
 | Kubelet API | TCP/10250 | Kubelet on the worker node |
 | NodePort Services | TCP/30000-32767 ||
 
-## Install container runtime
+## 2.2. Install container runtime
 
 K8s can work with different container runtimes (docker, containerd, CRI-O) via [K8s container runtime interface](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/container-runtime-interface.md).
 
@@ -103,7 +107,7 @@ $ sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 $ sudo usermod -aG docker <non_root_user>
 ```
 
-### Make sure "systemd" is used as the cgroup driver for Docker (for improved system stability) 
+### 2.2.1. Make sure "systemd" is used as the cgroup driver for Docker (for improved system stability) 
 
 ```bash
 # Set up Docker dameon
@@ -127,7 +131,7 @@ $ sudo systemctl restart docker
 
 Please **NOTE** that it is highly NOT recommended to change cgroup driver of a node that has joined a K8s cluster. The best approach is to drain the node; remove it from the cluster; and re-join it.
 
-## Install "kubeadm", "kubelet", and "kubectl"
+## 2.3. Install "kubeadm", "kubelet", and "kubectl"
 
 We need to install the matching versions of "kubeadm", "kubelet", and "kubectl" commands on all of the provisioned VM instances. In this tutorial, **K8s version 1.17.6 is installed**.
 
@@ -151,7 +155,7 @@ $ sudo systemctl daemon-reload
 $ sudo systemctl restart kubelet
 ```
 
-## Configure cgroup driver used by "kubelet" on control-plane node
+## 2.4. Configure cgroup driver used by "kubelet" on control-plane node
 
 **NOTE**: this is only needed when K8s is using a container runtime other than Docker. For Docker runtime, K8s will automatically detect the cgroup driver used by *kubelet* and set it in */var/lib/kubelet/config.yaml* file.
 
@@ -171,9 +175,9 @@ $ systemctl daemon-reload
 $ systemctl restart kubelet
 ```
 
-# Set up a K8s cluster
+# 3. Set up a K8s cluster
 
-## Initialze K8s Control-plane Node
+## 3.1. Initialze K8s Control-plane Node
 
 Pick one VM instance as the K8s control-plane node and run *kubeadm init <args>* command to initialize it. In my example, I'm using the command with *--pod-network-cidr* argument for customized Pod network IP CIDR range.
 
@@ -195,7 +199,7 @@ Your Kubernetes control-plane has initialized successfully!
 
 The command output also contains the messages that describe the future steps that need to take in order to use the K8s cluster properly.
 
-### Make kubectl working for root and regular users
+### 3.1.1. Make kubectl working for root and regular users
 
 In order to make *kubectl* working, we need some extra settings which are different between the root and the regular users.
 
@@ -213,7 +217,7 @@ $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-### Install a Pod Network
+### 3.1.2. Install a Pod Network
 
 At this point, if we check the status of K8s CoreDNS, we'll see that it stays at the status of "ContainerCreating" instead of "Running", as below:
 
@@ -249,7 +253,7 @@ kube-system   coredns-6955765f44-tqkkg                                         1
 ...
 ```
 
-## Join Worker Nodes in the K8s Clsuter
+## 3.2. Join Worker Nodes in the K8s Clsuter
 
 Now since the Control-Plane node is ready, we're ready to join worker nodes in the K8s cluster. The *kubeadm init* command output shows the command to execute on the VM instances that are intended as worker nodes. The command is in the following format and needs to run on each of the woker node instances.
 
@@ -277,7 +281,7 @@ ip-10-101-35-135.srv101.dsinternal.org   Ready    <none>   66s     v1.17.6
 ip-10-101-36-132.srv101.dsinternal.org   Ready    master   4h32m   v1.17.6
 ```
 
-### (Optional) Lift Control Plane Node Isolation
+### 3.2.1. (Optional) Lift Control Plane Node Isolation
 
 By default for security reasons, K8s cluster doesn't provision Pods on the control-plane node. If this restrication needs to be lifted, e.g. in a development environment, it can be done by executing the following command, which will *remove the node-role.kubernetes.io/master* taint from any nodes that have it, including the control-plane node.
 
@@ -294,7 +298,7 @@ taint "node-role.kubernetes.io/master" not found
 ```
 
 
-# Appendix. Find out Pod Network IP Range Using "calicoctl"
+# 4. Appendix. Find out Pod Network IP Range Using "calicoctl"
 
 When we initalize the Control-plane node using *kubeadm init* command, we provide a customized CIDR range for the network through *--pod-network-cidr* flag. But how could we find the K8s network IP range for a running K8s cluster? The procedure depends on the actual CNI being used by the K8s cluster. For Calico CNI as used in my example, we can get this through **calicocli** utiity.
 
