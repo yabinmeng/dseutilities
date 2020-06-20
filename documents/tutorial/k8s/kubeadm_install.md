@@ -9,7 +9,7 @@ For the demonstration purpose, 3 VM instances are provisioned in advance with th
 
 # 2. Install **kubeadm**
 
-*kubeadm* is [Kubernetes](https://kubernetes.io/)'s own utility to install and configure a minumum viable k8s cluster. *kubeadm* utility only does cluster bootstrapping, but not provisisoning. Therefore, this installation method requires the underlying machines to be prepared in advance. It also doesn't include other nice-to-have "add-ons"/features such as k8s dashboard.
+*kubeadm* is [Kubernetes](https://kubernetes.io/)'s own utility to install and configure a minimum viable k8s cluster. *kubeadm* utility only does cluster bootstrapping, but not provisioning. Therefore, this installation method requires the underlying machines to be prepared in advance. It also doesn't include other nice-to-have "add-ons"/features such as k8s dashboard.
 
 ## 2.1. Prerequisite Checks and Settings
 
@@ -17,7 +17,7 @@ There are a few prerequisite checks/operations that need to be done on each of t
 
 * Disable SWAP
 
-* Verify *MAC address* is unique each instance (NOTE: replace "eth0" with the right network adaptor name)
+* Verify *MAC address* is unique each instance (NOTE: replace "eth0" with the right network adapter name)
 
 ```bash
 $ ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}', or
@@ -71,12 +71,12 @@ $ sudo sysctl --system
 
 ## 2.2. Install container runtime
 
-K8s can work with different container runtimes (docker, containerd, CRI-O) via [K8s container runtime interface](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/container-runtime-interface.md).
+K8s can work with different container runtime (docker, containerd, CRI-O) via [K8s container runtime interface](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/container-runtime-interface.md).
 
 In this tutorial, docker container runtime is used. The procedure to install the latest Docker on Ubuntu is as follows:
 
 ```bash
-# Instll prerequisites packages for Docker
+# Install prerequisites packages for Docker
 $ sudo apt-get update
 $ sudo apt-get install -y \
     apt-transport-https \
@@ -230,7 +230,7 @@ kube-system   kube-proxy-wvthg                                                 1
 kube-system   kube-scheduler-ip-10-101-36-132.srv101.dsinternal.org            1/1     Running             0          8m49s
 ```
 
-This is an indication that K8s Pod networking is not in place yet. In K8s, Pod networking is implmented through [CNI (Container Networking Interface)](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni) and there many different CNI providers available out there. In my testing, I'm using [ProjectCalico](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni). The command to execute is as this:
+This is an indication that K8s Pod networking is not in place yet. In K8s, Pod networking is implemented through [CNI (Container Networking Interface)](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni) and there many different CNI providers available out there. In my testing, I'm using [ProjectCalico](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni). The command to execute is as this:
 
 ```bash
 $ kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
@@ -252,7 +252,7 @@ kube-system   coredns-6955765f44-tqkkg                                         1
 
 ## 3.2. Join Worker Nodes in the K8s Clsuter
 
-Now since the Control-Plane node is ready, we're ready to join worker nodes in the K8s cluster. The *kubeadm init* command output shows the command to execute on the VM instances that are intended as worker nodes. The command is in the following format and needs to run on each of the woker node instances.
+Now since the Control-Plane node is ready, we're ready to join worker nodes in the K8s cluster. The *kubeadm init* command output shows the command to execute on the VM instances that are intended as worker nodes. The command is in the following format and needs to run on each of the worker node instances.
 
 ```bash
 $ sudo kubeadm join <control_plane_ip_address>:6443 --token <token_value> --discovery-token-ca-cert-hash <ca_cert_hash_value>
@@ -280,7 +280,7 @@ ip-10-101-36-132.srv101.dsinternal.org   Ready    master   4h32m   v1.17.6
 
 ### 3.2.1. (Optional) Lift Control Plane Node Isolation
 
-By default for security reasons, K8s cluster doesn't provision Pods on the control-plane node. If this restrication needs to be lifted, e.g. in a development environment, it can be done by executing the following command, which will *remove the node-role.kubernetes.io/master* taint from any nodes that have it, including the control-plane node.
+By default for security reasons, K8s cluster doesn't provision Pods on the control-plane node. If this restriction needs to be lifted, e.g. in a development environment, it can be done by executing the following command, which will *remove the node-role.kubernetes.io/master* taint from any nodes that have it, including the control-plane node.
 
 ```bash
 $ kubectl taint nodes --all node-role.kubernetes.io/master-
@@ -297,7 +297,7 @@ taint "node-role.kubernetes.io/master" not found
 
 # 4. Appendix. Find out Pod Network IP Range Using "calicoctl"
 
-When we initalize the Control-plane node using *kubeadm init* command, we provide a customized CIDR range for the network through *--pod-network-cidr* flag. But how could we find the K8s network IP range for a running K8s cluster? The procedure depends on the actual CNI being used by the K8s cluster. For Calico CNI as used in my example, we can get this through **calicocli** utiity.
+When we initalize the Control-plane node using *kubeadm init* command, we provide a customized CIDR range for the network through *--pod-network-cidr* flag. But how could we find the K8s network IP range for a running K8s cluster? The procedure depends on the actual CNI being used by the K8s cluster. For Calico CNI as used in my example, we can get this through **calicocli** utility.
 
 The easiest way of using this utility is to install it as a K8s Pod, as below:
 
