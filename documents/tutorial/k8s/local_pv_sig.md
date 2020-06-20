@@ -59,7 +59,9 @@ $ sudo mkdir -p /mnt/disks
 
 ### Prepare Local Storage Spaces
 
-Since it is impossible to buy and attach a new hard drive to each node in the cluster, I'm using a Linux [loop device](https://en.wikipedia.org/wiki/Loop_device) to simulate a block device based out of a file.
+Since it is impossible to buy and attach a new hard drive to each node in the cluster, we can simulate a block device using a loop [loop device](https://en.wikipedia.org/wiki/Loop_device) to simulate a block device based out of a file.
+
+**NOTE** Repeat the following procedure on each node!
 
 * Create a 1 GB file (size can be changed) as the underlying file for the loop device
 
@@ -105,3 +107,5 @@ $ df -hT /dev/loop0
 Filesystem     Type  Size  Used Avail Use% Mounted on
 /dev/loop0     ext4  969M  1.3M  902M   1% /mnt/disks/63bccce1-06fd-434b-8ec9-35caed74168c
 ```
+
+### Generate 
