@@ -32,24 +32,24 @@ ip-10-101-36-132.srv101.dsinternal.org   Ready    master   47h   v1.17.6
 
 # K8s SIG Local Storage Static Provisioner
 
-[sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner) is part of K8s community efforts under the special intererst group (SIG) umbrella. The main goal of this effort is to simplify the local storagement management in a K8s cluster so that the local storage can be utilized through a *Local PV* which contains *node affinity* information that can be used to schedule Pods to the correct nodes while maintining the right storage space assignment. In the discussion below, I'll use the terms of "the provisioner utility", "the provisioner", or simply "the utility" exchangeably to refer to SIG Local Storage Static Provisioner.
+[sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner) is part of K8s community efforts under the special interest group (SIG) umbrella. The main goal of this effort is to simplify the local storage management in a K8s cluster so that the local storage can be utilized through a *Local PV* which contains *node affinity* information that can be used to schedule Pods to the correct nodes while maintaining the right storage space assignment. In the discussion below, I'll use the terms of "the provisioner utility", "the provisioner", or simply "the utility" to refer to SIG Local Storage Static Provisioner.
 
 The utility is able to detect local storage spaces and automatically create PVs out of it on each K8s node as long as the local storage spaces is created following certain conditions:
 
 * In the provisioner configuration, specify a discovery directory
-* The local storage space is prepared in a way that links to the discovery directoy
+* The local storage space is prepared in a way that links to the discovery directory
 ** **Filesystem volumeMode PV**: this is the default mode and requires the local storage space to be mounted under the discovery directory.
 ** **Block volumeMode PV**: this requires creating a symbolic link under discovery directory that points to the block device.
 
 ## Procedures
 
-Depending on the underlying infrastructure on which the K8s clsuter is running (eg. baremetal or cloud vendor infrastructures like GCE, GKE, EKS, or AKS), the actual procedure of using this utility to create and manage PVs is a little bit different. 
+Depending on the underlying infrastructure on which the K8s cluster is running (eg. bare-metal or cloud vendor infrastructures like GCE, GKE, EKS, or AKS), the actual procedure of using this utility to create and manage PVs is a little bit different. 
 
-In this tutorial, I'm demonstrating the procedure of how to manage and create local PVs on a baremetal infrastructure that follows the default "Filesystem volumeMode". The procedure of running on cloud vendor infrastructures is in general a bit simpler with cloud infrastructure specific differences. Please follow the utility's documentation for more details.
+In this tutorial, I'm demonstrating the procedure of how to manage and create local PVs on a bare-metal infrastructure that follows the default "Filesystem volumeMode". The procedure of running on cloud vendor infrastructures is in general a bit simpler with cloud infrastructure specific differences. Please follow the utility's documentation for more details.
 
 --- 
 
-### Specifiy and Create The Provisioner Discovery Directory
+### Specify and Create The Provisioner Discovery Directory
 
 On each node in the cluster, create a same folder (e.g. /mnt/disks) as the provisioner discovery directory:
 
