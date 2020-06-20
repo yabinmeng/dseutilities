@@ -12,7 +12,7 @@ There are 2 ways to provision a PV:
 
 PV types are implemented through plug-ins ([list](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#types-of-persistent-volumes)). Many of the PV types are "remote" by nature and can be dynamically provisioned. 
 
-But there do have cases when local storage is preferred, such as for better performance. Traditionally, K8s offers the local storage option via [HostPath Volume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath). This option, however, has quite some limitations, the biggest of which is it can't participate in K8s's resource-aware scheduling and there is no node affinity associated with it. Since K8s 1.14, K8s has introduced the concept of ***Local PV*** ([GA announcement](https://kubernetes.io/blog/2019/04/04/kubernetes-1.14-local-persistent-volumes-ga/)) in order to adress the challenges that are faced with *HostPath* volume. 
+But there do have cases when local storage is preferred, such as for better performance. Traditionally, K8s offers the local storage option via [HostPath Volume](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath). This option, however, has quite some limitations, the biggest of which is it can't participate in K8s's resource-aware scheduling and there is no node affinity associated with it. Since K8s 1.14, K8s has introduced the concept of ***Local PV*** ([GA announcement](https://kubernetes.io/blog/2019/04/04/kubernetes-1.14-local-persistent-volumes-ga/)) in order to address the challenges that are faced with *HostPath* volume. 
 
 Please note that a *Local PV* is by nature still static; but there are some **external static provisioners** that can help make the *Local PV* creation and management process semi-dynamic. In this tutorial, I'm demonstrating how to do so through one popular external static provisioner from [K8s SIGs](https://github.com/kubernetes-sigs) called [sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner). 
 
@@ -59,9 +59,9 @@ $ sudo mkdir -p /mnt/disks
 
 ### Prepare Local Storage Spaces
 
-Since it is impossible to buy and attach a new hard drive to each node in the cluster, we can simulate a block device using a loop [loop device](https://en.wikipedia.org/wiki/Loop_device) to simulate a block device based out of a file.
+**NOTE** This needs to be executed on each node in the cluster!
 
-**NOTE** Repeat the following procedure on each node!
+Since it is impossible to buy and attach a new hard drive to each node in the cluster, we can simulate a block device using a [loop device](https://en.wikipedia.org/wiki/Loop_device) to simulate a block device based out of a file. 
 
 * Create a 1 GB file (size can be changed) as the underlying file for the loop device
 
@@ -108,4 +108,38 @@ Filesystem     Type  Size  Used Avail Use% Mounted on
 /dev/loop0     ext4  969M  1.3M  902M   1% /mnt/disks/63bccce1-06fd-434b-8ec9-35caed74168c
 ```
 
-### Generate 
+### Generate Provisioner K8s Resource File (.yaml) Using Helm
+
+**NOTE** This only needs to be executed on control-plane/master node in the cluster!
+
+The provisioner defines a bundle of K8s resources of the following types:
+* ServiceAccount
+* ConfigMap
+* StorageClass
+* ClusterRole
+* ClusterRoleBinding
+* DaemonSet
+
+The easiest way to generate a customized resource definition file for the above types of resources for the provisioner that is relevant to your own case is through the [Helm](https://helm.sh/) chart template that is provided.
+
+#### (Optional) Install Helm 
+
+The procedure of installing Helm on Ubuntu is as below:
+
+```bash
+$ curl https://helm.baltorepo.com/organization/signing.asc | sudo apt-key add -
+
+$ sudo apt-get install apt-transport-https --yes
+
+$ echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+
+$ sudo apt-get update
+
+$ sudo apt-get install helm
+
+# Check Helm version
+$ helm version
+version.BuildInfo{Version:"v3.2.4", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", GitTreeState:"clean", GoVersion:"go1.13.12"}
+```
+
+#### 
