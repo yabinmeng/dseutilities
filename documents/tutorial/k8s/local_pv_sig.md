@@ -142,7 +142,7 @@ $ helm version
 version.BuildInfo{Version:"v3.2.4", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", GitTreeState:"clean", GoVersion:"go1.13.12"}
 ```
 
-#### Use Provisioner Helm Template
+#### Customize the Resource Definition File from Helm Template File
 
 * Download the utility's source code
 
@@ -203,3 +203,6 @@ classes:
     reclaimPolicy: Delete # Available reclaim policies: Delete/Retain, defaults: Delete.
     isDefaultClass: false # set as default class
 ```
+
+The generated customized resource definition file for the local storage provisioner for this tutorial can be found [**here**](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/generated/local-storage-provisioner.yaml).
+
