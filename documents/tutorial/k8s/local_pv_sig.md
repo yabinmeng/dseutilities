@@ -259,6 +259,8 @@ Source:
 Events:    <none>
 ```
 
+At this point, since *Local PVs* are created, the K8s cluster can allocate it to the Pods through *PVC* requests; and all Pods that belong to a particular node can **ONLY** utilize the local storage spaces that are dedicated to that node. 
+
 # Summary
 
 Please **NOTE** that a *Local PV* can be created in a purely static and manual approach by defining a PV resource definition file - an example from K8s [document](https://kubernetes.io/docs/concepts/storage/volumes/#local) is copied below.
