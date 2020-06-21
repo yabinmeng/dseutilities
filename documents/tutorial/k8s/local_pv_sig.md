@@ -163,7 +163,7 @@ In the above example, the customization of the generated resource definition fil
 
 The customization file ("values.yaml") used in this tutorial can be found [here(https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/values.yaml)]. In particular, the customization that has been made in this tutorial is related with ***StorageClass*** resource.
 
-```
+```yaml
 #
 # Configure storage classes.
 #
