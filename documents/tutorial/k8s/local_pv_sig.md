@@ -20,7 +20,7 @@ Another common external static provisioner is from [Rancher company](https://ran
 
 ## K8s Cluster Overview
 
-The tutorial has been run against a K8s cluster that was created using **kubeadm** utility (see [procedure](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/kubeadm_install.md)). This cluster has 3 VM instances and for testing purpose, the control-plane/master node is configured to allow launching Pods on it. 
+The tutorial has been run against a K8s cluster that was created using **kubeadm** utility (see [procedure](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/kubeadm_install.md)). This cluster has 3 VM instances and for testing purpose, ***the control-plane/master node is configured to allow launching Pods on it***. 
 
 ```bash
 $ kubectl get nodes
@@ -32,7 +32,7 @@ ip-10-101-36-132.srv101.dsinternal.org   Ready    master   47h   v1.17.6
 
 # K8s SIG Local Storage Static Provisioner
 
-[sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner) is part of K8s community efforts under the special interest group (SIG) umbrella. The main goal of this effort is to simplify the local storage management in a K8s cluster so that the local storage can be utilized through a *Local PV* which contains *node affinity* information that can be used to schedule Pods to the correct nodes while maintaining the right storage space assignment. In the discussion below, I'll use the terms of "the provisioner utility", "the provisioner", or simply "the utility" to refer to SIG Local Storage Static Provisioner.
+[sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner) is part of K8s community efforts under the special interest group (SIG) umbrella. The main goal of this effort is to simplify the local storage management in a K8s cluster so that the local storage can be utilized through a *Local PV* which contains *node affinity* information that can be used to schedule Pods to the nodes with the right storage space assignment. In the discussion below, I'll use the terms of "the provisioner utility", "the provisioner", or simply "the utility" to refer to SIG Local Storage Static Provisioner.
 
 The utility is able to detect local storage spaces and automatically create PVs out of it on each K8s node as long as the local storage spaces is created following certain conditions:
 
