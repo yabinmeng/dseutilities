@@ -92,7 +92,7 @@ $ sudo mkfs.ext4 /dev/loop0
 * Mount the device under the provisioner discovery directory. Please note mounting the device using its UUID (instead of the name) is considered as a best-practice and highly recommended.
 
 ```bash
-$ DISK_UUID=$(sudo blkid -s UUID -o value /dev/loop0)
+$   
 $ sudo mkdir /mnt/disks/$DISK_UUID
 $ sudo mount -t ext4 /dev/loop0 /mnt/disks/$DISK_UUID
 ```
@@ -128,13 +128,9 @@ The procedure of installing Helm on Ubuntu is as below:
 
 ```bash
 $ curl https://helm.baltorepo.com/organization/signing.asc | sudo apt-key add -
-
 $ sudo apt-get install apt-transport-https --yes
-
 $ echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-
 $ sudo apt-get update
-
 $ sudo apt-get install helm
 
 # Check Helm version
@@ -298,3 +294,37 @@ spec:
 But creating and managing *Local PV* resource definition files as above can be cumbersome and error-prone, especially when we consider that there might be multiple *Local PVs* to be managed per node and meanwhile the proper *Node Affinity* attributes have to be maintained properly.
 
 Int his tutorial, we explored a ***semi-dynamic*** way of provisioning *Local PVs* in a K8s cluster through a local storage provisioner. By using the provisioner, we still need to statically and manually (can be scripted) provision the actual local storage spaces on each node; but the provisioner can do the rest of the work of discovering, creating, and configuring *Local PVs* automatically.
+
+# Appendix 
+
+## Cleanup the Created Loop Device
+
+When we're done with the testing K8s cluster, we can clean up the loop devices that were created during the test. The proper cleanup procedure is as below (**NOTE**: Please do NOT execute this procedure when the local storage space is still used by the cluster).
+
+* Un-mount the local storage space 
+
+```bash
+$ DISK_UUID=$(sudo blkid -s UUID -o value /dev/loop0)
+$ sudo umount /mnt/disks/$DISK_UUID
+```
+
+* Delete the loop device
+```bash
+$ sudo losetup -d /dev/loop0
+```
+
+* Remove the file behind the loop device
+
+```bash
+$ sudo rm -rf /root/myloopbackfile.img
+```
+
+## Mount a RAM Disk 
+
+In this tutorial so far, a loop device with a certain size is used to simulate a local storage space that can be discovered and managed by the provisioner as a *Local PV*. If we don't care about the size of the local storage space in the test, the simplest way to use a RAM disk to do the simulation, as below:
+
+```bash
+$ VOL=myvol
+$ sudo mkdir /mnt/disks/$VOL
+$ sudo mount -t tmpfs $VOL /mnt/disks/$VOL
+```
