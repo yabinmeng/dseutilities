@@ -120,7 +120,7 @@ The provisioner defines a bundle of K8s resources of the following types:
 * ClusterRoleBinding
 * DaemonSet
 
-The easiest way to generate a customized resource definition file for the above types of resources for the provisioner that is relevant to your own case is through the [Helm](https://helm.sh/) chart template that is provided.
+The easiest way to generate a customized resource definition file for the above types of resources that is relevant to your own case is through the [Helm](https://helm.sh/) chart template that is provided.
 
 #### (Optional) Install Helm 
 
@@ -142,4 +142,64 @@ $ helm version
 version.BuildInfo{Version:"v3.2.4", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", GitTreeState:"clean", GoVersion:"go1.13.12"}
 ```
 
-#### 
+#### Use Provisioner Helm Template
+
+* Download the utility's source code
+
+```bash
+$ git clone --depth=1 https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner.git
+```
+
+* Run the following command to generate a customized provisioner resource file 
+
+```bash
+$ helm template -f <template_value_yaml_file> <release_name> [--namespace <namespace_name>]./sig-storage-local-static-provisioner/helm/provisioner > <provisioner_resource_yaml_file>
+
+# An example is as below
+# $ helm template -f ./values.yaml local-storage ./sig-storage-local-static-provisioner/helm/provisioner > local-storage-provisioner.yaml
+```
+
+In the above example, the customization of the generated resource definition file (from the proved template file) is controlled by "<template_value_yaml_file>". The utility has provided an example ([values.yaml](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/blob/master/helm/provisioner/values.yaml)).
+
+The customization file ("values.yaml") used in this tutorial can be found [here(https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/values.yaml)]. In particular, the customization that has been made in this tutorial is related with ***StorageClass*** resource.
+
+```
+#
+# Configure storage classes.
+#
+classes:
+- name: local-storage # Defines name of storage classe.
+  # Path on the host where local volumes of this storage class are mounted
+  # under.
+  hostDir: /mnt/disks
+  # Optionally specify mount path of local volumes. By default, we use same
+  # path as hostDir in container.
+  # mountDir: /mnt/fast-disks
+  # The volume mode of created PersistentVolume object. Default to Filesystem
+  # if not specified.
+  volumeMode: Filesystem
+  # Filesystem type to mount.
+  # It applies only when the source path is a block device,
+  # and desire volume mode is Filesystem.
+  # Must be a filesystem type supported by the host operating system.
+  fsType: ext4
+  # File name pattern to discover. By default, discover all file names.
+  namePattern: "'*'"
+  blockCleanerCommand:
+  #  Do a quick reset of the block device during its cleanup.
+  #  - "/scripts/quick_reset.sh"
+  #  or use dd to zero out block dev in two iterations by uncommenting these lines
+  #  - "/scripts/dd_zero.sh"
+  #  - "2"
+  # or run shred utility for 2 iteration.s
+     - "/scripts/shred.sh"
+     - "2"
+  # or blkdiscard utility by uncommenting the line below.
+  #  - "/scripts/blkdiscard.sh"
+  # Uncomment to create storage class object with default configuration.
+  storageClass: true
+  # Uncomment to create storage class object and configure it.
+  storageClass:
+    reclaimPolicy: Delete # Available reclaim policies: Delete/Retain, defaults: Delete.
+    isDefaultClass: false # set as default class
+```
