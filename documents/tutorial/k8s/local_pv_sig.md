@@ -1,4 +1,4 @@
-# Overview
+# 1. Overview
 
 In this tutorial, I'm going to demonstrate how to ***semi-dynamically*** provision local PersistentVolumes (PVs) in a  K8s cluster. 
 
@@ -18,7 +18,7 @@ Please note that a *Local PV* is by nature still static; but there are some **ex
 
 Another common external static provisioner is from [Rancher company](https://rancher.com/)'s [local-path-provisioner](https://github.com/rancher/local-path-provisioner) and it is not the focus of this tutorial.
 
-## K8s Cluster Overview
+## 1.1. K8s Cluster Overview
 
 The tutorial has been run against a K8s cluster that was created using **kubeadm** utility (see [procedure](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/kubeadm_install.md)). This cluster has 3 VM instances and for testing purpose, ***the control-plane/master node is configured to allow launching Pods on it***. 
 
@@ -30,7 +30,7 @@ ip-10-101-35-135.srv101.dsinternal.org   Ready    <none>   42h   v1.17.6
 ip-10-101-36-132.srv101.dsinternal.org   Ready    master   47h   v1.17.6
 ```
 
-# K8s SIG Local Storage Static Provisioner
+# 2. K8s SIG Local Storage Static Provisioner
 
 [sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner) is part of K8s community efforts under the special interest group (SIG) umbrella. The main goal of this effort is to simplify the local storage management in a K8s cluster so that the local storage can be utilized through a *Local PV* which contains *node affinity* information that can be used to schedule Pods to the nodes with the right storage space assignment. In the discussion below, I'll use the terms of "the provisioner utility", "the provisioner", or simply "the utility" interchangeably to refer to SIG Local Storage Static Provisioner.
 
@@ -41,7 +41,7 @@ The utility is able to detect local storage spaces and automatically create PVs 
   * **Filesystem volumeMode PV**: this is the default mode and requires the local storage space to be mounted under the discovery directory.
   * **Block volumeMode PV**: this requires creating a symbolic link under discovery directory that points to the block device.
 
-## Procedures
+## 2.1. Procedures
 
 Depending on the underlying infrastructure on which the K8s cluster is running (eg. bare-metal or cloud vendor infrastructures like GCE, GKE, EKS, or AKS), the actual procedure of using this utility to create and manage PVs is a little bit different. 
 
@@ -49,7 +49,7 @@ In this tutorial, I'm demonstrating the procedure of how to manage and create lo
 
 --- 
 
-### Specify and Create The Provisioner Discovery Directory
+### 2.1.1. Specify and Create The Provisioner Discovery Directory
 
 On each node in the cluster, create a same folder (e.g. /mnt/disks) as the provisioner discovery directory:
 
@@ -57,7 +57,7 @@ On each node in the cluster, create a same folder (e.g. /mnt/disks) as the provi
 $ sudo mkdir -p /mnt/disks
 ```
 
-### Prepare Local Storage Spaces
+### 2.1.2. Prepare Local Storage Spaces
 
 **NOTE** This needs to be executed on each node in the cluster!
 
@@ -108,7 +108,7 @@ Filesystem     Type  Size  Used Avail Use% Mounted on
 /dev/loop0     ext4  969M  1.3M  902M   1% /mnt/disks/63bccce1-06fd-434b-8ec9-35caed74168c
 ```
 
-### Generate Provisioner K8s Resource File (.yaml) Using Helm
+### 2.1.3. Generate Provisioner K8s Resource File (.yaml) Using Helm
 
 **NOTE** This only needs to be executed on control-plane/master node in the cluster!
 
@@ -122,7 +122,7 @@ The provisioner defines a bundle of K8s resources of the following types:
 
 The easiest way to generate a customized resource definition file for the above types of resources (that is relevant to your own case) is through the [Helm](https://helm.sh/) chart template that is provided in the utility.
 
-#### (Optional) Install Helm 
+#### 2.1.3.1. (Optional) Install Helm 
 
 The procedure of installing Helm on Ubuntu is as below:
 
@@ -138,7 +138,7 @@ $ helm version
 version.BuildInfo{Version:"v3.2.4", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", GitTreeState:"clean", GoVersion:"go1.13.12"}
 ```
 
-#### Customize the Resource Definition File from Helm Template File
+#### 2.1.3.2. Customize the Resource Definition File from Helm Template File
 
 * Download the utility's source code
 
@@ -208,7 +208,7 @@ classes:
 
 The generated provisioner resource definition file in this tutorial can be found [**here**](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/generated/local-storage-provisioner.yaml).
 
-#### Install The Provisioner Resources
+#### 2.1.3.3. Install The Provisioner Resources
 
 Now with the provisioner resource definition file generated, we can install it in the K8s cluster using the following command and create the corresponding resources in the cluster. The command output shows the created resource types and names.
 
@@ -262,7 +262,7 @@ Events:    <none>
 
 At this point, since *Local PVs* are created, the K8s cluster can allocate it to the Pods through *PVC* requests; and all Pods that belong to one particular node can **ONLY** utilize the local storage spaces that are dedicated to that node (this is guaranteed by the *Local PV*'s *Node Affinity* attribute). 
 
-# Summary
+# 3. Summary
 
 Please **NOTE** that a *Local PV* can be created in a purely static and manual approach by defining a PV resource definition file - an example from K8s [document](https://kubernetes.io/docs/concepts/storage/volumes/#local) is copied below.
 
@@ -295,9 +295,9 @@ But creating and managing *Local PV* resource definition files as above can be c
 
 Int his tutorial, we explored a ***semi-dynamic*** way of provisioning *Local PVs* in a K8s cluster through a local storage provisioner. By using the provisioner, we still need to statically and manually (can be scripted) provision the actual local storage spaces on each node; but the provisioner can do the rest of the work of discovering, creating, and configuring *Local PVs* automatically.
 
-# Appendix 
+# 4. Appendix 
 
-## Cleanup the Created Loop Device
+## 4.1. Cleanup the Created Loop Device
 
 When we're done with the testing K8s cluster, we can clean up the loop devices that were created during the test. The proper cleanup procedure is as below (**NOTE**: Please do NOT execute this procedure when the local storage space is still used by the cluster).
 
@@ -319,7 +319,7 @@ $ sudo losetup -d /dev/loop0
 $ sudo rm -rf /root/myloopbackfile.img
 ```
 
-## Mount a RAM Disk 
+## 4.2. Mount a RAM Disk 
 
 In this tutorial so far, a loop device with a certain size is used to simulate a local storage space that can be discovered and managed by the provisioner as a *Local PV*. If we don't care about the size of the local storage space in the test, the simplest way to use a RAM disk to do the simulation, as below:
 
