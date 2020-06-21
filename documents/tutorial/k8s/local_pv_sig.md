@@ -229,7 +229,7 @@ daemonset.apps/local-static-provisioner created
 
 Once the above provisioner resources are created in the K8s cluster, the provisioner will scan the specified discovery folder and if there is any local storage spaces mounted under the folder, it will create *Local PVs* **automatically**. The number of the *Local PVs* on each node is equal to the number of mounted local storage spaces under the discovery folder.
 
-In this tutorial, on each node there is only 1 local storage space that is mounted under the provisioner discovery folder. Since there are 3 nodes in the cluster, we're expecting to see 3 *Local PVs* in the cluster, which is confirmed from the following output.  **NOTE** that if the control-plane node is NOT enabled to launch Pods (which is true by default) on it, we would ONLY see 2 *Local PVs* in the cluster, one per worker node.
+In this tutorial, on each node there is only 1 local storage space that is mounted under the provisioner discovery folder. Since there are 3 nodes in the cluster, we're expecting to see 3 *Local PVs* in the cluster, which is confirmed from the following command line output.  **NOTE** that if the control-plane node is NOT enabled to launch Pods (which is true by default) on it, we would ONLY see 2 *Local PVs* in the cluster, one per worker node.
 
 ```bash
 $ kubectl get pv
@@ -239,7 +239,7 @@ local-pv-5aa1117a   968Mi      RWO            Delete           Available        
 local-pv-9dd3fb96   968Mi      RWO            Delete           Available           local-storage            4h23m
 ```
 
-Let's check the details of one Local PV and we can see some important attributes such as "Node Affinity", "Source Type", "Source Path", and etc. **NOTE** that double-checking the "Node Affinity" attribute confirms that each each *Local PV* only confirms to one particular node and can NOT be allocated to multiple nodes.
+Let's check the details of one Local PV and we can see some important attributes such as "Node Affinity", "Source Type", "Source Path", and etc. **NOTE** that double-checking the "Node Affinity" attribute confirms that each *Local PV* only confirms to one particular node and can NOT be allocated to multiple nodes.
 
 ```bash
 $ kubectl describe pv local-pv-514b438b
@@ -264,7 +264,7 @@ Source:
 Events:    <none>
 ```
 
-At this point, since *Local PVs* are created, the K8s cluster can allocate it to the Pods through *PVC* requests; and all Pods that belong to a particular node can **ONLY** utilize the local storage spaces that are dedicated to that node. 
+At this point, since *Local PVs* are created, the K8s cluster can allocate it to the Pods through *PVC* requests; and all Pods that belong to one particular node can **ONLY** utilize the local storage spaces that are dedicated to that node (this is guaranteed by the *Local PV*'s *Node Affinity* attribute). 
 
 # Summary
 
@@ -297,4 +297,4 @@ spec:
 
 But creating and managing *Local PV* resource definition files as above can be cumbersome and error-prone, especially when we consider that there might be multiple *Local PVs* to be managed per node and meanwhile the proper *Node Affinity* attributes have to be maintained properly.
 
-Int his tutorial, we explored a ***semi-dynamic*** way of provisioning *Local PVs* in a K8s cluster through a local storage provisioner. By using the provisioner, we still need to statically and manually (can be scripted) provision the actual local storage spaces per node; but the provisioner can do the rest of the work of discovering, creating, and configuring *Local PVs* automatically.
+Int his tutorial, we explored a ***semi-dynamic*** way of provisioning *Local PVs* in a K8s cluster through a local storage provisioner. By using the provisioner, we still need to statically and manually (can be scripted) provision the actual local storage spaces on each node; but the provisioner can do the rest of the work of discovering, creating, and configuring *Local PVs* automatically.
