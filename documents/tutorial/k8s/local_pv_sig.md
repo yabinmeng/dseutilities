@@ -61,7 +61,7 @@ $ sudo mkdir -p /mnt/disks
 
 **NOTE** This needs to be executed on each node in the cluster!
 
-Since it is impossible to buy and attach a new hard drive to each node in the cluster, we can simulate a block device using a [loop device](https://en.wikipedia.org/wiki/Loop_device) to simulate a block device based out of a file. 
+Since it is impossible to buy and attach a new hard drive to each node in the cluster, we can simulate a block device using a [loop device](https://en.wikipedia.org/wiki/Loop_device) to simulate a block device based on a file. 
 
 * Create a 1 GB file (size can be changed) as the underlying file for the loop device
 
@@ -222,7 +222,7 @@ clusterrolebinding.rbac.authorization.k8s.io/local-static-provisioner-node-bindi
 daemonset.apps/local-static-provisioner created
 ```
 
-Once the above provisioner resources are created in the K8s cluster, the provisioner will scan the specified discovery folder and if there is any local storage spaces mounted under the folder, it will create *Local PVs* **automatically**. The number of the *Local PVs* is equal to the number of mounted local storage spaces under the discovery folder.
+Once the above provisioner resources are created in the K8s cluster, the provisioner will scan the specified discovery folder and if there is any local storage spaces mounted under the folder, it will create *Local PVs* **automatically**. The number of the *Local PVs* on each node is equal to the number of mounted local storage spaces under the discovery folder.
 
 In this tutorial, on each node there is only 1 local storage space that is mounted under the provisioner discovery folder. Since there are 3 nodes in the cluster, we're expecting to see 3 *Local PVs* in the cluster, which is confirmed from the following output.  **NOTE** that if the control-plane node is NOT enabled to launch Pods (which is true by default) on it, we would ONLY see 2 *Local PVs* in the cluster, one per worker node.
 
@@ -234,7 +234,7 @@ local-pv-5aa1117a   968Mi      RWO            Delete           Available        
 local-pv-9dd3fb96   968Mi      RWO            Delete           Available           local-storage            4h23m
 ```
 
-Let's check the details of one Local PV and we can see some important info such as **Node Affinity**, "Source Type", "Source Path", and etc.
+Let's check the details of one Local PV and we can see some important attributes such as "Node Affinity", "Source Type", "Source Path", and etc. **NOTE** that double-checking the "Node Affinity" attribute confirms that each each *Local PV* only confirms to one particular node and can NOT be allocated to multiple nodes.
 
 ```bash
 $ kubectl describe pv local-pv-514b438b
@@ -261,3 +261,33 @@ Events:    <none>
 
 # Summary
 
+Please **NOTE** that a *Local PV* can be created in a purely static and manual approach by defining a PV resource definition. An example from K8s [document](https://kubernetes.io/docs/concepts/storage/volumes/#local) is copied below.
+
+```bash
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: example-pv
+spec:
+  capacity:
+    storage: 100Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: /mnt/disks/ssd1
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - example-node
+```
+
+But creating and managing the *Local PV* resource definition file as above can be cumbersome and error-prone, especially when we consider that there might be multiple *Local PVs* to be managed per node and meanwhile the proper *Node Affinity* attribute has to be maintained. 
+
+Int his tutorial, we explored a semi-dynamic way of provisioning *Local PVs* in a K8s cluster through a local storage static provisioner. By using the provisioner, we only need to provision the actual local storage spaces per node and let the provisioner do the rest of the work of discovering, creating, and configuring the *Local PVs* automatically.
