@@ -222,7 +222,9 @@ clusterrolebinding.rbac.authorization.k8s.io/local-static-provisioner-node-bindi
 daemonset.apps/local-static-provisioner created
 ```
 
-At this point, we can see that there are 3 *Local PVs* are **automatically** created. Each Local PV corresponds to one local storage space as we provisioned earlier (using the simulated loop device)
+Once the above provisioner resources are created in the K8s cluster, the provisioner will scan the specified discovery folder and if there is any local storage spaces mounted under the folder, it will create *Local PVs* **automatically**. The number of the *Local PVs* is equal to the number of mounted local storage spaces under the discovery folder.
+
+In this tutorial, on each node there is only 1 local storage space that is mounted under the provisioner discovery folder. Since there are 3 nodes in the cluster, we're expecting to see 3 *Local PVs* in the cluster, which is confirmed from the following output.  **NOTE** that if the control-plane node is NOT enabled to launch Pods (which is true by default) on it, we would ONLY see 2 *Local PVs* in the cluster, one per worker node.
 
 ```bash
 $ kubectl get pv
@@ -231,3 +233,31 @@ local-pv-514b438b   968Mi      RWO            Delete           Available        
 local-pv-5aa1117a   968Mi      RWO            Delete           Available           local-storage            4h23m
 local-pv-9dd3fb96   968Mi      RWO            Delete           Available           local-storage            4h23m
 ```
+
+Let's check the details of one Local PV and we can see some important info such as **Node Affinity**, "Source Type", "Source Path", and etc.
+
+```bash
+$ kubectl describe pv local-pv-514b438b
+Name:              local-pv-514b438b
+Labels:            <none>
+Annotations:       pv.kubernetes.io/provisioned-by: local-volume-provisioner-ip-10-101-35-135.srv101.dsinternal.org-3c2d77b2-17c6-4575-bbb6-7cc3e40fd1a0
+Finalizers:        [kubernetes.io/pv-protection]
+StorageClass:      local-storage
+Status:            Available
+Claim:
+Reclaim Policy:    Delete
+Access Modes:      RWO
+VolumeMode:        Filesystem
+Capacity:          968Mi
+Node Affinity:
+  Required Terms:
+    Term 0:        kubernetes.io/hostname in [ip-10-101-35-135.srv101.dsinternal.org]
+Message:
+Source:
+    Type:  LocalVolume (a persistent volume backed by local storage on a node)
+    Path:  /mnt/disks/2ba4f792-5ad9-4560-a010-f1521f5dc03f
+Events:    <none>
+```
+
+# Summary
+
