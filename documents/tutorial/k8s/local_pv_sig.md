@@ -117,7 +117,7 @@ The provisioner defines a bundle of K8s resources of the following types:
 * ConfigMap
 * StorageClass
 * ClusterRole
-* ClusterRoleBinding
+* ClusterRoleBinding (for PV and Node)
 * DaemonSet
 
 The easiest way to generate a customized resource definition file for the above types of resources that is relevant to your own case is through the [Helm](https://helm.sh/) chart template that is provided.
@@ -153,10 +153,11 @@ $ git clone --depth=1 https://github.com/kubernetes-sigs/sig-storage-local-stati
 * Run the following command to generate a customized provisioner resource file 
 
 ```bash
-$ helm template -f <template_value_yaml_file> <release_name> [--namespace <namespace_name>]./sig-storage-local-static-provisioner/helm/provisioner > <provisioner_resource_yaml_file>
+# The general form of the command
+# $ helm template -f <template_value_yaml_file> <release_name> [--namespace <namespace_name>]./sig-storage-local-static-provisioner/helm/provisioner > <provisioner_resource_yaml_file>
 
-# An example is as below
-# $ helm template -f ./values.yaml local-storage ./sig-storage-local-static-provisioner/helm/provisioner > local-storage-provisioner.yaml
+# The command used in this tutorial
+$ helm template -f ./values.yaml local-storage ./sig-storage-local-static-provisioner/helm/provisioner > local-storage-provisioner.yaml
 ```
 
 In the above example, the customization of the generated resource definition file (from the proved template file) is controlled by "<template_value_yaml_file>". The utility has provided an example ([values.yaml](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/blob/master/helm/provisioner/values.yaml)).
@@ -206,3 +207,27 @@ classes:
 
 The generated customized resource definition file for the local storage provisioner for this tutorial can be found [**here**](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/generated/local-storage-provisioner.yaml).
 
+#### Install The Provisioner Resources
+
+Now the provisioner resource definition file is generated, we can install it in the K8s cluster using the following command and create the corresponding resources in the cluster. The command output shows the created resource types and names.
+
+```bash
+$ kubectl create -f ./local-storage-provisioner.yaml
+serviceaccount/local-static-provisioner created
+configmap/local-static-provisioner-config created
+storageclass.storage.k8s.io/local-storage created
+clusterrole.rbac.authorization.k8s.io/local-static-provisioner-node-clusterrole created
+clusterrolebinding.rbac.authorization.k8s.io/local-static-provisioner-pv-binding created
+clusterrolebinding.rbac.authorization.k8s.io/local-static-provisioner-node-binding created
+daemonset.apps/local-static-provisioner created
+```
+
+At this point, we can see that there are 3 *Local PVs* are **automatically** created. Each Local PV corresponds to one local storage space as we provisioned earlier (using the simulated loop device)
+
+```bash
+$ kubectl get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
+local-pv-514b438b   968Mi      RWO            Delete           Available           local-storage            4h23m
+local-pv-5aa1117a   968Mi      RWO            Delete           Available           local-storage            4h23m
+local-pv-9dd3fb96   968Mi      RWO            Delete           Available           local-storage            4h23m
+```
