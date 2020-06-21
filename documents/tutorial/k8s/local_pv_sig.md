@@ -288,6 +288,6 @@ spec:
           - example-node
 ```
 
-But creating and managing the *Local PV* resource definition file as above can be cumbersome and error-prone, especially when we consider that there might be multiple *Local PVs* to be managed per node and meanwhile the proper *Node Affinity* attribute has to be maintained. 
+But creating and managing *Local PV* resource definition files as above can be cumbersome and error-prone, especially when we consider that there might be multiple *Local PVs* to be managed per node and meanwhile the proper *Node Affinity* attribute has to be maintained. 
 
 Int his tutorial, we explored a semi-dynamic way of provisioning *Local PVs* in a K8s cluster through a local storage static provisioner. By using the provisioner, we only need to provision the actual local storage spaces per node and let the provisioner do the rest of the work of discovering, creating, and configuring the *Local PVs* automatically.
