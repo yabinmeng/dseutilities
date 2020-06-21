@@ -162,7 +162,7 @@ $ helm template -f ./values.yaml local-storage ./sig-storage-local-static-provis
 
 In the above example, the customization of the generated resource definition file (from the proved template file) is controlled by "<template_value_yaml_file>". The utility has provided an example ([values.yaml](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/blob/master/helm/provisioner/values.yaml)).
 
-For this tutorial, the "template value yaml file" can be found [here](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/values.yaml)], with the focus round ***StorageClass*** resource definition, in particular the following ones (non-default values):
+For this tutorial, the "template value yaml file" can be found [here](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/values.yaml), with the focus round ***StorageClass*** resource definition, in particular the following attributes (non-default values):
 * name: local-storage
 * hostDir: /mnt/disks
 * storageClass: true
