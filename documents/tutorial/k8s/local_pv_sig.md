@@ -61,7 +61,7 @@ $ sudo mkdir -p /mnt/disks
 
 **NOTE** This needs to be executed on each node in the cluster!
 
-Since it is impossible to buy and attach a new hard drive to each node in the cluster in this tutorial, I am simulating a block device using a [loop device](https://en.wikipedia.org/wiki/Loop_device) to simulate a block device based on a file. 
+Since it is impossible to buy and attach a new hard drive to each node in the cluster in this tutorial, I am simulating a block device using a [loop device](https://en.wikipedia.org/wiki/Loop_device) (which is to simulates a block device based on a file). 
 
 * Create a 1 GB file (size can be changed) as the underlying file for the loop device
 
