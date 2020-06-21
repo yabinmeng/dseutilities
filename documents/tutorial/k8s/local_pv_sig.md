@@ -38,8 +38,9 @@ The utility is able to detect local storage spaces and automatically create PVs 
 
 * In the provisioner configuration, specify a discovery directory
 * The local storage space is prepared in a way that links to the discovery directory
-** **Filesystem volumeMode PV**: this is the default mode and requires the local storage space to be mounted under the discovery directory.
-** **Block volumeMode PV**: this requires creating a symbolic link under discovery directory that points to the block device.
+
+  * **Filesystem volumeMode PV**: this is the default mode and requires the local storage space to be mounted under the discovery directory.
+  * **Block volumeMode PV**: this requires creating a symbolic link under discovery directory that points to the block device.
 
 ## Procedures
 
