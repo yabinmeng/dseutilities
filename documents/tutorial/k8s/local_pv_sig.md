@@ -162,7 +162,12 @@ $ helm template -f ./values.yaml local-storage ./sig-storage-local-static-provis
 
 In the above example, the customization of the generated resource definition file (from the proved template file) is controlled by "<template_value_yaml_file>". The utility has provided an example ([values.yaml](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/blob/master/helm/provisioner/values.yaml)).
 
-The customization file ("values.yaml") used in this tutorial can be found [here(https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/values.yaml)]. In particular, the customization that has been made in this tutorial is related with ***StorageClass*** resource.
+For this tutorial, the "template value yaml file" can be found [here](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/values.yaml)], with the focus round ***StorageClass*** resource definition, in particular the following ones (non-default values):
+* name: local-storage
+* hostDir: /mnt/disks
+* storageClass: true
+* storageClass::reclaimPolicy: Delete
+* storageClass::isDefaultClass: false
 
 ```yaml
 #
@@ -205,11 +210,11 @@ classes:
     isDefaultClass: false # set as default class
 ```
 
-The generated customized resource definition file for the local storage provisioner for this tutorial can be found [**here**](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/generated/local-storage-provisioner.yaml).
+The generated provisioner resource definition file in this tutorial can be found [**here**](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/local_pv_sig/helm/generated/local-storage-provisioner.yaml).
 
 #### Install The Provisioner Resources
 
-Now the provisioner resource definition file is generated, we can install it in the K8s cluster using the following command and create the corresponding resources in the cluster. The command output shows the created resource types and names.
+Now with the provisioner resource definition file generated, we can install it in the K8s cluster using the following command and create the corresponding resources in the cluster. The command output shows the created resource types and names.
 
 ```bash
 $ kubectl create -f ./local-storage-provisioner.yaml
