@@ -261,7 +261,7 @@ Events:    <none>
 
 # Summary
 
-Please **NOTE** that a *Local PV* can be created in a purely static and manual approach by defining a PV resource definition. An example from K8s [document](https://kubernetes.io/docs/concepts/storage/volumes/#local) is copied below.
+Please **NOTE** that a *Local PV* can be created in a purely static and manual approach by defining a PV resource definition file - an example from K8s [document](https://kubernetes.io/docs/concepts/storage/volumes/#local) is copied below.
 
 ```bash
 apiVersion: v1
