@@ -37,8 +37,7 @@ ip-10-101-36-132.srv101.dsinternal.org   Ready    master   47h   v1.17.6
 The utility is able to detect local storage spaces and automatically create PVs out of it on each K8s node as long as the local storage spaces is created following certain conditions:
 
 * In the provisioner configuration, specify a discovery directory
-* The local storage space is prepared in a way that links to the discovery directory
-
+* The local storage space is prepared in a way that links to the discovery directory:
   * **Filesystem volumeMode PV**: this is the default mode and requires the local storage space to be mounted under the discovery directory.
   * **Block volumeMode PV**: this requires creating a symbolic link under discovery directory that points to the block device.
 
