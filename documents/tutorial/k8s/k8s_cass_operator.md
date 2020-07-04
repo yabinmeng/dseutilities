@@ -95,14 +95,14 @@ NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE
 local-storage   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  21h
 ```
 
-This local storage class automatically detects 3 PVs that are available in the K8s cluster (one PV per K8s node). Note that each PV has a storage capacity of 968MB.
+This local storage class automatically detects 3 PVs that are available in the K8s cluster (one PV per K8s node). Note that each PV has a storage capacity of close to 4GB.
 
 ```bash
 kubectl get pv
 NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
-local-pv-3ca094ef   968Mi      RWO            Delete           Available           local-storage            4s
-local-pv-7fce55f4   968Mi      RWO            Delete           Available           local-storage            4s
-local-pv-9ef344cc   968Mi      RWO            Delete           Available           local-storage            5s
+local-pv-43190a99   3873Mi     RWO            Delete           Available           local-storage            13m
+local-pv-77e548f1   3873Mi     RWO            Delete           Available           local-storage            12m
+local-pv-b23352ed   3873Mi     RWO            Delete           Available           local-storage            13m
 ```
 
 # Provision a DSE/C* Cluster

@@ -92,7 +92,6 @@ $ sudo mkfs.ext4 /dev/loop0
 * Mount the device under the provisioner discovery directory. Please note mounting the device using its UUID (instead of the name) is considered as a best-practice and highly recommended.
 
 ```bash
-$   
 $ sudo mkdir /mnt/disks/$DISK_UUID
 $ sudo mount -t ext4 /dev/loop0 /mnt/disks/$DISK_UUID
 ```
