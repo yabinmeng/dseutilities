@@ -63,3 +63,29 @@ Pay attention to the command line output and we can see that the following K8s r
 | service | cassandradatacenter-webhook-service |
 | deployment.apps | cass-operator |
 | validatingwebhookconfiguration | cassandradatacenter-webhook-registration |
+
+In order to get the details of the above created resources, run the following command:
+
+```bash
+$ kubectl -n cass-operator describe <resource_type> <resource_name>
+
+$ kubectl -n cass-operator get <resource_type> <resource_name> -o [yaml|json]
+```
+
+The most noticeable resource from the above list is *cassandradatacenters.cassandra.datastax.com*. Let's get the details of this resource. At the end of the output, we can see that this CRD defines a new resource type called **CassandraDataCenter** or simply **cassdc**. This new resource type is what we're going to use to create a DSE/C* cluster within a K8s cluster.
+
+```bash
+$ kubectl -n cass-operator get crd cassandradatacenters.cassandra.datastax.com -o yaml
+
+...
+status:
+  acceptedNames:
+    kind: CassandraDatacenter
+    listKind: CassandraDatacenterList
+    plural: cassandradatacenters
+    shortNames:
+    - cassdc
+    - cassdcs
+    singular: cassandradatacenter
+
+```
