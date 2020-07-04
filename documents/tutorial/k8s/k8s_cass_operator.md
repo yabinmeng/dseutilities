@@ -15,21 +15,11 @@ ip-10-101-32-217.srv101.dsinternal.org   Ready    <none>   4h15m   v1.17.6
 ip-10-101-35-135.srv101.dsinternal.org   Ready    master   4h19m   v1.17.6
 ```
 
-The local PVs that are available in the cluster are as below:
-
-```bash
-kubectl get pv
-NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
-local-pv-3ca094ef   968Mi      RWO            Delete           Available           local-storage            4s
-local-pv-7fce55f4   968Mi      RWO            Delete           Available           local-storage            4s
-local-pv-9ef344cc   968Mi      RWO            Delete           Available           local-storage            5s
-```
-
 # Install C* Operator
 
 At the core of C* Operator, it is an API extension of K8s through [Customer Resource Definition (CRD)](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/). Currently it supports K8s versions from 1.13 to 1.18 (1.15 and above is recommended). The corresponding CRDs can be found from [here] (https://github.com/datastax/cass-operator).
 
-In my testing, the procedure of installing C* Operator (version 1.17) is as below (executed from K8s master node):
+The procedure of installing C* Operator (version 1.17) is as below (executed from K8s master node):
 
 ```bash
 $ wget https://raw.githubusercontent.com/datastax/cass-operator/master/docs/user/cass-operator-manifests-v1.17.yaml
@@ -88,4 +78,30 @@ status:
     - cassdcs
     singular: cassandradatacenter
 
+```
+
+As the resource type name suggests, this resource defines a DSE/C* data center (DC). 
+
+# Define a Storage Class 
+
+In K8s, storage dynamic provisioning is achieved through a Storage Class. For network attached storage solutions like AWS EBS, GCE Persistent Disk, Azure Disk, and etc., the storage provisioning is fully automatic. This means that we don't need to prepare the required storage space in advance; nor do we need to worry about PVs and PVCs. All these steps are automatically handled by a Storage Class (the provisioner of the Storage Class).
+
+For local storage provisioning, it is not fully automatic. But with some help, we can make it semi-automatic. We've already explored this in another tutorial ([here](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/local_pv_sig.md)).
+
+For the testing in this tutorial, I'm going to utilize the local storage class, named **local-storage**, that we have already created:
+
+```bash
+$ kubectl get storageclass -o wide
+NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-storage   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  21h
+```
+
+This local storage class automatically detects 3 PVs that are available in the K8s cluster (one PV per K8s node):
+
+```bash
+kubectl get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
+local-pv-3ca094ef   968Mi      RWO            Delete           Available           local-storage            4s
+local-pv-7fce55f4   968Mi      RWO            Delete           Available           local-storage            4s
+local-pv-9ef344cc   968Mi      RWO            Delete           Available           local-storage            5s
 ```
