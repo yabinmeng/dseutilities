@@ -2,8 +2,7 @@
 
 Earlier this year on Mar. 31, DataStax has announced the [release](https://www.datastax.com/press-release/datastax-helps-apache-cassandra-become-industry-standard-scale-out-cloud-native-data) of K8s operator for Apache C*. Later this year on April 7th, DataStax also GA-released DataStax Enterprise (DSE) version 6.8 and K8s operator is part of this release. For simplicity purpose, I'm going to use the term "C* Operator" to refer to K8s operator for Apache C* and DSE.   
 
-In this tutorial, I will demonstrate how to provision a DSE cluster (through C* Operator) on the K8s cluster and the local storage Persistent Volumes (PVs) that we created earlier ([K8s cluster](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/kubeadm_install.md) and [Local PVs](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/local_pv_sig.md)). 
-
+In this tutorial, I will demonstrate how to provision a DSE cluster (through C* Operator) on the K8s cluster that we created earlier ([K8s cluster](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/kubeadm_install.md).
 
 Note that K8s cluster has 3 nodes and the master node is configured to allow launching Pods on it.
 
@@ -96,7 +95,7 @@ NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE
 local-storage   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  21h
 ```
 
-This local storage class automatically detects 3 PVs that are available in the K8s cluster (one PV per K8s node):
+This local storage class automatically detects 3 PVs that are available in the K8s cluster (one PV per K8s node). Note that each PV has a storage capacity of 968MB.
 
 ```bash
 kubectl get pv
@@ -105,3 +104,54 @@ local-pv-3ca094ef   968Mi      RWO            Delete           Available        
 local-pv-7fce55f4   968Mi      RWO            Delete           Available           local-storage            4s
 local-pv-9ef344cc   968Mi      RWO            Delete           Available           local-storage            5s
 ```
+
+# Provision a DSE/C* Cluster
+
+At this point, with a new K8s resource type *CassandraDataCenter* defined and a storage class ready, we can provision a DSE/C* cluster. 
+
+First we need to create a resource definition file (e.g. named *mydsecluster-dc1.yaml*) for a single-DC, single-rack, 3-node DSE 6.8.1 cluster. Each DSE node requests for 4GB system memory (with 2GB as the heap size) and 400MB storage space. Please pay attention that the **storageClassName** must match what we have created in the previous step, which is ***local-storage***.
+
+```yaml
+apiVersion: cassandra.datastax.com/v1beta1
+kind: CassandraDatacenter
+metadata:
+  name: dc1
+spec:
+  clusterName: mydsecluster
+  serverType: dse
+  serverVersion: 6.8.1
+  size: 3
+  racks:
+  - name: rack1
+  resources:
+    requests:
+      memory: 4Gi
+  storageConfig:
+    cassandraDataVolumeClaimSpec:
+      storageClassName: local-storage
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 400M
+  config:
+    cassandra-yaml:
+      num_tokens: 8
+      allocate_tokens_for_local_replication_factor: 3
+    jvm-server-options:
+      initial_heap_size: 2G
+      max_heap_size: 2G
+```
+
+Then we schedule it in the K8s cluster 
+
+```bash
+$ kubectl apply -f mydsecluster-dc1.yaml
+cassandradatacenter.cassandra.datastax.com/dc1 created
+
+
+```
+
+
+
+There is minor difference between defining a DSE cluster and an OSS C* cluster. I'll cover it later in this tutorial.
