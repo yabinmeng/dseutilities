@@ -62,7 +62,7 @@ cat <<EOF | sudo tee /etc/docker/daemon.json
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl restart docke
+sudo systemctl restart docker
 
 
 ######################
