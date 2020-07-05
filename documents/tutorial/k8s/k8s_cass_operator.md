@@ -109,7 +109,22 @@ local-pv-b23352ed   3873Mi     RWO            Delete           Available        
 
 At this point, with a new K8s resource type *CassandraDataCenter* defined and a storage class ready, we can provision a DSE/C* cluster. 
 
-First we need to create a resource definition file (e.g. named *mydsecluster-dc1.yaml*) for a single-DC, single-rack, 3-node DSE 6.8.1 cluster. Each DSE node requests for 4GB system memory (with 2GB as the heap size) and 400MB storage space. Please pay attention that the **storageClassName** must match what we have created in the previous step, which is ***local-storage***.
+First we need to create a resource definition file that defines a DSE/C* DC. An example (e.g. named *mydsecluster-dc1.yaml*) is demonstrated below. **Note** that in this resource definition file:
+
+* The DSE/C* cluster name is determined by the value of the *spec.clusterName* property.
+  * *serverType*
+    * for DSE cluster, the *serverType* value is **dse** 
+    * for OSS C* cluster, the *serverType* value is **cassandra**
+  * *serverVersion*
+    * at the moment, for DSE cluster, the supported version is 6.8.x
+    * at the moment, for OSS C* is 3.11.6
+* The DSE/C* DC name is determined by the value of the *metadata.name* property
+* The 
+
+* The ***storageClassName*** must match what we have created in the previous step, which is ***local-storage***.
+
+
+for a single-DC, single-rack, 3-node DSE 6.8.1 cluster. Each DSE node requests for 4GB system memory (with 2GB as the heap size) and 1GB storage space. 
 
 ```yaml
 apiVersion: cassandra.datastax.com/v1beta1
@@ -120,6 +135,8 @@ spec:
   clusterName: mydsecluster
   serverType: dse
   serverVersion: 6.8.1
+  managementApiAuth:
+    insecure: {}
   size: 3
   racks:
   - name: rack1
@@ -133,7 +150,7 @@ spec:
       - ReadWriteOnce
       resources:
         requests:
-          storage: 400M
+          storage: 1Gi
   config:
     cassandra-yaml:
       num_tokens: 8
@@ -143,10 +160,11 @@ spec:
       max_heap_size: 2G
 ```
 
-Then we schedule it in the K8s cluster 
+
+Then we schedule it in the K8s cluster. Wait for a while 
 
 ```bash
-$ kubectl apply -f mydsecluster-dc1.yaml
+$ kubectl -n cass-operator create -f myclusterdc1.yaml
 cassandradatacenter.cassandra.datastax.com/dc1 created
 
 
