@@ -107,24 +107,21 @@ local-pv-b23352ed   3873Mi     RWO            Delete           Available        
 
 # Provision a DSE/C* Cluster
 
-At this point, with a new K8s resource type *CassandraDataCenter* defined and a storage class ready, we can provision a DSE/C* cluster. 
+At this point, with a new K8s resource type ***CassandraDataCenter*** defined and a storage class ready, we can provision a DSE/C* cluster. 
 
-First we need to create a resource definition file that defines a DSE/C* DC. An example (e.g. named *mydsecluster-dc1.yaml*) is demonstrated below. **Note** that in this resource definition file:
+First we need to create a resource definition file that defines a DSE/C* DC. An example (e.g. named *mydsecluster-dc1.yaml*) is demonstrated below. **Note** that in this resource definition file. The settings in this resource definition file are quite straightforward and self-explanatory. But I'd like to emphasize a few things:
 
-* The DSE/C* cluster name is determined by the value of the *spec.clusterName* property.
-  * *serverType*
-    * for DSE cluster, the *serverType* value is **dse** 
-    * for OSS C* cluster, the *serverType* value is **cassandra**
-  * *serverVersion*
-    * at the moment, for DSE cluster, the supported version is 6.8.x
-    * at the moment, for OSS C* is 3.11.6
-* The DSE/C* DC name is determined by the value of the *metadata.name* property
-* The 
-
-* The ***storageClassName*** must match what we have created in the previous step, which is ***local-storage***.
-
-
-for a single-DC, single-rack, 3-node DSE 6.8.1 cluster. Each DSE node requests for 4GB system memory (with 2GB as the heap size) and 1GB storage space. 
+* Both DSE/C* cluster name (***spec.clusterName***) and DC name (***metadata.name***) must be lower case
+* DSE/C* version (***spec.serverType***)
+  *  for DSE cluster, the value is **dse** 
+  *  for OSS C* cluster, the value is **cassandra**
+* DSE/C* version - at the moment, the only supported versions are:
+  * for DSE cluster, 6.8.0 and 6.8.1
+  * for OSS C* cluster, 3.11.6
+* The Storage Class (***spec.storageConfig.cassandraDataVolumeClaimSpec.storageClassName***) value must match what we have created in the previous step (e.g. ***local-storage***).
+* DSE/C* JVM options, note the config. name differences (with or without "server"). If we misuse the incorrect name (e.g. "jvm_options" for a DSE cluster), the DSE/C* Pods will fail to be launched
+  * for DSE clusters, the JVM options are defined under ***spec.config.jvm_server_options***
+  * for OSS C* clusters, the JVM options are defined under ***spec.config.jvm_options***
 
 ```yaml
 apiVersion: cassandra.datastax.com/v1beta1
@@ -155,21 +152,65 @@ spec:
     cassandra-yaml:
       num_tokens: 8
       allocate_tokens_for_local_replication_factor: 3
+      authenticator: com.datastax.bdp.cassandra.auth.DseAuthenticator
+      authorizer: com.datastax.bdp.cassandra.auth.DseAuthorizer
+      role_manager: com.datastax.bdp.cassandra.auth.DseRoleManager
+    dse-yaml:
+      authentication_options:
+        enabled: true
+        default_scheme: internal
     jvm-server-options:
       initial_heap_size: 2G
       max_heap_size: 2G
 ```
 
-
-Then we schedule it in the K8s cluster. Wait for a while 
-
+We launch the ***CassandraDatacenter*** K8s object via the following command:
 ```bash
 $ kubectl -n cass-operator create -f myclusterdc1.yaml
 cassandradatacenter.cassandra.datastax.com/dc1 created
-
-
 ```
 
+We should also see a number (***spec.size***) of DSE/C* node Pods are launched. Each Pod has a naming convention of ***<dse/C*_cluster_name>-<DC_name>-<rack_name>_sts_#***. For a successful provisioning, you should see all DSE/C* node Pods in "Running" status. If there are not enough DSE/C* Pods as per ***spec.size***, or the Pods are not in "Running" status, there are some issues with the provisioning
+```bash
+$ kubectl -n cass-operator get pods
+NAME                             READY   STATUS    RESTARTS   AGE
+cass-operator-78c9999797-vrq8z   1/1     Running   0          12h
+mydsecluster-dc1-rack1-sts-0     2/2     Running   0          15m
+mydsecluster-dc1-rack1-sts-1     2/2     Running   0          15m
+mydsecluster-dc1-rack1-sts-2     2/2     Running   0          15m
+```
 
+Behind the scene, the DSE/C* Pods and the corresponding Persistent Volume Claims (PVCs) are managed by a number of StatefulSets (one StatefulSet per rack) that were created by the ***CassandraDatacenter*** CRD. These StatefulSets (STSs) have the naming convention of ***<dse/C*_cluster_name>-<DC_name>-<rack_name>_sts***
 
-There is minor difference between defining a DSE cluster and an OSS C* cluster. I'll cover it later in this tutorial.
+In my testing, there is only one rack and therefore one STS. Checking the details of the StatefulSet will show us key information like how many replicas are maintained by the STS, the volume claim and the associated StorageClass, and etc.
+
+```bash
+$ kubectl -n cass-operator get sts
+NAME                         READY   AGE
+mydsecluster-dc1-rack1-sts   3/3     39m
+
+$ kubectl -n cass-operator describe sts mydsecluster-dc1-rack1-sts
+Name:               mydsecluster-dc1-rack1-sts
+...
+Replicas:           3 desired | 3 total
+Update Strategy:    RollingUpdate
+  Partition:        824636451024
+Pods Status:        3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+...
+Volume Claims:
+  Name:          server-data
+  StorageClass:  local-storage
+...
+Events:
+  Type    Reason            Age   From                    Message
+  ----    ------            ----  ----                    -------
+  Normal  SuccessfulCreate  46m   statefulset-controller  create Claim server-data-mydsecluster-dc1-rack1-sts-0 Pod mydsecluster-dc1-rack1-sts-0 in StatefulSet mydsecluster-dc1-rack1-sts success
+  Normal  SuccessfulCreate  46m   statefulset-controller  create Pod mydsecluster-dc1-rack1-sts-0 in StatefulSet mydsecluster-dc1-rack1-sts successful
+  Normal  SuccessfulCreate  46m   statefulset-controller  create Claim server-data-mydsecluster-dc1-rack1-sts-1 Pod mydsecluster-dc1-rack1-sts-1 in StatefulSet mydsecluster-dc1-rack1-sts success
+  Normal  SuccessfulCreate  46m   statefulset-controller  create Pod mydsecluster-dc1-rack1-sts-1 in StatefulSet mydsecluster-dc1-rack1-sts successful
+  Normal  SuccessfulCreate  46m   statefulset-controller  create Claim server-data-mydsecluster-dc1-rack1-sts-2 Pod mydsecluster-dc1-rack1-sts-2 in StatefulSet mydsecluster-dc1-rack1-sts success
+  Normal  SuccessfulCreate  46m   statefulset-controller  create Pod mydsecluster-dc1-rack1-sts-2 in StatefulSet mydsecluster-dc1-rack1-sts successful  
+```
+
+From the event associated with the STS, we can see that in sequence it creates one DSE/C* Pod followed by a corresponding PVC for that Pod, until the number of replicas maintained in the STS is reached.
