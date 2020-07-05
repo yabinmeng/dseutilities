@@ -216,7 +216,7 @@ $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 ### 3.1.2. Install a Pod Network
 
-At this point, if we check the status of K8s CoreDNS, we'll see that it stays at the status of "ContainerCreating" instead of "Running", as below:
+At this point, if we check the status of K8s CoreDNS, we'll see that it stays at the status of "ContainerCreating" or "Pending" instead of "Running", as below:
 
 ```bash
 $ kubectl get pods --all-namespaces
@@ -233,7 +233,7 @@ kube-system   kube-scheduler-ip-10-101-36-132.srv101.dsinternal.org            1
 This is an indication that K8s Pod networking is not in place yet. In K8s, Pod networking is implemented through [CNI (Container Networking Interface)](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni) and there many different CNI providers available out there. In my testing, I'm using [ProjectCalico](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni). The command to execute is as this:
 
 ```bash
-$ kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+$ kubectl apply -f https://docs.projectcalico.org/v3.15/manifests/calico.yaml
 ```
 
 During the installation, **Calico** will determine the available Pos IP address range in the network based on the *--pod-network-cidr* flag value as provided in the *kubeadm init* command.
@@ -302,7 +302,6 @@ When we initalize the Control-plane node using *kubeadm init* command, we provid
 The easiest way of using this utility is to install it as a K8s Pod, as below:
 
 ```bash
-$ kubectl apply -f https://docs.projectcalico.org/manifests/calicoctl-etcd.yaml
 $ kubectl apply -f https://docs.projectcalico.org/manifests/calicoctl.yaml
 ```
 
