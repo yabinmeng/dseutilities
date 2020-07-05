@@ -180,7 +180,9 @@ mydsecluster-dc1-rack1-sts-1     2/2     Running   0          15m
 mydsecluster-dc1-rack1-sts-2     2/2     Running   0          15m
 ```
 
-Behind the scene, the DSE/C* Pods and the corresponding Persistent Volume Claims (PVCs) are managed by a number of StatefulSets (one StatefulSet per rack) that were created by the ***CassandraDatacenter*** CRD. These StatefulSets (STSs) have the naming convention of ***<dse/C_cluster_name>-<DC_name>-<rack_name>_sts***
+## StatefulSet (STS)
+
+Behind the scene, the DSE/C* Pods and the corresponding Persistent Volume Claims (PVCs) are managed by a number of STSs (one per rack) that were created by the ***CassandraDatacenter*** CRD. These STSs have the naming convention of ***<dse/C_cluster_name>-<DC_name>-<rack_name>_sts***
 
 In my testing, there is only one rack and therefore one STS. Checking the details of the StatefulSet will show us key information like how many replicas are maintained by the STS, the volume claim and the associated StorageClass, and etc.
 
@@ -194,9 +196,6 @@ Name:               mydsecluster-dc1-rack1-sts
 ...
 Replicas:           3 desired | 3 total
 Update Strategy:    RollingUpdate
-  Partition:        824636451024
-Pods Status:        3 Running / 0 Waiting / 0 Succeeded / 0 Failed
-Pod Template:
 ...
 Volume Claims:
   Name:          server-data
@@ -214,3 +213,46 @@ Events:
 ```
 
 From the event associated with the STS, we can see that in sequence it creates one DSE/C* Pod followed by a corresponding PVC for that Pod, until the number of replicas maintained in the STS is reached.
+
+The PVC request for each DSE/C* Pod has the naming convention of ***server-data-<dse/C_cluster_name>-<DC_name>-<rack_name>-sts-#***, as below:
+ 
+```bash
+$ kubectl -n cass-operator get pvc
+NAME                                       STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS    AGE
+server-data-mydsecluster-dc1-rack1-sts-0   Bound    local-pv-b687f08e   3873Mi     RWO            local-storage   68m
+server-data-mydsecluster-dc1-rack1-sts-1   Bound    local-pv-60098f11   3873Mi     RWO            local-storage   68m
+server-data-mydsecluster-dc1-rack1-sts-2   Bound    local-pv-dfc1ebd6   3873Mi     RWO            local-storage   68m
+```
+
+### Containers
+
+The STS also determines the containers that are launched within a DSE/C* Pod. We can get this information from the "Pod Template" section of the above command.
+
+```bash
+...
+Pod Template:
+...
+  Init Containers:
+   server-config-init:
+    Image:      datastax/cass-config-builder:1.0.1
+    Port:       <none>
+    Host Port:  <none>   
+    ...
+  Containers:
+   cassandra:
+    Image:       datastax/dse-server:6.8.1
+    Ports:       9042/TCP, 8609/TCP, 7000/TCP, 7001/TCP, 8080/TCP
+    Host Ports:  0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP
+    ...
+   server-system-logger:
+    Image:      busybox
+    Port:       <none>
+    Host Port:  <none>
+    ...
+```
+
+
+
+# Connect to the DSE/C* Cluster
+
+
