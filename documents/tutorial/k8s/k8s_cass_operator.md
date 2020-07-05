@@ -251,8 +251,71 @@ Pod Template:
     ...
 ```
 
+# Operate the DSE/C* Cluster
 
+At this point, DSE/C* Pods are up and running. We can check the DSE/C* cluster status and connect to it for some basic operations.
 
-# Connect to the DSE/C* Cluster
+* Check DSE cluster status
 
+```bash
+$ kubectl -n cass-operator exec mydsecluster-dc1-rack1-sts-0 -c cassandra -- dsetool status
+DC: dc1             Workload: Cassandra       Graph: no
+======================================================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--   Address          Load             Effective-Ownership  VNodes                                       Rack         Health [0,1]
+UN   192.168.21.74    208.41 KiB       63.70%               8                                            rack1        0.90
+UN   192.168.39.9     170.85 KiB       63.89%               8                                            rack1        0.90
+UN   192.168.48.10    222 KiB          72.41%               8                                            rack1        0.90
+```
 
+## Connect via CQLSH
+
+The C* Operator also creates a secret as the DSE/C* cluster's default super user (**NOTE** this secret is always created no matter whether or not DSE authentication is enabled). The secret has the naming convention of ***dse/C_cluster_name>-superuser***.
+
+```bash
+$ kubectl -n cass-operator get secrets
+NAME                           TYPE                                  DATA   AGE
+cass-operator-token-mg9kq      kubernetes.io/service-account-token   3      14h
+cass-operator-webhook-config   Opaque                                2      14h
+default-token-qx9w8            kubernetes.io/service-account-token   3      14h
+mydsecluster-superuser         Opaque                                2      14h
+```
+
+We can get the secret detail, including username and password, by describing it.
+```bash
+$ kubectl -n cass-operator get secret mydsecluster-superuser -o yaml
+apiVersion: v1
+data:
+  password: TXJIem5KSTc0cUtYV2NXQ1FBZWxBdHRYeWVxM2hyem5IWVlDWHZmMzhRWTBQU2MzWTEwb1J3
+  username: bXlkc2VjbHVzdGVyLXN1cGVydXNlcg==
+kind: Secret
+metadata:
+  ...
+type: Opaque
+```
+
+The username/password values are BASE64 encoded. Using "jq" utility we can parse out the plain-text username and password using the following commands: 
+
+```bash
+$ CASS_USER=$(kubectl -n cass-operator get secret mydsecluster-superuser -o json | jq -r '.data.username' | base64 --decode)
+$ CASS_PASS=$(kubectl -n cass-operator get secret mydsecluster-superuser -o json | jq -r '.data.password' | base64 --decode)
+```
+
+Now we can connect to the DSE/C* cluster through CQLSH
+
+```bash
+$ kubectl -n cass-operator exec -it mydsecluster-dc1-rack1-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS'"
+Connected to mydsecluster at 127.0.0.1:9042.
+[cqlsh 6.8.0 | DSE 6.8.1 | CQL spec 3.4.5 | DSE protocol v2]
+Use HELP for help.
+mydsecluster-superuser@cqlsh> list roles;
+
+ role                   | super | login | options
+------------------------+-------+-------+---------
+              cassandra | False | False |        {}
+    dse_backup_operator | False | False |        {}
+ mydsecluster-superuser |  True |  True |        {}
+
+(3 rows)
+```
