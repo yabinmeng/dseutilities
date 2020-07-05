@@ -319,3 +319,20 @@ mydsecluster-superuser@cqlsh> list roles;
 
 (3 rows)
 ```
+
+## Check DSE/C* Server Log
+
+We can log in a DSE/C* Pod and check its system log: 
+
+```bash
+$ kubectl -n cass-operator exec -it mydsecluster-dc1-rack1-sts-0 -c cassandra -- bash
+$ cd /var/log/cassandra/
+$ ls
+audit  debug.log  dse-collectd.log  dse-collectd.pid  gc.log.0.current  gremlin.log  system.log
+```
+
+Without logging in the DSE/C* node, we can check DSE/C* system log as below:
+
+```bash
+$ kubectl -n cass-operator logs mydsecluster-dc1-rack1-sts-0 -c server-system-logger
+```
