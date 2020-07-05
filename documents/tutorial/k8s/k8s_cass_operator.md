@@ -170,7 +170,7 @@ $ kubectl -n cass-operator create -f myclusterdc1.yaml
 cassandradatacenter.cassandra.datastax.com/dc1 created
 ```
 
-We should also see a number (***spec.size***) of DSE/C* node Pods are launched. Each Pod has a naming convention of ***<dse/C*_cluster_name>-<DC_name>-<rack_name>-sts-#***. For a successful provisioning, you should see all DSE/C* node Pods in "Running" status. If there are not enough DSE/C* Pods as per ***spec.size***, or the Pods are not in "Running" status, there are some issues with the provisioning
+We should also see a number (***spec.size***) of DSE/C* node Pods are launched. Each Pod has a naming convention of ***<dse/C_cluster_name>-<DC_name>-<rack_name>-sts-#***. For a successful provisioning, you should see all DSE/C* node Pods in "Running" status. If there are not enough DSE/C* Pods as per ***spec.size***, or the Pods are not in "Running" status, there are some issues with the provisioning
 ```bash
 $ kubectl -n cass-operator get pods
 NAME                             READY   STATUS    RESTARTS   AGE
@@ -180,7 +180,7 @@ mydsecluster-dc1-rack1-sts-1     2/2     Running   0          15m
 mydsecluster-dc1-rack1-sts-2     2/2     Running   0          15m
 ```
 
-Behind the scene, the DSE/C* Pods and the corresponding Persistent Volume Claims (PVCs) are managed by a number of StatefulSets (one StatefulSet per rack) that were created by the ***CassandraDatacenter*** CRD. These StatefulSets (STSs) have the naming convention of ***<dse/C*_cluster_name>-<DC_name>-<rack_name>_sts***
+Behind the scene, the DSE/C* Pods and the corresponding Persistent Volume Claims (PVCs) are managed by a number of StatefulSets (one StatefulSet per rack) that were created by the ***CassandraDatacenter*** CRD. These StatefulSets (STSs) have the naming convention of ***<dse/C_cluster_name>-<DC_name>-<rack_name>_sts***
 
 In my testing, there is only one rack and therefore one STS. Checking the details of the StatefulSet will show us key information like how many replicas are maintained by the STS, the volume claim and the associated StorageClass, and etc.
 
