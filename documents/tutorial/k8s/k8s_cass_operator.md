@@ -170,7 +170,7 @@ $ kubectl -n cass-operator create -f myclusterdc1.yaml
 cassandradatacenter.cassandra.datastax.com/dc1 created
 ```
 
-We should also see a number (***spec.size***) of DSE/C* node Pods are launched. Each Pod has a naming convention of ***<dse/C*_cluster_name>-<DC_name>-<rack_name>_sts_#***. For a successful provisioning, you should see all DSE/C* node Pods in "Running" status. If there are not enough DSE/C* Pods as per ***spec.size***, or the Pods are not in "Running" status, there are some issues with the provisioning
+We should also see a number (***spec.size***) of DSE/C* node Pods are launched. Each Pod has a naming convention of ***<dse/C*_cluster_name>-<DC_name>-<rack_name>-sts-#***. For a successful provisioning, you should see all DSE/C* node Pods in "Running" status. If there are not enough DSE/C* Pods as per ***spec.size***, or the Pods are not in "Running" status, there are some issues with the provisioning
 ```bash
 $ kubectl -n cass-operator get pods
 NAME                             READY   STATUS    RESTARTS   AGE
