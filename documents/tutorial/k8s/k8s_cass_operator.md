@@ -1,4 +1,4 @@
-# Overiew
+# <!-- TOC -->autoauto- [1. Overiew](#1-overiew)auto- [2. Install C* Operator](#2-install-c-operator)auto- [3. Define a Storage Class](#3-define-a-storage-class)auto- [4. Provision a DSE/C* Cluster](#4-provision-a-dsec-cluster)auto    - [4.1. StatefulSet (STS)](#41-statefulset-sts)auto        - [4.1.1. Containers](#411-containers)auto- [5. Operate the DSE/C* Cluster](#5-operate-the-dsec-cluster)auto    - [5.1. Connect via CQLSH](#51-connect-via-cqlsh)autoauto<!-- /TOC -->1. Overiew
 
 Earlier this year on Mar. 31, DataStax has announced the [release](https://www.datastax.com/press-release/datastax-helps-apache-cassandra-become-industry-standard-scale-out-cloud-native-data) of K8s operator for Apache C*. Later this year on April 7th, DataStax also GA-released DataStax Enterprise (DSE) version 6.8 and K8s operator is part of this release. For simplicity purpose, I'm going to use the term "C* Operator" to refer to K8s operator for Apache C* and DSE.   
 
@@ -14,7 +14,7 @@ ip-10-101-32-217.srv101.dsinternal.org   Ready    <none>   4h15m   v1.17.6
 ip-10-101-35-135.srv101.dsinternal.org   Ready    master   4h19m   v1.17.6
 ```
 
-# Install C* Operator
+# 2. Install C* Operator
 
 At the core of C* Operator, it is an API extension of K8s through [Customer Resource Definition (CRD)](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/). Currently it supports K8s versions from 1.13 to 1.18 (1.15 and above is recommended). The corresponding CRDs can be found from [here] (https://github.com/datastax/cass-operator).
 
@@ -81,7 +81,7 @@ status:
 
 As the resource type name suggests, this resource defines a DSE/C* data center (DC). 
 
-# Define a Storage Class 
+# 3. Define a Storage Class 
 
 In K8s, storage dynamic provisioning is achieved through a Storage Class. For network attached storage solutions like AWS EBS, GCE Persistent Disk, Azure Disk, and etc., the storage provisioning is fully automatic. This means that we don't need to prepare the required storage space in advance; nor do we need to worry about PVs and PVCs. All these steps are automatically handled by a Storage Class (the provisioner of the Storage Class).
 
@@ -105,7 +105,7 @@ local-pv-77e548f1   3873Mi     RWO            Delete           Available        
 local-pv-b23352ed   3873Mi     RWO            Delete           Available           local-storage            13m
 ```
 
-# Provision a DSE/C* Cluster
+# 4. Provision a DSE/C* Cluster
 
 At this point, with a new K8s resource type ***CassandraDataCenter*** defined and a storage class ready, we can provision a DSE/C* cluster. 
 
@@ -180,7 +180,7 @@ mydsecluster-dc1-rack1-sts-1     2/2     Running   0          15m
 mydsecluster-dc1-rack1-sts-2     2/2     Running   0          15m
 ```
 
-## StatefulSet (STS)
+## 4.1. StatefulSet (STS)
 
 Behind the scene, the DSE/C* Pods and the corresponding Persistent Volume Claims (PVCs) are managed by a number of STSs (one per rack) that were created by the ***CassandraDatacenter*** CRD. These STSs have the naming convention of ***<dse/C_cluster_name>-<DC_name>-<rack_name>_sts***
 
@@ -224,7 +224,7 @@ server-data-mydsecluster-dc1-rack1-sts-1   Bound    local-pv-60098f11   3873Mi  
 server-data-mydsecluster-dc1-rack1-sts-2   Bound    local-pv-dfc1ebd6   3873Mi     RWO            local-storage   68m
 ```
 
-### Containers
+### 4.1.1. Containers
 
 The STS also determines the containers that are launched within a DSE/C* Pod. We can get this information from the "Pod Template" section of the above command.
 
@@ -251,7 +251,7 @@ Pod Template:
     ...
 ```
 
-# Operate the DSE/C* Cluster
+# 5. Operate the DSE/C* Cluster
 
 At this point, DSE/C* Pods are up and running. We can check the DSE/C* cluster status and connect to it for some basic operations.
 
@@ -269,7 +269,7 @@ UN   192.168.39.9     170.85 KiB       63.89%               8                   
 UN   192.168.48.10    222 KiB          72.41%               8                                            rack1        0.90
 ```
 
-## Connect via CQLSH
+## 5.1. Connect via CQLSH
 
 The C* Operator also creates a secret as the DSE/C* cluster's default super user (**NOTE** this secret is always created no matter whether or not DSE authentication is enabled). The secret has the naming convention of ***dse/C_cluster_name>-superuser***.
 
