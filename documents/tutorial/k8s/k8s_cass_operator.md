@@ -1,4 +1,4 @@
-# <!-- TOC -->autoauto- [1. Overiew](#1-overiew)auto- [2. Install C* Operator](#2-install-c-operator)auto- [3. Define a Storage Class](#3-define-a-storage-class)auto- [4. Provision a DSE/C* Cluster](#4-provision-a-dsec-cluster)auto    - [4.1. StatefulSet (STS)](#41-statefulset-sts)auto        - [4.1.1. Containers](#411-containers)auto- [5. Operate the DSE/C* Cluster](#5-operate-the-dsec-cluster)auto    - [5.1. Connect via CQLSH](#51-connect-via-cqlsh)autoauto<!-- /TOC -->1. Overiew
+# 1. Overiew
 
 Earlier this year on Mar. 31, DataStax has announced the [release](https://www.datastax.com/press-release/datastax-helps-apache-cassandra-become-industry-standard-scale-out-cloud-native-data) of K8s operator for Apache C*. Later this year on April 7th, DataStax also GA-released DataStax Enterprise (DSE) version 6.8 and K8s operator is part of this release. For simplicity purpose, I'm going to use the term "C* Operator" to refer to K8s operator for Apache C* and DSE.   
 
