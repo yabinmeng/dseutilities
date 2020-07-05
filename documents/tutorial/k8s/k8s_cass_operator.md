@@ -320,7 +320,7 @@ mydsecluster-superuser@cqlsh> list roles;
 (3 rows)
 ```
 
-## Check DSE/C* Server Log
+## 5.2. Check DSE/C* Server Log
 
 We can log in a DSE/C* Pod and check its system log: 
 
