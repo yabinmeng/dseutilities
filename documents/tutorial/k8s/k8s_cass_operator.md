@@ -69,9 +69,7 @@ As the resource type name suggests, this resource defines a DSE/C* data center (
 
 In K8s, storage dynamic provisioning is achieved through a Storage Class. For network attached storage solutions like AWS EBS, GCE Persistent Disk, Azure Disk, and etc., the storage provisioning is fully automatic. This means that we don't need to prepare the required storage space in advance; nor do we need to worry about PVs and PVCs. All these steps are automatically handled by a Storage Class (the provisioner of the Storage Class).
 
-For local storage provisioning, it is not fully automatic. But with some help, we can make it semi-automatic. We've already explored this in another tutorial ([here](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/local_pv_sig.md)).
-
-For the testing in this tutorial, I'm going to utilize the local storage class, named **local-storage**, that we have already created:
+For local storage provisioning, it is not fully automatic. But with some help, we can make it semi-automatic. We've already explored this in another tutorial ([here](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/local_pv_sig.md)). For the testing in this tutorial, we're going to utilize the local storage class, named **local-storage**, that we have already created in that tutorial.
 
 ```bash
 $ kubectl get storageclass -o wide
@@ -79,7 +77,7 @@ NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE
 local-storage   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  21h
 ```
 
-Once the local storage space is prepared following certain conditions, this local storage class is able to detect the available space and automatically creates PVs that are ready to use in the K8s cluster. For the C* Operator testing as demonstrated in this tutorial, these PVs will be automatically allocated to the scheduled DSE/C* Pods.
+Following certain conditions, this local storage class is able to detect the available local storage space and automatically creates PVs for the K8s cluster. For the in this tutorial, these PVs will be automatically allocated to the scheduled DSE/C* Pods by the C* Operator.
 
 ```bash
 $ kubectl get pv
