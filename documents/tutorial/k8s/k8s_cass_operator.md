@@ -37,23 +37,7 @@ deployment.apps/cass-operator created
 validatingwebhookconfiguration.admissionregistration.k8s.io/cassandradatacenter-webhook-registration created
 ```
 
-Pay attention to the command line output and we can see that the following K8s resources are created:
-
-| Resource Type | Resource Name |
-| ----------- | ----------- |
-| namespace | cass-operator |
-| serviceaccount | cass-operator |
-| secret | cass-operator-webhook-config |
-| CRD | cassandradatacenters.cassandra.datastax.com |
-| clusterrole | cass-operator-cluster-role |
-| clusterrolebinding | cass-operator |
-| role | cass-operator |
-| rolebinding | cass-operator |
-| service | cassandradatacenter-webhook-service |
-| deployment.apps | cass-operator |
-| validatingwebhookconfiguration | cassandradatacenter-webhook-registration |
-
-In order to get the details of the above created resources, run the following command:
+Pay attention to the command line output and we can see a list of K8s resources are created. In order to get the details of the above created resources, run the following command:
 
 ```bash
 $ kubectl -n cass-operator describe <resource_type> <resource_name>
