@@ -79,10 +79,10 @@ NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE
 local-storage   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  21h
 ```
 
-This local storage class automatically detects 3 PVs that are available in the K8s cluster (one PV per K8s node). Note that each PV has a storage capacity of close to 4GB.
+Once the local storage space is prepared following certain conditions, this local storage class is able to detect the available space and automatically creates PVs that are ready to use in the K8s cluster. For the C* Operator testing as demonstrated in this tutorial, these PVs will be automatically allocated to the scheduled DSE/C* Pods.
 
 ```bash
-kubectl get pv
+$ kubectl get pv
 NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
 local-pv-43190a99   3873Mi     RWO            Delete           Available           local-storage            13m
 local-pv-77e548f1   3873Mi     RWO            Delete           Available           local-storage            12m
@@ -91,7 +91,7 @@ local-pv-b23352ed   3873Mi     RWO            Delete           Available        
 
 # 4. Provision a DSE/C* Cluster
 
-At this point, with a new K8s resource type ***CassandraDataCenter*** defined and a storage class ready, we can provision a DSE/C* cluster. 
+At this point, we can provision a DSE/C* cluster through the newly created ***CassandraDataCenter*** K8s resource. 
 
 First we need to create a resource definition file that defines a DSE/C* DC. An example (e.g. named *mydsecluster-dc1.yaml*) is demonstrated below. **Note** that in this resource definition file. The settings in this resource definition file are quite straightforward and self-explanatory. But I'd like to emphasize a few things:
 
@@ -154,7 +154,8 @@ $ kubectl -n cass-operator create -f myclusterdc1.yaml
 cassandradatacenter.cassandra.datastax.com/dc1 created
 ```
 
-We should also see a number (***spec.size***) of DSE/C* node Pods are launched. Each Pod has a naming convention of ***<dse/C_cluster_name>-<DC_name>-<rack_name>-sts-#***. For a successful provisioning, you should see all DSE/C* node Pods in "Running" status. If there are not enough DSE/C* Pods as per ***spec.size***, or the Pods are not in "Running" status, there are some issues with the provisioning
+We should also see a number (***spec.size***) of DSE/C* node Pods are launched. Each Pod follows a naming convention of ***<dse/C_cluster_name>-<DC_name>-<rack_name>-sts-#***. For a successful provisioning, you should see all DSE/C* node Pods in "Running" status. If there are not enough DSE/C* Pods as per ***spec.size***, or the Pods are not in "Running" status, there are some issues with the provisioning.
+
 ```bash
 $ kubectl -n cass-operator get pods
 NAME                             READY   STATUS    RESTARTS   AGE
@@ -168,7 +169,7 @@ mydsecluster-dc1-rack1-sts-2     2/2     Running   0          15m
 
 Behind the scene, the DSE/C* Pods and the corresponding Persistent Volume Claims (PVCs) are managed by a number of STSs (one per rack) that were created by the ***CassandraDatacenter*** CRD. These STSs have the naming convention of ***<dse/C_cluster_name>-<DC_name>-<rack_name>_sts***
 
-In my testing, there is only one rack and therefore one STS. Checking the details of the StatefulSet will show us key information like how many replicas are maintained by the STS, the volume claim and the associated StorageClass, and etc.
+In this testing, there is only one rack and therefore one STS. Checking the details of the StatefulSet will show us some key information like how many replicas are maintained by the STS, the volume claim and the associated storage class, and etc.
 
 ```bash
 $ kubectl -n cass-operator get sts
@@ -196,7 +197,7 @@ Events:
   Normal  SuccessfulCreate  46m   statefulset-controller  create Pod mydsecluster-dc1-rack1-sts-2 in StatefulSet mydsecluster-dc1-rack1-sts successful  
 ```
 
-From the event associated with the STS, we can see that in sequence it creates one DSE/C* Pod followed by a corresponding PVC for that Pod, until the number of replicas maintained in the STS is reached.
+From the event list of the STS, we can see that in sequence it creates one DSE/C* Pod followed by a corresponding storage allocation for that Pod through a PVC, until the number of replicas maintained in the STS is reached.
 
 The PVC request for each DSE/C* Pod has the naming convention of ***server-data-<dse/C_cluster_name>-<DC_name>-<rack_name>-sts-#***, as below:
  
@@ -210,7 +211,7 @@ server-data-mydsecluster-dc1-rack1-sts-2   Bound    local-pv-dfc1ebd6   3873Mi  
 
 ### 4.1.1. Containers
 
-The STS also determines the containers that are launched within a DSE/C* Pod. We can get this information from the "Pod Template" section of the above command.
+The STS also determines the containers that are launched within a DSE/C* Pod. We also can get this information from the "Pod Template" section of the above command. For each DSE/C* node Pod, there is one "Init Container" and two "Regular Containers".
 
 ```bash
 ...
@@ -255,7 +256,7 @@ UN   192.168.48.10    222 KiB          72.41%               8                   
 
 ## 5.1. Connect via CQLSH
 
-The C* Operator also creates a secret as the DSE/C* cluster's default super user (**NOTE** this secret is always created no matter whether or not DSE authentication is enabled). The secret has the naming convention of ***dse/C_cluster_name>-superuser***.
+The C* Operator also creates a secret as the DSE/C* cluster's default super user (**NOTE** this secret is always created no matter whether or not DSE authentication is enabled). The secret has the naming convention of ***<dse/C_cluster_name>-superuser***.
 
 ```bash
 $ kubectl -n cass-operator get secrets
@@ -266,7 +267,7 @@ default-token-qx9w8            kubernetes.io/service-account-token   3      14h
 mydsecluster-superuser         Opaque                                2      14h
 ```
 
-We can get the secret detail, including username and password, by describing it.
+We can get the secret detail, including username and password, using the following command:
 ```bash
 $ kubectl -n cass-operator get secret mydsecluster-superuser -o yaml
 apiVersion: v1
@@ -279,7 +280,7 @@ metadata:
 type: Opaque
 ```
 
-The username/password values are BASE64 encoded. Using "jq" utility we can parse out the plain-text username and password using the following commands: 
+The username/password values are BASE64 encoded. With the help of "jq" utility, we can parse out the plain-text username and password with the following command chain:
 
 ```bash
 $ CASS_USER=$(kubectl -n cass-operator get secret mydsecluster-superuser -o json | jq -r '.data.username' | base64 --decode)
