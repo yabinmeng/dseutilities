@@ -29,4 +29,7 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_machine.type.png" alt="default-pool:Nodes" width="500"/>
 
 * In the "NODE POOLs --> default-pool --> Security" page, specify the following key information
-  * 
+  * Choose the GCP service account that is allowed to access the GCE instances 
+    * **NOTE** that this is GCP service account, not K8s service account. As a GCP security best practice, it is highly recommended NOT to use "Compute Engine default service account".
+
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/security_service.account.png" alt="default-pool:Nodes" width="500"/>
