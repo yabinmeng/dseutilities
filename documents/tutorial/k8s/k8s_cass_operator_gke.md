@@ -11,7 +11,7 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
   * Cluster location
     * Type: zonal or regional
     * Zone name or region name
-  * K8s version
+  * K8s version 
 
 ![Cluster Basics](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/cluster_basics.png)
 
