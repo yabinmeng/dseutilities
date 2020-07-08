@@ -15,18 +15,18 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
   
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/cluster_basics.png" alt="Cluster Basics" width="500"/>
 
-* In the "Node pools --> default-pool" page, specify the following key information
+* In the "NODE POOLs --> default-pool" page, specify the following key information
   * The size (the number of nodes) of the K8s cluster 
   * Whether we want GKE to auto-scale the cluster when needed
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/default-pool.png" alt="default-pool" width="500"/>
 
-* In the "Node pools --> default-pool --> Nodes" page, specify the following key information
+* In the "NODE POOLs --> default-pool --> Nodes" page, specify the following key information
   * GCE instance type 
     * **NOTE** make sure the selected instance type is big enough to run DSE server. Otherwise, K8s probably won't be able to schedule starting a DSE node Pod successfully
   * GCE instance boot disk type and size
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_machine.type.png" alt="default-pool:Nodes" width="500"/>
 
-* In the "Node Pools --> default-pool --> Security" page, specify the following key information
+* In the "NODE POOLs --> default-pool --> Security" page, specify the following key information
   * 
