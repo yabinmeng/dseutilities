@@ -13,7 +13,7 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
     * Zone name or region name
   * K8s version 
   
-<img src="[drawing.jpg](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/cluster_basics.png)" alt="Cluster Basics" width="400"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/cluster_basics.png" alt="Cluster Basics" width="400"/>
 
 * In the "Node pools --> default-pool --> Nodes" page, specify the following information
   * 
