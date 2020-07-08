@@ -1,8 +1,8 @@
-# Overview
+# 1. Overview
 
 In the [previous tutorial](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/k8s_cass_operator_local.md), I explored the procedure of deploying a DSE 6.8.1 cluster on an on-prem K8s cluster with locally attached storage. In this tutorial, I'm going to explore the procedure of deploying a DSE 6.8.1 cluster on GKE cloud platform with the network attached storage spaces (GCP persistent disks). Moreover, I'm going to explore how to expose the DSE K8s "service" through an K8s Ingress for external access.
 
-# Provision a GKE Cluster
+# 2. Provision a GKE Cluster
 
 A GKE cluster can be launched from the GCP console or from "gcloud" utility. The steps to create it from GCP console are as below:
 
@@ -40,15 +40,15 @@ Leave the values on other pages as default and then click "Create" button. Wait 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_cluster_list.png" alt="default-pool:Nodes" width="500"/>
 
 
-# Access the GKE Cluster from Client PC
+# 3. Access the GKE Cluster from Client PC
 
-## Install Google Cloud SDK
+## 3.1. Install Google Cloud SDK
 
 The easiest way to access GCP resources, including a GKE cluster is through Google Cloud SDK. Please follow the Google document to install and configure Google Cloud SDK on your client PC. Please choose the corresponding procedure that matches your client PC OS
 
 https://cloud.google.com/sdk/docs/quickstarts
 
-## Connect to GKE Cluster
+## 3.2. Connect to GKE Cluster
 
 In order to connect to the GKE cluster from the client PC, we need to log in GCP first. Run the following command and follow the instructions. 
 
@@ -91,7 +91,7 @@ gke-ymtest-ck8s-operator-default-pool-5f7a5097-8qlh   Ready    <none>   4h47m   
 gke-ymtest-ck8s-operator-default-pool-5f7a5097-glgm   Ready    <none>   4h47m   v1.16.10-gke.8
 ```
 
-# Install DSE Cluster using C* Operator
+# 4. Install DSE Cluster using C* Operator
 
 Now since we have a running GKE cluster and we're able to connect it from the client PC, we're good to deploy a DSE cluster in it using C* Operator. Like what we did in an on-prem K8s cluster, the high-level procedure is as below:
 
@@ -99,7 +99,7 @@ Now since we have a running GKE cluster and we're able to connect it from the cl
 * Install C* Operator (CRD) in the K8s(GKE) cluster
 * Deploy the DSE cluster using "CassandraDC" resource type (created by C* Operator)
 
-## Define a Storage Class
+## 4.1. Define a Storage Class
 
 As we've already discussed in the [previous tutorial](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/k8s_cass_operator_local.md), a K8s Storage Class that corresponds to network attached storage solutions from different cloud providers like AWS EBS, GCE Persistent Disk, Azure Disk, and etc., is able to completely provision the storage space dyanmically. For GKE, the Storage Class provisioner is [**GCE PD**](https://kubernetes.io/docs/concepts/storage/storage-classes/#gce-pd).
 
@@ -123,7 +123,7 @@ From the specification, Google persistent SSD disk is going to be used as the st
 $ kubectl apply -f server_storage_sc.yaml
 ```
 
-## Install C* Operator
+## 4.2. Install C* Operator
 
 This step is exactly the same as that in the previous tutorial
 
@@ -132,7 +132,7 @@ kubectl apply -f https://raw.githubusercontent.com/datastax/cass-operator/v1.3.0
 namespace/cass-operator created
 ```
 
-## Deploy a DSE 6.8.1 Cluster
+## 4.3. Deploy a DSE 6.8.1 Cluster
 
 Again, this step is almost identical to that in the previous tutorial. We create a resource definition file for the CassandraDC type ("mydsecluster.yaml"). 
 
@@ -183,7 +183,7 @@ The only difference is the "storageClassName" is changed to the new Storage Clas
 kubectl -n cass-operator apply -f mydsecluster.yaml
 ```
 
-## Troubleshooting - DSE Pods Failing to be Initialied 
+## 4.4. Troubleshooting - DSE Pods Failing to be Initialied 
 
 From the previous CassandraDC resource definition file, each Pod requires 4G memory. If we provision the GKE cluster with a smaller GCE instance type (e.g. default "n1-standard-1"), then K8s won't be able to satisfy the Pod request and therefore it will fail launching (scheduling) DSE Pods on the GKE nodes.
 
@@ -219,7 +219,7 @@ It turns out that the default GKE cluster OS image is "Container Optimized OS - 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_os_ubuntu.png" alt="default-pool:Nodes" width="500"/>
 
 
-## Verify Deployed DSE Cluster
+## 4.5. Verify Deployed DSE Cluster
 
 Once we launched the GKE cluster with the right instance type and OS image. The DSE server Pods are launched successfully and we can verify the connection to it from CQLSH utility from within a DSE Pod (actually the main container, "cassandra", within the Pod).
 
@@ -241,5 +241,5 @@ Use HELP for help.
 mydsecluster-superuser@cqlsh>
 ```
 
-# External Access to the DSE Cluster (Outside the GKE Cluster)
+# 5. External Access to the DSE Cluster (Outside the GKE Cluster)
 
