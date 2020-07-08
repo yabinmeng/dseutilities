@@ -219,3 +219,27 @@ It turns out that the default GKE cluster OS image is "Container Optimized OS - 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_os_ubuntu.png" alt="default-pool:Nodes" width="500"/>
 
 
+## Verify Deployed DSE Cluster
+
+Once we launched the GKE cluster with the right instance type and OS image. The DSE server Pods are launched successfully and we can verify the connection to it from CQLSH utility from within a DSE Pod (actually the main container, "cassandra", within the Pod).
+
+```bash
+$ kubectl -n cass-operator get pods
+NAME                             READY   STATUS    RESTARTS   AGE
+cass-operator-78c9999797-kqm6w   1/1     Running   0          10m
+mydsecluster-dc1-rack1-sts-0     2/2     Running   0          10m
+mydsecluster-dc1-rack1-sts-1     2/2     Running   0          10m
+mydsecluster-dc1-rack1-sts-2     2/2     Running   0          10m
+
+// NOTE: this requis "jq" utility installed on the client PC
+$ CASS_USER=$(kubectl -n cass-operator get secret mydsecluster-superuser -o json | jq -r '.data.username' | base64 --decode)
+$ CASS_PASS=$(kubectl -n cass-operator get secret mydsecluster-superuser -o json | jq -r '.data.password' | base64 --decode)
+$ kubectl -n cass-operator exec -it mydsecluster-dc1-rack1-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS'"
+Connected to mydsecluster at 127.0.0.1:9042.
+[cqlsh 6.8.0 | DSE 6.8.1 | CQL spec 3.4.5 | DSE protocol v2]
+Use HELP for help.
+mydsecluster-superuser@cqlsh>
+```
+
+# External Access to the DSE Cluster (Outside the GKE Cluster)
+
