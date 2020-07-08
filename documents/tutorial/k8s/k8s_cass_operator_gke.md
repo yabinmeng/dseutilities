@@ -48,12 +48,27 @@ The easiest way to access GCP resources, including a GKE cluster is through Goog
 
 https://cloud.google.com/sdk/docs/quickstarts
 
-Once the the Google Cloud SDK is installed and configured on the client PC, verify its information using the following command. Make sure the GCP project and account information matches your desired ones.
+## Connect to GKE Cluster
+
+In order to connect to the GKE cluster from the client PC, we need to log in GCP first. Run the following command and follow the instructions. 
+
+```bash
+$ gcloud auth login
+```
+
+After logging in, verify the GCP login info using either of the following command. Make sure the GCP project, account, and region/zone information matches the desired ones.
 
 ```bash
 $ gcloud info
+
+$ gcloud config list
 ```
 
-## Connect to GKE Cluster
+If the GCP login information is correct, we can connect to the GKE cluster using the following command. This command generates the credentials and endpoint information that are need by the "kubectl" utility to connect to a specific cluster in GKE. By default, the credentials and endpoint information is stored in "***~/.kube/config***" file. 
 
-In order to run the 
+```bash
+$ gcloud container clusters get-credentials <gke_cluster_name> --zone <zone_name> --project <GCP_project_name>
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for <gke_cluster_name>
+```
+
