@@ -60,7 +60,6 @@ After logging in, verify the GCP login info using either of the following comman
 
 ```bash
 $ gcloud info
-
 $ gcloud config list
 ```
 
@@ -71,4 +70,28 @@ $ gcloud container clusters get-credentials <gke_cluster_name> --zone <zone_name
 Fetching cluster endpoint and auth data.
 kubeconfig entry generated for <gke_cluster_name>
 ```
+
+At this point, we're ready to run operate the GKE cluster from the client PC. This assumes that "kubectl" utility is already installed on the client PC. If not, follow K8s document ([here](https://kubernetes.io/docs/tasks/tools/install-kubectl/)) to install it. Once installed, verify its version and the basic GKE cluster information using the following commands:
+
+```bash
+// "kubectl" version
+$ kubectl version --client
+
+// GKE cluster information
+$ kubectl cluster-info
+```
+
+We can also get the GKE cluster (worker) node information using the following command. Please **NOTE** that the node listed here are ALL worker nodes. For a GKE cluster, a master node is managed by Google and you can only access it through APIs.
+
+```bash
+$ kubectl get nodes
+NAME                                                  STATUS   ROLES    AGE     VERSION
+gke-ymtest-ck8s-operator-default-pool-5f7a5097-7b2h   Ready    <none>   4h47m   v1.16.10-gke.8
+gke-ymtest-ck8s-operator-default-pool-5f7a5097-8qlh   Ready    <none>   4h47m   v1.16.10-gke.8
+gke-ymtest-ck8s-operator-default-pool-5f7a5097-glgm   Ready    <none>   4h47m   v1.16.10-gke.8
+```
+
+# Install DSE Cluster using C* Operator
+
+## Define a Storage Class
 
