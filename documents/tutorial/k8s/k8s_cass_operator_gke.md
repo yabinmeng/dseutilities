@@ -33,3 +33,27 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
     * **NOTE** that this is GCP service account, not K8s service account. As a GCP security best practice, it is highly recommended NOT to use "Compute Engine default service account".
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/security_service.account.png" alt="default-pool:Nodes" width="500"/>
+
+
+Leave the values on other pages as default and then click "Create" button. Wait for a short while and you'll see the created GKE cluster showing up in the cluster list.
+
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/security_service.account.png" alt="default-pool:Nodes" width="500"/>
+
+
+# Access the GKE Cluster from Client PC
+
+## Install Google Cloud SDK
+
+The easiest way to access GCP resources, including a GKE cluster is through Google Cloud SDK. Please follow the Google document to install and configure Google Cloud SDK on your client PC. Please choose the corresponding procedure that matches your client PC OS
+
+https://cloud.google.com/sdk/docs/quickstarts
+
+Once the the Google Cloud SDK is installed and configured on the client PC, verify its information using the following command. Make sure the GCP project and account information matches your desired ones.
+
+```bash
+$ gcloud info
+```
+
+## Connect to GKE Cluster
+
+In order to run the 
