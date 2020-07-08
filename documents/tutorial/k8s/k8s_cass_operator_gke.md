@@ -37,7 +37,7 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
 
 Leave the values on other pages as default and then click "Create" button. Wait for a short while and you'll see the created GKE cluster showing up in the cluster list.
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/security_service.account.png" alt="default-pool:Nodes" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_cluster_list.png" alt="default-pool:Nodes" width="500"/>
 
 
 # Access the GKE Cluster from Client PC
