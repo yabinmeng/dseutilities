@@ -14,7 +14,29 @@ ip-10-101-32-217.srv101.dsinternal.org   Ready    <none>   4h15m   v1.17.6
 ip-10-101-35-135.srv101.dsinternal.org   Ready    master   4h19m   v1.17.6
 ```
 
-# 2. Install C* Operator
+# 2. Define a Storage Class 
+
+In K8s, storage dynamic provisioning is achieved through a Storage Class. For network attached storage solutions like AWS EBS, GCE Persistent Disk, Azure Disk, and etc., the storage provisioning is fully automatic. This means that we don't need to prepare the required storage space in advance; nor do we need to worry about PVs and PVCs. All these steps are automatically handled by a Storage Class (the provisioner of the Storage Class).
+
+For local storage provisioning, it is not fully automatic. But with some help, we can make it semi-automatic. We've already explored this in another tutorial ([here](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/local_pv_sig.md)). For the testing in this tutorial, we're going to utilize the local storage class, named **local-storage**, that we have already created in that tutorial.
+
+```bash
+$ kubectl get storageclass -o wide
+NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-storage   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  21h
+```
+
+Following certain conditions, this local storage class is able to detect the available local storage space and automatically creates PVs for the K8s cluster. For the in this tutorial, these PVs will be automatically allocated to the scheduled DSE/C* Pods by the C* Operator.
+
+```bash
+$ kubectl get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
+local-pv-43190a99   3873Mi     RWO            Delete           Available           local-storage            13m
+local-pv-77e548f1   3873Mi     RWO            Delete           Available           local-storage            12m
+local-pv-b23352ed   3873Mi     RWO            Delete           Available           local-storage            13m
+```
+
+# 3. Install C* Operator
 
 At the core of C* Operator, it is an API extension of K8s through [Customer Resource Definition (CRD)](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/). Currently it supports K8s versions from 1.13 to 1.18 (1.15 and above is recommended). The corresponding CRDs can be found from [here] (https://github.com/datastax/cass-operator).
 
@@ -64,28 +86,6 @@ status:
 ```
 
 As the resource type name suggests, this resource defines a DSE/C* data center (DC). 
-
-# 3. Define a Storage Class 
-
-In K8s, storage dynamic provisioning is achieved through a Storage Class. For network attached storage solutions like AWS EBS, GCE Persistent Disk, Azure Disk, and etc., the storage provisioning is fully automatic. This means that we don't need to prepare the required storage space in advance; nor do we need to worry about PVs and PVCs. All these steps are automatically handled by a Storage Class (the provisioner of the Storage Class).
-
-For local storage provisioning, it is not fully automatic. But with some help, we can make it semi-automatic. We've already explored this in another tutorial ([here](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/local_pv_sig.md)). For the testing in this tutorial, we're going to utilize the local storage class, named **local-storage**, that we have already created in that tutorial.
-
-```bash
-$ kubectl get storageclass -o wide
-NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-local-storage   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  21h
-```
-
-Following certain conditions, this local storage class is able to detect the available local storage space and automatically creates PVs for the K8s cluster. For the in this tutorial, these PVs will be automatically allocated to the scheduled DSE/C* Pods by the C* Operator.
-
-```bash
-$ kubectl get pv
-NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
-local-pv-43190a99   3873Mi     RWO            Delete           Available           local-storage            13m
-local-pv-77e548f1   3873Mi     RWO            Delete           Available           local-storage            12m
-local-pv-b23352ed   3873Mi     RWO            Delete           Available           local-storage            13m
-```
 
 # 4. Provision a DSE/C* Cluster
 

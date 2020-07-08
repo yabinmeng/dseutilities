@@ -22,7 +22,7 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/default-pool.png" alt="default-pool" width="500"/>
 
 * In the "NODE POOLs --> default-pool --> Nodes" page, specify the following key information
-  * GCE instance type 
+  * GCE instance type (in this tutorial, the instance type is **n1-standard-4**)
     * **NOTE** make sure the selected instance type is big enough to run DSE server. Otherwise, K8s probably won't be able to schedule starting a DSE node Pod successfully
   * GCE instance boot disk type and size
 
@@ -93,5 +93,129 @@ gke-ymtest-ck8s-operator-default-pool-5f7a5097-glgm   Ready    <none>   4h47m   
 
 # Install DSE Cluster using C* Operator
 
+Now since we have a running GKE cluster and we're able to connect it from the client PC, we're good to deploy a DSE cluster in it using C* Operator. Like what we did in an on-prem K8s cluster, the high-level procedure is as below:
+
+* Define a storage class (which is responsible for providing the storage space to be associated with each DSE server Pod)
+* Install C* Operator (CRD) in the K8s(GKE) cluster
+* Deploy the DSE cluster using "CassandraDC" resource type (created by C* Operator)
+
 ## Define a Storage Class
+
+As we've already discussed in the [previous tutorial](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/k8s_cass_operator_local.md), a K8s Storage Class that corresponds to network attached storage solutions from different cloud providers like AWS EBS, GCE Persistent Disk, Azure Disk, and etc., is able to completely provision the storage space dyanmically. For GKE, the Storage Class provisioner is [**GCE PD**](https://kubernetes.io/docs/concepts/storage/storage-classes/#gce-pd).
+
+In this tutorial, I'm going to define a Storage Class named "server-storage" with the following specification ("sever_storage_sc.yaml"):
+
+```bash
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: server-storage
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+  fstype: xfs
+  replication-type: none
+```
+
+From the specification, Google persistent SSD disk is going to be used as the storage space for the GKE cluster. Considering the main user case for this GKE cluster is to deploy a DSE cluster in it, I'm using "xfs" file system on the provisioned storage space (instead of the default "ext4" file system). This is because "xfs" file system is the recommended one for DSE/C* cluster.
+
+```bash
+$ kubectl apply -f server_storage_sc.yaml
+```
+
+## Install C* Operator
+
+This step is exactly the same as that in the previous tutorial
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/datastax/cass-operator/v1.3.0/docs/user/cass-operator-manifests-v1.16.yaml
+namespace/cass-operator created
+```
+
+## Deploy a DSE 6.8.1 Cluster
+
+Again, this step is almost identical to that in the previous tutorial. We create a resource definition file for the CassandraDC type ("mydsecluster.yaml"). 
+
+```bash
+apiVersion: cassandra.datastax.com/v1beta1
+kind: CassandraDatacenter
+metadata:
+  name: dc1
+spec:
+  clusterName: mydsecluster
+  serverType: dse
+  serverVersion: 6.8.1
+  managementApiAuth:
+    insecure: {}
+  size: 3
+  racks:
+  - name: rack1
+  resources:
+    requests:
+      memory: 4Gi
+  storageConfig:
+    cassandraDataVolumeClaimSpec:
+      storageClassName: server-storage
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+  config:
+    cassandra-yaml:
+      num_tokens: 8
+      allocate_tokens_for_local_replication_factor: 3
+      authenticator: com.datastax.bdp.cassandra.auth.DseAuthenticator
+      authorizer: com.datastax.bdp.cassandra.auth.DseAuthorizer
+      role_manager: com.datastax.bdp.cassandra.auth.DseRoleManager
+    dse-yaml:
+      authentication_options:
+        enabled: true
+        default_scheme: internal
+    jvm-server-options:
+      initial_heap_size: 2G
+      max_heap_size: 2G
+```
+
+The only difference is the "storageClassName" is changed to the new Storage Class name, **server-storage**, as we created earlier.
+
+```bash
+kubectl -n cass-operator apply -f mydsecluster.yaml
+```
+
+## Troubleshooting - DSE Pods Failing to be Initialied 
+
+From the previous CassandraDC resource definition file, each Pod requires 4G memory. If we provision the GKE cluster with a smaller GCE instance type (e.g. default "n1-standard-1"), then K8s won't be able to satisfy the Pod request and therefore it will fail launching (scheduling) DSE Pods on the GKE nodes.
+
+```bash
+$ kubectl -n cass-operator get pods
+NAME                             READY   STATUS     RESTARTS   AGE
+cass-operator-78c9999797-pdmmh   1/1     Running    0          14m
+mydsecluster-dc1-rack1-sts-0     0/2     Init:0/1   0          13m
+mydsecluster-dc1-rack1-sts-1     0/2     Init:0/1   0          13m
+mydsecluster-dc1-rack1-sts-2     0/2     Init:0/1   0          13m
+```
+
+In this tutorial, the GKE node instance type is **n1-standard-4** and it has enough system resource to satisfy the Pod request. But the DSE Pod initialization still gets stuck in the above status. Why is this?
+
+
+
+
+When I describe the DSE Pod detail as below, I found the following warning message which says "xfs" file system is not supported while K8s is trying to mount the storage request (**PVC**) to the the Pod.
+
+```bash
+$ kubectl -n cass-operator describe pod mydsecluster-dc1-rack1-sts-0
+  ... ... 
+  Warning  FailedMount  2m7s (x2 over 4m21s)  kubelet, gke-ymtest-operator-default-pool-d0e13daf-kk5w  Unable to attach or mount volumes: unmounted volumes=[server-data], unattached volumes=[server-config default-token-vq8tc server-logs server-data]: timed out waiting for the condition
+  Warning  FailedMount  115s (x2 over 3m58s)  kubelet, gke-ymtest-operator-default-pool-d0e13daf-kk5w  (combined from similar events): MountVolume.MountDevice failed for volume "pvc-9a84fce4-ab0a-4225-a640-275b439ba5f8" : mount failed: exit status 32
+Mounting command: systemd-run
+Mounting arguments: --description=Kubernetes transient mount for /var/lib/kubelet/plugins/kubernetes.io/gce-pd/mounts/gke-ymtest-operator-46-pvc-9a84fce4-ab0a-4225-a640-275b439ba5f8 --scope -- mount -t xfs -o defaults /dev/disk/by-id/google-gke-ymtest-operator-46-pvc-9a84fce4-ab0a-4225-a640-275b439ba5f8 /var/lib/kubelet/plugins/kubernetes.io/gce-pd/mounts/gke-ymtest-operator-46-pvc-9a84fce4-ab0a-4225-a640-275b439ba5f8
+Output: Running scope as unit: run-r1dcc3bb559e74f86a16e26380232fc31.scope
+mount: /var/lib/kubelet/plugins/kubernetes.io/gce-pd/mounts/gke-ymtest-operator-46-pvc-9a84fce4-ab0a-4225-a640-275b439ba5f8: unknown filesystem type 'xfs'.
+```
+
+It turns out that the default GKE cluster OS image is "Container Optimized OS - cos" has some limitations related with using XFS. Although there is a [work-around](https://medium.com/@allanlei/mounting-xfs-on-gke-adcf9bd0f212), a cleaner way is to change the GKE OS image from "cos" to another one that supports XFS (eg. Ubuntu). This requires we need to recreate a GKE cluster. This time, we need to 
+
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_cluster_list.png" alt="default-pool:Nodes" width="500"/>
+
 
