@@ -214,8 +214,8 @@ Output: Running scope as unit: run-r1dcc3bb559e74f86a16e26380232fc31.scope
 mount: /var/lib/kubelet/plugins/kubernetes.io/gce-pd/mounts/gke-ymtest-operator-46-pvc-9a84fce4-ab0a-4225-a640-275b439ba5f8: unknown filesystem type 'xfs'.
 ```
 
-It turns out that the default GKE cluster OS image is "Container Optimized OS - cos" has some limitations related with using XFS. Although there is a [work-around](https://medium.com/@allanlei/mounting-xfs-on-gke-adcf9bd0f212), a cleaner way is to change the GKE OS image from "cos" to another one that supports XFS (eg. Ubuntu). This requires we need to recreate a GKE cluster. This time, we need to 
+It turns out that the default GKE cluster OS image is "Container Optimized OS - cos" has some limitations related with using XFS. Although there is a [work-around](https://medium.com/@allanlei/mounting-xfs-on-gke-adcf9bd0f212), a cleaner way is to change the GKE OS image from "cos" to another one that supports XFS (eg. Ubuntu). This requires we need to recreate a GKE cluster. This time, we need to choose the right image type in the "NODE POOLs --> default-pool --> Nodes" page.
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_cluster_list.png" alt="default-pool:Nodes" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_os_ubuntu.png" alt="default-pool:Nodes" width="500"/>
 
 
