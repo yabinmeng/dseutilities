@@ -6,15 +6,16 @@ In the [previous tutorial](https://github.com/yabinmeng/dseutilities/blob/master
 
 A GKE cluster can be launched from the GCP console or from "gcloud" utility. The steps to create it from GCP console are as below:
 
-* Cluster Basics - specify:
+* In the "Cluster Basics" page, specify the following information:
   * GKE cluster name,  
   * Cluster location
     * Type: zonal or regional
     * Zone name or region name
   * K8s version 
+  
+<img src="[drawing.jpg](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/cluster_basics.png)" alt="Cluster Basics" width="400"/>
 
-![Cluster Basics](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/cluster_basics.png)
-
-* Node pool node specification
+* In the "Node pools --> default-pool --> Nodes" page, specify the following information
+  * 
 
 ![Node Specification](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_machine.type.png)
