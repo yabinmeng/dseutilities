@@ -27,3 +27,6 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
   * GCE instance boot disk type and size
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_machine.type.png" alt="default-pool:Nodes" width="500"/>
+
+* In the "Node Pools --> default-pool --> Security" page, specify the following key information
+  * 
