@@ -50,7 +50,7 @@ https://cloud.google.com/sdk/docs/quickstarts
 
 ## 3.2. Connect to GKE Cluster
 
-In order to connect to the GKE cluster from the client PC, we need to log in GCP first. Run the following command and follow the instructions. 
+In order to connect to the GKE cluster from the client PC, we need to log in GCP first. Run the following command and follow the instructions. **NOTE**: Check Appendix A for another way of connecting to GCP using a dedicated service account!
 
 ```bash
 $ gcloud auth login
@@ -266,7 +266,7 @@ As already mentioned, this is not a GCP security best practice, we should always
 
 ## Create a GCP Service Account
 
-From "GCP IAM & Admin --> Service Accounts" page, click "Create Service Account" and follows the instructions. In this tutorial, a service account named "mydse-k8s-svcacct" is created. For this service account, the following roles are granted:
+From "GCP IAM & Admin --> Service Accounts" page, click "Create Service Account" and follows the instructions. In this tutorial, a service account named "mydse-k8s-svcacct" is given (the full GCP service account is **<given_name>@<GCP_project_name>.iam.gserviceaccount.com**). For this service account, the following roles are granted:
 * Compute Admin
 * Kubernetes Engine Admin 
 
@@ -280,3 +280,36 @@ Please **NOTE** that in a real deployment, a service account as above may likely
 Once the service account is created, click its name from the service account list, which brings up the service account detail page. Since we're going to use this service account to manage a GKE cluster from a client machine, we need to add a key for this service account. With this key, we're able to connect to the GCP environment using this service account.
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_k8s_svcacct_addkey.png" width="400"/>
+
+Follow the instructions on the page. Choose JSON as the key type and create the key. Once created, it automatically reminds to download the generated key (in json format), e.g. ymtest-project-33be509e87d0.json.
+
+## Connect using the GCP Service Account
+
+After we downloaded the GCP service account key to the client machine, we can use it to connect the client PC to the GCP project.
+
+```bash
+$ gcloud auth activate-service-account mydse-k8s-svcacct@ymtest-project.iam.gserviceaccount.com --key-file=ymtest-project-33be509e87d0.json --project=ymtest-project
+Activated service account credentials for: [mydse-k8s-svcacct@ymtest-project.iam.gserviceaccount.com]
+
+$ gcloud config list
+[core]
+account = mydse-k8s-svcacct@ymtest-project.iam.gserviceaccount.com
+disable_usage_reporting = True
+project = ymtest-project
+
+Your active configuration is: [default]
+```
+
+Since this GCP service account has GKE Admin privilege, we can use it to manage the GKE cluster (after connecting to the GKE cluster first). For example, we can install C* Operator CRD and deploy a DSE cluster in the GKE cluster, just as we did above. 
+
+```bash
+$ gcloud container clusters get-credentials ymtest-ck8s-operator --zone us-central1-c --project ymtest-project
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for ymtest-ck8s-operator.
+
+$ kubectl cluster-info
+Kubernetes master is running at https://35.188.154.45
+GLBCDefaultBackend is running at https://35.188.154.45/api/v1/namespaces/kube-system/services/default-http-backend:http/proxy
+KubeDNS is running at https://35.188.154.45/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Metrics-server is running at https://35.188.154.45/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
+```
