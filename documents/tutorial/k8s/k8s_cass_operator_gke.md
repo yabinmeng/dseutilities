@@ -250,9 +250,9 @@ First of all, the GKE cluster we created above is a public cluster. That means e
 ```bash
 $ kubectl get nodes -o wide
 NAME                                                  STATUS   ROLES    AGE    VERSION          INTERNAL-IP   EXTERNAL-IP      OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
-gke-ymtest-ck8s-operator-default-pool-02df0734-90z0   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.12   xx.xxx.xxx.80     Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
-gke-ymtest-ck8s-operator-default-pool-02df0734-b12z   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.10   xxx.xxx.xxx.167   Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
-gke-ymtest-ck8s-operator-default-pool-02df0734-gwfv   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.11   xx.xxx.xxx.51    Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
+gke-ymtest-ck8s-operator-default-pool-02df0734-90z0   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.12   xx.xxx.xxx.xx     Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
+gke-ymtest-ck8s-operator-default-pool-02df0734-b12z   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.10   xxx.xxx.xxx.xxx   Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
+gke-ymtest-ck8s-operator-default-pool-02df0734-gwfv   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.11   xx.xxx.xxx.xx    Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
 ```
 
 In a K8s cluster, the major method of exposing a GKE cluster for external access is through [K8s Services](https://kubernetes.io/docs/concepts/services-networking/service/). 
@@ -328,7 +328,7 @@ dseextsvc-node-port  default  INGRESS    1000      tcp:30278,tcp:23        False
 Now we can test the connection from the client PC using "CQLSH" utility. **NOTE** that we have to specify the exposed NodePort at 30278 instead of the regular 9042.
 
 ```bash
-$ cqlsh 34.69.152.80 30278 -u $CASS_USER -p $CASS_PASS
+$ cqlsh <GKE_Worker_node_Public_IP> 30278 -u $CASS_USER -p $CASS_PASS
 Connected to mydsecluster at 34.69.152.80:30278.
 [cqlsh 5.0.1 | DSE 6.8.1 | CQL spec 3.4.5 | DSE protocol v2]
 Use HELP for help.
@@ -392,8 +392,8 @@ Fetching cluster endpoint and auth data.
 kubeconfig entry generated for ymtest-ck8s-operator.
 
 $ kubectl cluster-info
-Kubernetes master is running at https://35.188.154.45
-GLBCDefaultBackend is running at https://35.188.154.45/api/v1/namespaces/kube-system/services/default-http-backend:http/proxy
-KubeDNS is running at https://35.188.154.45/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
-Metrics-server is running at https://35.188.154.45/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
+Kubernetes master is running at https://xx.xxx.xxx.xx
+GLBCDefaultBackend is running at https://xx.xxx.xxx.xx/api/v1/namespaces/kube-system/services/default-http-backend:http/proxy
+KubeDNS is running at https://xx.xxx.xxx.xx/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Metrics-server is running at https://xx.xxx.xxx.xx/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
 ```
