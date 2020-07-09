@@ -13,31 +13,31 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
     * Zone name or region name
   * K8s version (as of the writing, the latest GKE K8s version is 1.16.10-gke.8)
   
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/cluster_basics.png" alt="Cluster Basics" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/cluster_basics.png" alt="Cluster Basics" width="400"/>
 
 * In the "NODE POOLs --> default-pool" page, specify the following key information
   * The size (the number of nodes) of the K8s cluster 
   * Whether we want GKE to auto-scale the cluster when needed
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/default-pool.png" alt="default-pool" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/default-pool.png" alt="default-pool" width="400"/>
 
 * In the "NODE POOLs --> default-pool --> Nodes" page, specify the following key information
   * GCE instance type (in this tutorial, the instance type is **n1-standard-4**)
     * **NOTE** make sure the selected instance type is big enough to run DSE server. Otherwise, K8s probably won't be able to schedule starting a DSE node Pod successfully
   * GCE instance boot disk type and size
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_machine.type.png" alt="default-pool:Nodes" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_machine.type.png" alt="default-pool:Nodes" width="400"/>
 
 * In the "NODE POOLs --> default-pool --> Security" page, specify the following key information
   * Choose the GCP service account that is allowed to access the GCE instances 
     * **NOTE** that this is GCP service account, not K8s service account. As a GCP security best practice, it is highly recommended NOT to use the default "Compute Engine default service account". Instead, we should create a new GCP service account and grant it proper privileges.
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/security_service.account.png" alt="default-pool:Nodes" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/security_service.account.png" alt="default-pool:Nodes" width="400"/>
 
 
 Leave the values on other pages as default and then click "Create" button. Wait for a short while and you'll see the created GKE cluster showing up in the cluster list.
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_cluster_list.png" alt="default-pool:Nodes" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_cluster_list.png" alt="default-pool:Nodes" width="400"/>
 
 
 # 3. Access the GKE Cluster from Client PC
@@ -216,7 +216,7 @@ mount: /var/lib/kubelet/plugins/kubernetes.io/gce-pd/mounts/gke-ymtest-operator-
 
 It turns out that the default GKE cluster OS image is "Container Optimized OS - cos" has some limitations related with using XFS. Although there is a [work-around](https://medium.com/@allanlei/mounting-xfs-on-gke-adcf9bd0f212), a cleaner way is to change the GKE OS image from "cos" to another one that supports XFS (eg. Ubuntu). This requires we need to recreate a GKE cluster. This time, we need to choose the right image type in the "NODE POOLs --> default-pool --> Nodes" page.
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_os_ubuntu.png" alt="default-pool:Nodes" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/nodes_os_ubuntu.png" alt="default-pool:Nodes" width="400"/>
 
 
 ## 4.5. Verify Deployed DSE Cluster
@@ -270,13 +270,13 @@ From "GCP IAM & Admin --> Service Accounts" page, click "Create Service Account"
 * Compute Admin
 * Kubernetes Engine Admin 
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gcp_k8s_svcacct.png" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gcp_k8s_svcacct.png" width="400"/>
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gcp_k8s_svcacct_role.png" width="500"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gcp_k8s_svcacct_role.png" width="400"/>
 
 
 Please **NOTE** that in a real deployment, a service account as above may likely be given too much permissions than it should have. For example, we probably should at least to separate the GCE instances and GKE cluster access and management privileges into different service accounts and/or user groups. 
 
 Once the service account is created, click its name from the service account list, which brings up the service account detail page. Since we're going to use this service account to manage a GKE cluster from a client machine, we need to add a key for this service account. With this key, we're able to connect to the GCP environment using this service account.
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_k8s_svcacct_addkey.png" width="300"/>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_k8s_svcacct_addkey.png" width="400"/>
