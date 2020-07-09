@@ -304,7 +304,7 @@ Events:                   <none>
 
 Checking the created service detail and we can see that a random port (30278) has been assigned for external access, which also maps to an internal port of 9042 on each DSE node container.
 
-## Create a GCP Firewall Rule to Allow External Access to NodePort
+## 5.2. Create a GCP Firewall Rule to Allow External Access to NodePort
 
 In order for us to access GCP instances from outside, we need to first create a firewall that allows us to do so. The firewall rule we created below allows external access to *ALL* GCE instances (within the current GCP project) on port 30278 (and port 23 for telnet verification purpose) from one specific IP address (which is the client PC's IP address).
 
@@ -323,7 +323,7 @@ dseextsvc-node-port  default  INGRESS    1000      tcp:30278,tcp:23        False
 (e.g. --target-service-accounts=mydse-k8s-svcacct@ymtest-project.iam.gserviceaccount.com)
 ```
 
-## Verify CQLSH Connection from the Client PC
+## 5.3. Verify CQLSH Connection from the Client PC
 
 Now we can test the connection from the client PC using "CQLSH" utility. **NOTE** that we have to specify the exposed NodePort at 30278 instead of the regular 9042.
 
