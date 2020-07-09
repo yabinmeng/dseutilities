@@ -30,7 +30,7 @@ A GKE cluster can be launched from the GCP console or from "gcloud" utility. The
 
 * In the "NODE POOLs --> default-pool --> Security" page, specify the following key information
   * Choose the GCP service account that is allowed to access the GCE instances 
-    * **NOTE** that this is GCP service account, not K8s service account. As a GCP security best practice, it is highly recommended NOT to use "Compute Engine default service account".
+    * **NOTE** that this is GCP service account, not K8s service account. As a GCP security best practice, it is highly recommended NOT to use the default "Compute Engine default service account". Instead, we should create a new GCP service account and grant it proper privileges.
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/security_service.account.png" alt="default-pool:Nodes" width="500"/>
 
@@ -85,10 +85,10 @@ We can also get the GKE cluster (worker) node information using the following co
 
 ```bash
 $ kubectl get nodes
-NAME                                                  STATUS   ROLES    AGE     VERSION
-gke-ymtest-ck8s-operator-default-pool-5f7a5097-7b2h   Ready    <none>   4h47m   v1.16.10-gke.8
-gke-ymtest-ck8s-operator-default-pool-5f7a5097-8qlh   Ready    <none>   4h47m   v1.16.10-gke.8
-gke-ymtest-ck8s-operator-default-pool-5f7a5097-glgm   Ready    <none>   4h47m   v1.16.10-gke.8
+NAME                                                  STATUS   ROLES    AGE    VERSION
+gke-ymtest-ck8s-operator-default-pool-02df0734-90z0   Ready    <none>   173m   v1.16.10-gke.8
+gke-ymtest-ck8s-operator-default-pool-02df0734-b12z   Ready    <none>   173m   v1.16.10-gke.8
+gke-ymtest-ck8s-operator-default-pool-02df0734-gwfv   Ready    <none>   173m   v1.16.10-gke.8
 ```
 
 # 4. Install DSE Cluster using C* Operator
@@ -128,7 +128,7 @@ $ kubectl apply -f server_storage_sc.yaml
 This step is exactly the same as that in the previous tutorial
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/datastax/cass-operator/v1.3.0/docs/user/cass-operator-manifests-v1.16.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/datastax/cass-operator/v1.3.0/docs/user/cass-operator-manifests-v1.16.yaml
 namespace/cass-operator created
 ```
 
@@ -242,4 +242,31 @@ mydsecluster-superuser@cqlsh>
 ```
 
 # 5. External Access to the DSE Cluster (Outside the GKE Cluster)
+
+The GKE cluster we created above is a public cluster. That means each K8s worker node in the cluster has a public IP address. We can get their public IPs by specifying "-o wide" option for "kubectl get nodes" command:
+
+```bash
+$ kubectl get nodes -o wide
+NAME                                                  STATUS   ROLES    AGE    VERSION          INTERNAL-IP   EXTERNAL-IP      OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+gke-ymtest-ck8s-operator-default-pool-02df0734-90z0   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.12   34.69.152.80     Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
+gke-ymtest-ck8s-operator-default-pool-02df0734-b12z   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.10   35.223.112.167   Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
+gke-ymtest-ck8s-operator-default-pool-02df0734-gwfv   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.11   35.202.235.51    Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
+```
+
+
+
+## Use K8s "NodePort" Service to Expose "DSE" Service
+
+
+# Appendix. Manage GKE Cluster with Dedicated GCP Service Account for Better Security
+
+In the above procedure, when we create the GKE cluster, In the "NODE POOLS --> default-pool --> Security" page, we choose the default "Compute Engine default service account" as the GCP service account that is used to access the GCE instances (as K8s worker nodes).
+
+As already mentioned, this is not a GCP security best practice, we should always use a dedicated GCP service account with fine-grained access privileges. In this Appendix, I will describe how to do so.
+
+## Create a GCP Service Account
+
+From "GCP IAM & Admin --> Service Accounts" page, click "Create Service Account" and follows the instructions. In this tutorial, a service account named "mydse-k8s-svcacct" is created. For this service account, the following roles are granted:
+* Compute Admin
+* Kubernetes Engine Admin 
 
