@@ -255,11 +255,15 @@ gke-ymtest-ck8s-operator-default-pool-02df0734-b12z   Ready    <none>   173m   v
 gke-ymtest-ck8s-operator-default-pool-02df0734-gwfv   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.11   xx.xxx.xxx.xx    Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
 ```
 
-In a K8s cluster, the major method of exposing a GKE cluster for external access is through [K8s Services](https://kubernetes.io/docs/concepts/services-networking/service/). 
+In a K8s cluster, the way to allow for external access is through [K8s Services](https://kubernetes.io/docs/concepts/services-networking/service/). There are various types of K8s services but not all are suitable for exposing DSE cluster externally. In this tutorial, I'm demonstrating using K8s [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) service to allow external access to the DSE cluster in the GKE cluster.
 
 ## 5.1. Use K8s "NodePort" Service to Expose "DSE" Service
 
-One K8s service that can expose GKE worker node port to external is [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport). When using NodePort, it exposes a static port externally on each of the worker nodes in a K8s cluster and internally it maps the external facing port to an internal port that offers the actual service.
+---
+
+**NOTE** using "NodePort" to expose K8s service externally is NOT recommended for production deployment because this method is closely tied up with the IP addresses of the Pods deployed in the K8s cluster; and on a particular port which has to be within the range 30000 to 32767. It is therefore a fairly static solution with some limitations. 
+
+---
 
 Let's file create a NodePort service definition file ("dseext_nodeport.yaml") .
 
