@@ -279,3 +279,4 @@ Please **NOTE** that in a real deployment, a service account as above may likely
 
 Once the service account is created, click its name from the service account list, which brings up the service account detail page. Since we're going to use this service account to manage a GKE cluster from a client machine, we need to add a key for this service account. With this key, we're able to connect to the GCP environment using this service account.
 
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_k8s_svcacct_addkey.png" width="300"/>
