@@ -248,9 +248,9 @@ The GKE cluster we created above is a public cluster. That means each K8s worker
 ```bash
 $ kubectl get nodes -o wide
 NAME                                                  STATUS   ROLES    AGE    VERSION          INTERNAL-IP   EXTERNAL-IP      OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
-gke-ymtest-ck8s-operator-default-pool-02df0734-90z0   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.12   34.69.152.80     Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
-gke-ymtest-ck8s-operator-default-pool-02df0734-b12z   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.10   35.223.112.167   Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
-gke-ymtest-ck8s-operator-default-pool-02df0734-gwfv   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.11   35.202.235.51    Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
+gke-ymtest-ck8s-operator-default-pool-02df0734-90z0   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.12   xx.xxx.xxx.80     Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
+gke-ymtest-ck8s-operator-default-pool-02df0734-b12z   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.10   xxx.xxx.xxx.167   Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
+gke-ymtest-ck8s-operator-default-pool-02df0734-gwfv   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.11   xx.xxx.xxx.51    Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
 ```
 
 
