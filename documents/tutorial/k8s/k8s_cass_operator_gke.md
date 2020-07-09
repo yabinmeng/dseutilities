@@ -270,3 +270,6 @@ From "GCP IAM & Admin --> Service Accounts" page, click "Create Service Account"
 * Compute Admin
 * Kubernetes Engine Admin 
 
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gcp_k8s_svcacct.png" alt="default-pool" width="500"/>
+
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gcp_k8s_svcacc_rolet.png" alt="default-pool" width="500"/>
