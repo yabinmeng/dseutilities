@@ -310,7 +310,7 @@ In order for us to access GCP instances from outside, we need to first create a 
 
 ```bash
 $ gcloud compute firewall-rules create dseextsvc-node-port --source-ranges=<client_PC_IP>/32 --allow tcp:30278,tcp:23
-Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/ymtest-project/global/firewalls/dseextsvc-node-port].
+Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/<GCP_project_name>/global/firewalls/dseextsvc-node-port].
 Creating firewall...done.
 NAME                 NETWORK  DIRECTION  PRIORITY  ALLOW             DENY  DISABLED
 dseextsvc-node-port  default  INGRESS    1000      tcp:30278,tcp:23        False
@@ -320,7 +320,7 @@ dseextsvc-node-port  default  INGRESS    1000      tcp:30278,tcp:23        False
 
 ```bash
 --target-service-accounts=<service_account_full_name>
-(e.g. --target-service-accounts=mydse-k8s-svcacct@ymtest-project.iam.gserviceaccount.com)
+(e.g. --target-service-accounts=mydse-k8s-svcacct@<GCP_project_name>.iam.gserviceaccount.com)
 ```
 
 ## 5.3. Verify CQLSH Connection from the Client PC
@@ -365,21 +365,21 @@ Once the service account is created, click its name from the service account lis
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gke_k8s_svcacct_addkey.png" width="400"/>
 
-Follow the instructions on the page. Choose JSON as the key type and create the key. Once created, it automatically reminds to download the generated key (in json format), e.g. ymtest-project-33be509e87d0.json.
+Follow the instructions on the page. Choose JSON as the key type and create the key. Once created, it automatically reminds to download the generated key (in json format), e.g. <GCP_project_name>-33be509e87d0.json.
 
 ## 6.2. Connect using the GCP Service Account
 
 After we downloaded the GCP service account key to the client machine, we can use it to connect the client PC to the GCP project.
 
 ```bash
-$ gcloud auth activate-service-account mydse-k8s-svcacct@ymtest-project.iam.gserviceaccount.com --key-file=ymtest-project-33be509e87d0.json --project=ymtest-project
-Activated service account credentials for: [mydse-k8s-svcacct@ymtest-project.iam.gserviceaccount.com]
+$ gcloud auth activate-service-account mydse-k8s-svcacct@<GCP_project_name>.iam.gserviceaccount.com --key-file=<service_account_key_file_name>.json --project=<GCP_project_name>
+Activated service account credentials for: [mydse-k8s-svcacct@<GCP_project_name>.iam.gserviceaccount.com]
 
 $ gcloud config list
 [core]
-account = mydse-k8s-svcacct@ymtest-project.iam.gserviceaccount.com
+account = mydse-k8s-svcacct@<GCP_project_name>.iam.gserviceaccount.com
 disable_usage_reporting = True
-project = ymtest-project
+project = <GCP_project_name>
 
 Your active configuration is: [default]
 ```
@@ -387,7 +387,7 @@ Your active configuration is: [default]
 Since this GCP service account has GKE Admin privilege, we can use it to manage the GKE cluster (after connecting to the GKE cluster first). For example, we can install C* Operator CRD and deploy a DSE cluster in the GKE cluster, just as we did above. 
 
 ```bash
-$ gcloud container clusters get-credentials ymtest-ck8s-operator --zone us-central1-c --project ymtest-project
+$ gcloud container clusters get-credentials ymtest-ck8s-operator --zone us-central1-c --project <GCP_project_name>
 Fetching cluster endpoint and auth data.
 kubeconfig entry generated for ymtest-ck8s-operator.
 
