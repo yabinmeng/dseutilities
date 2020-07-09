@@ -273,3 +273,9 @@ From "GCP IAM & Admin --> Service Accounts" page, click "Create Service Account"
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gcp_k8s_svcacct.png" width="500"/>
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/resources/k8s_cass_operator_gke/images/gcp_k8s_svcacct_role.png" width="500"/>
+
+
+Please **NOTE** that in a real deployment, a service account as above may likely be given too much permissions than it should have. For example, we probably should at least to separate the GCE instances and GKE cluster access and management privileges into different service accounts and/or user groups. 
+
+Once the service account is created, click its name from the service account list, which brings up the service account detail page. Since we're going to use this service account to manage a GKE cluster from a client machine, we need to add a key for this service account. With this key, we're able to connect to the GCP environment using this service account.
+
