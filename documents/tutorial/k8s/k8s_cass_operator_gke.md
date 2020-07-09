@@ -243,7 +243,9 @@ mydsecluster-superuser@cqlsh>
 
 # 5. External Access to the DSE Cluster (Outside the GKE Cluster)
 
-The GKE cluster we created above is a public cluster. That means each K8s worker node in the cluster has a public IP address. We can get their public IPs by specifying "-o wide" option for "kubectl get nodes" command:
+So far we successfully deployed a DSE cluster in a GKE K8s cluster. Now let's see how to connect to the DSE cluster from outside the GKE cluster (e.g. from the client PC).
+
+First of all, the GKE cluster we created above is a public cluster. That means each K8s worker node in the cluster has a public IP address. We can get their public IPs of the GKE worker nodes (GCE instances) by specifying "-o wide" option for "kubectl get nodes" command:
 
 ```bash
 $ kubectl get nodes -o wide
@@ -253,18 +255,100 @@ gke-ymtest-ck8s-operator-default-pool-02df0734-b12z   Ready    <none>   173m   v
 gke-ymtest-ck8s-operator-default-pool-02df0734-gwfv   Ready    <none>   173m   v1.16.10-gke.8   10.128.0.11   xx.xxx.xxx.51    Ubuntu 18.04.4 LTS   5.3.0-1016-gke   docker://19.3.2
 ```
 
+In a K8s cluster, the major method of exposing a GKE cluster for external access is through [K8s Services](https://kubernetes.io/docs/concepts/services-networking/service/). 
 
+## 5.1. Use K8s "NodePort" Service to Expose "DSE" Service
 
-## Use K8s "NodePort" Service to Expose "DSE" Service
+One K8s service that can expose GKE worker node port to external is [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport). When using NodePort, it exposes a static port externally on each of the worker nodes in a K8s cluster and internally it maps the external facing port to an internal port that offers the actual service.
 
+Let's file create a NodePort service definition file ("dseext_nodeport.yaml") .
 
-# Appendix. Manage GKE Cluster with Dedicated GCP Service Account for Better Security
+```bash
+apiVersion: v1
+kind: Service
+metadata:
+  name: dseextsvc
+spec:
+  type: NodePort
+  selector:
+    cassandra.datastax.com/cluster: mydsecluster
+  ports:
+  - port: 9042
+    protocol: TCP
+    targetPort: 9042
+```
+
+Create the NodePort service named *dseextsvc*
+
+```bash
+$ kubectl -n cass-operator apply -f dseext_nodeport.yaml
+service/dseextsvc created
+
+$ kubectl -n cass-operator describe service dseextsvc
+Name:                     dseextsvc
+Namespace:                cass-operator
+Labels:                   <none>
+Annotations:              kubectl.kubernetes.io/last-applied-configuration:
+                            {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"dseextsvc","namespace":"cass-operator"},"spec":{"ports":[{"port":...
+Selector:                 cassandra.datastax.com/cluster=mydsecluster
+Type:                     NodePort
+IP:                       10.12.0.187
+Port:                     <unset>  9042/TCP
+TargetPort:               9042/TCP
+NodePort:                 <unset>  30278/TCP
+Endpoints:                10.8.0.5:9042,10.8.1.9:9042,10.8.2.3:9042
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+```
+
+Checking the created service detail and we can see that a random port (30278) has been assigned for external access, which also maps to an internal port of 9042 on each DSE node container.
+
+## Create a GCP Firewall Rule to Allow External Access to NodePort
+
+In order for us to access GCP instances from outside, we need to first create a firewall that allows us to do so. The firewall rule we created below allows external access to *ALL* GCE instances (within the current GCP project) on port 30278 (and port 23 for telnet verification purpose) from one specific IP address (which is the client PC's IP address).
+
+```bash
+$ gcloud compute firewall-rules create dseextsvc-node-port --source-ranges=<client_PC_IP>/32 --allow tcp:30278,tcp:23
+Creating firewall...⠹Created [https://www.googleapis.com/compute/v1/projects/ymtest-project/global/firewalls/dseextsvc-node-port].
+Creating firewall...done.
+NAME                 NETWORK  DIRECTION  PRIORITY  ALLOW             DENY  DISABLED
+dseextsvc-node-port  default  INGRESS    1000      tcp:30278,tcp:23        False
+```
+
+**NOTE** We can also limit the firewall rule to only allow external access to a specific set of target GCE instances, e.g. those GCE instances as the GKE cluster worker nodes. We can achieve this by creating a dedicated service account (see Appendix) and add the following condition when creating the firewall rule.
+
+```bash
+--target-service-accounts=<service_account_full_name>
+(e.g. --target-service-accounts=mydse-k8s-svcacct@ymtest-project.iam.gserviceaccount.com)
+```
+
+## Verify CQLSH Connection from the Client PC
+
+Now we can test the connection from the client PC using "CQLSH" utility. **NOTE** that we have to specify the exposed NodePort at 30278 instead of the regular 9042.
+
+```bash
+$ cqlsh 34.69.152.80 30278 -u $CASS_USER -p $CASS_PASS
+Connected to mydsecluster at 34.69.152.80:30278.
+[cqlsh 5.0.1 | DSE 6.8.1 | CQL spec 3.4.5 | DSE protocol v2]
+Use HELP for help.
+mydsecluster-superuser@cqlsh> desc keyspaces;
+
+system_virtual_schema  system_schema  system_backups      dse_insights_local
+dse_system_local       system_auth    dse_insights        dse_system
+dse_security           system_views   system_distributed
+solr_admin             system         system_traces
+testks                 dse_leases     dse_perf
+
+```
+
+# 6. Appendix. Manage GKE Cluster with Dedicated GCP Service Account for Better Security
 
 In the above procedure, when we create the GKE cluster, In the "NODE POOLS --> default-pool --> Security" page, we choose the default "Compute Engine default service account" as the GCP service account that is used to access the GCE instances (as K8s worker nodes).
 
 As already mentioned, this is not a GCP security best practice, we should always use a dedicated GCP service account with fine-grained access privileges. In this Appendix, I will describe how to do so.
 
-## Create a GCP Service Account
+## 6.1. Create a GCP Service Account
 
 From "GCP IAM & Admin --> Service Accounts" page, click "Create Service Account" and follows the instructions. In this tutorial, a service account named "mydse-k8s-svcacct" is given (the full GCP service account is **<given_name>@<GCP_project_name>.iam.gserviceaccount.com**). For this service account, the following roles are granted:
 * Compute Admin
@@ -283,7 +367,7 @@ Once the service account is created, click its name from the service account lis
 
 Follow the instructions on the page. Choose JSON as the key type and create the key. Once created, it automatically reminds to download the generated key (in json format), e.g. ymtest-project-33be509e87d0.json.
 
-## Connect using the GCP Service Account
+## 6.2. Connect using the GCP Service Account
 
 After we downloaded the GCP service account key to the client machine, we can use it to connect the client PC to the GCP project.
 
