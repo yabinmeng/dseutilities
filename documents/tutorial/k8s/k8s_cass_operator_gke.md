@@ -306,7 +306,7 @@ External Traffic Policy:  Cluster
 Events:                   <none>
 ```
 
-Checking the created service detail and we can see that a random port (30278) has been assigned for external access, which also maps to an internal port of 9042 on each DSE node container.
+Checking the created service detail and we can see that a random port (**NodePort: 30278/TCP**) has been assigned for external access, which also maps to an internal port of 9042 on each DSE container.
 
 ## 5.2. Create a GCP Firewall Rule to Allow External Access to NodePort
 
