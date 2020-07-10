@@ -257,7 +257,7 @@ gke-ymtest-ck8s-operator-default-pool-02df0734-gwfv   Ready    <none>   173m   v
 
 In a K8s cluster, the way to allow for external access is through [K8s Services](https://kubernetes.io/docs/concepts/services-networking/service/). There are various types of K8s services but not all are suitable for exposing DSE cluster externally. In this tutorial, I'm demonstrating using K8s [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) service to allow external access to the DSE cluster in the GKE cluster.
 
-## 5.1. Use K8s "NodePort" Service to Expose "DSE" Service
+## 5.1. Use K8s "NodePort" to Expose DSE "Service"
 
 ---
 
