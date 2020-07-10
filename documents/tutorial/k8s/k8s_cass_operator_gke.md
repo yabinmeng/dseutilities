@@ -265,7 +265,7 @@ In a K8s cluster, the way to allow for external access is through [K8s Services]
 
 ---
 
-Let's file create a NodePort service definition file ("dseext_nodeport.yaml") .
+Let's first create a NodePort service definition file ("dseext_nodeport.yaml") .
 
 ```bash
 apiVersion: v1
