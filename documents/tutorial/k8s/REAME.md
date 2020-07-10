@@ -1,4 +1,4 @@
-# Overview
+# Kubernetes (K8s) Tutorial 
 
 This repository has a series of tutorials for K8s with DSE/C*. This list will be continuously growing and at the moment, the following  tutorials are available:
 
