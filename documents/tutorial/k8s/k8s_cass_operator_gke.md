@@ -221,7 +221,7 @@ It turns out that the default GKE cluster OS image is "Container Optimized OS - 
 
 ## 4.5. Verify Deployed DSE Cluster
 
-Once we launched the GKE cluster with the right instance type and OS image. The DSE server Pods are launched successfully and we can verify the connection to it from CQLSH utility from within a DSE Pod (actually the main container, "cassandra", within the Pod).
+Once we launched the GKE cluster with the right instance type and OS image, the DSE server Pods are launched successfully and we can verify the connection to it from CQLSH utility from within a DSE Pod (actually from within the main container, "cassandra", within the Pod).
 
 ```bash
 $ kubectl -n cass-operator get pods
