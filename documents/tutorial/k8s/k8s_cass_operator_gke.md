@@ -261,7 +261,7 @@ In a K8s cluster, the way to allow for external access is through [K8s Services]
 
 ---
 
-**NOTE** using "NodePort" to expose K8s service externally is NOT recommended for production deployment because this method is closely tied up with the IP addresses of the Pods deployed in the K8s cluster; and on a particular port which has to be within the range 30000 to 32767. It is therefore a fairly static solution with some limitations. 
+**NOTE** using "NodePort" to expose K8s service externally is NOT recommended for production deployment because this method is closely tied up with the IP addresses of the containers deployed in the K8s cluster; and on a particular port which has to be within the range 30000 to 32767. It is therefore a fairly static solution with some limitations. 
 
 ---
 
