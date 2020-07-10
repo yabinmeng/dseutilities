@@ -2,7 +2,7 @@
 
 Earlier this year on Mar. 31, DataStax has announced the [release](https://www.datastax.com/press-release/datastax-helps-apache-cassandra-become-industry-standard-scale-out-cloud-native-data) of K8s operator for Apache C*. Later this year on April 7th, DataStax also GA-released DataStax Enterprise (DSE) version 6.8 and K8s operator is part of this release. For simplicity purpose, I'm going to use the term "C* Operator" to refer to K8s operator for Apache C* and DSE.   
 
-In this tutorial, I will demonstrate how to provision a DSE cluster (through C* Operator) on the K8s cluster that we created earlier ([K8s cluster](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/kubeadm_install.md).
+In this tutorial, I will demonstrate how to provision a DSE cluster (through C* Operator) on the on-prem K8s cluster that we created earlier ([K8s cluster](https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/k8s/kubeadm_install.md).
 
 Note that K8s cluster has 3 nodes and the master node is configured to allow launching Pods on it.
 
