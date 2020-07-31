@@ -1,6 +1,6 @@
 # Background
 
-When DSE client-to-server and server-to-server encryption (aka, in-transit SSL/TLS encryption) is enabled, the most important step is to create the keystore and truststore files for each DSE node. This step is not conceptually clear, but practically it is complex and lenghth. For example, DataStax documentation (https://docs.datastax.com/en/security/6.7/security/secSetUpSSLCert.html#secSetUpSSLCert) describes the procedure of how to create the keystore and truststore files based on self-signed root CA certificate. As we can see, the procedure involves quite a few steps and the procedure needs to be repeated for each DSE node.
+When DSE client-to-server and server-to-server encryption (aka, in-transit SSL/TLS encryption) is enabled, the most important step is to create the keystore and truststore files for each DSE node. This step is conceptually clear, but practically it is complex and lenghthy. For example, DataStax documentation (https://docs.datastax.com/en/security/6.7/security/secSetUpSSLCert.html#secSetUpSSLCert) describes the procedure of how to create the keystore and truststore files based on self-signed root CA certificate. As we can see, the procedure involves quite a few steps and the procedure needs to be repeated for each DSE node.
 
 # Script Description
 
