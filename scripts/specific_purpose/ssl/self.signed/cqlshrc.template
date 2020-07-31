@@ -3,7 +3,8 @@
 certfile = ~/SelfSignedSSL/jks/rootca/rootca.crt
 ; Optional, true by default.
 validate = false
-userkey = ~/SelfSignedSSL/jks/cqlsh/cqlsh_<Node.IP.with.Hyphen>.key
+; 'userkey' is required when 2-way SSL is enabled
+;userkey = ~/SelfSignedSSL/jks/cqlsh/cqlsh_<Node.IP.with.Hyphen>.key
 usercert = ~/SelfSignedSSL/jks/cqlsh/cqlsh_<Node.IP.with.Hyphen>.crt.signed
 
 [certfiles]
