@@ -1,0 +1,71 @@
+#!/bin/bash
+CWD="$(cd -P -- "$(dirname -- "$0")" && pwd -P)"
+. $CWD/util/calc-python-path
+
+RUN_IN_BACKGROUND=1
+
+# Specifies log path for garbage collection and oom dumps
+export OPSC_LOG_PATH="log"
+
+while true; do
+    case "$1" in
+        -f)
+            export OPSCENTERD_LOG_STDOUT=1
+            RUN_IN_BACKGROUND=0
+            shift
+        ;;
+        --)
+            shift
+            break
+        ;;
+        *)
+            echo "Invalid argument." >&2
+            exit 1
+        ;;
+    esac
+done
+
+JAVA="${JAVA:-$(./bin/find-java)}"
+if [ "x$JAVA" == "x" ]; then
+    echo "Could not locate java process. Please put java on your path or set JAVA_HOME to /path/to/your/jvm"
+    exit 1
+fi
+
+if [ "x$OPSC_IS_PACKAGE" != "x" ]; then
+    export OPSC_LOG_PATH="/var/log/opscenter"
+fi
+
+java_ver_output=`"${JAVA:-java}" -version 2>&1`
+jvmver=`echo "$java_ver_output" | grep '[openjdk|java] version' | awk -F'"' 'NR==1 {print $2}' | cut -d\- -f1`
+JVM_VERSION=${jvmver%_*}
+echo "Detected Java version $JVM_VERSION"
+
+JAVA8_GC="-XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCCause -XX:+PrintTenuringDistribution
+          -XX:+PrintGCApplicationStoppedTime -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5
+          -XX:GCLogFileSize=1M -Xloggc:$OPSC_LOG_PATH/gc.log -verbose:gc"
+
+JAVA9_GC="-Xlog:gc*=debug,age*=trace,safepoint=trace:file=$OPSC_LOG_PATH/gc.log:time:filecount=5,filesize=1024 --illegal-access=permit"
+
+if [ "$JVM_VERSION" \< "9" ] ; then
+    GC_OPTIONS=${JAVA8_GC}
+else
+    GC_OPTIONS=${JAVA9_GC}
+fi
+
+TWISTD="./bin/twistd"
+REACTOR="-r select"
+OPSC_JVM_OPTS="-server -Xmx4096m -Xms4096m -Dpython.cachedir.skip=false
+                -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$OPSC_LOG_PATH
+                -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:G1ReservePercent=0
+                -XX:ParallelGCThreads=4 -XX:ConcGCThreads=4 $GC_OPTIONS $OPSC_JVM_OPTS"
+JYTHON_CLASS="org.python.util.jython"
+LAUNCH_TWISTD="$TWISTD $REACTOR $TWISTD_EXTRA --pidfile= -noy bin/start_opscenter.py"
+LAUNCH_OPSC_COMMAND="$JAVA $OPSC_JVM_OPTS -cp $CLASSPATH $JYTHON_CLASS $LAUNCH_TWISTD"
+
+if [ "x$OPSC_IS_PACKAGE" != "x" ]; then
+    exec $LAUNCH_OPSC_COMMAND > /dev/null 2>&1
+elif [ $RUN_IN_BACKGROUND = 1 ]; then
+    exec $LAUNCH_OPSC_COMMAND > /dev/null 2>&1 &
+else
+    exec $LAUNCH_OPSC_COMMAND
+fi
