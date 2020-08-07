@@ -1,0 +1,56 @@
+---
+- name: Install required system packages for Docker
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg-agent
+    - software-properties-common
+
+- name: Add Docker's official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Verify that we have the right key fingerprint
+  apt_key:
+    id: 0EBFCD88
+    state: present
+  tags:
+    - docker
+
+- name: Get OS sub-type information
+  shell: 'lsb_release -cs'
+  register: os_sub_type_shell_output
+
+- name: Set OS sub-type to a variable
+  set_fact: os_sub_type="{{ os_sub_type_shell_output.stdout }}"
+  
+#- debug: msg="{{ os_sub_type }}"
+
+- name: Add Docker's Debian Repository
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/ubuntu {{ os_sub_type }} stable"
+    state: present
+
+- name: Install Docker (latest version)
+  apt: 
+    name: docker-ce
+    update_cache: yes
+    state: latest
+
+- name: Add remote user {{ docker_user }} to "docker" group
+  user:
+    name: "{{ docker_user }}"
+    group: "docker"
+    append: yes
+
+- name: Install docker-compose
+  get_url: 
+    url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: '+x'

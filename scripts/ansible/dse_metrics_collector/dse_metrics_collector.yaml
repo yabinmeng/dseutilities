@@ -1,0 +1,12 @@
+---
+# Install Docker on the "metrics server"
+- hosts: metrics_server
+  any_errors_fatal: true
+  become: true
+  become_method: sudo
+  tasks:
+  - name: Get the current timestamp
+    shell: 'date +%Y%m%d%H%M%S'
+    register: current_timestamp
+  roles:
+  - { role: install_docker_debian }

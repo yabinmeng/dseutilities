@@ -1,0 +1,18 @@
+---
+### DSE Metrics Collector configuration
+#   - mc_xxx 
+#
+# (packaged DSE install) collectd config directory
+mc_collectd_dir: /etc/dse/collectd
+# (tarball DSE install) collectd config directory
+#mc_collectd_dir: <DSE_tarball_HOMEDIR>/resources/dse/collectd/etc/collectd/
+
+# collectd listening port
+collectd_listening_port: 9103
+
+# DSE service user
+dse_svc_user: cassandra
+
+# Docker user
+docker_user: automaton
+
