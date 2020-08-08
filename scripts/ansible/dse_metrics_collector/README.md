@@ -1,4 +1,4 @@
-# Background
+# Overview
 
 [DataStax Enterprise (DSE) Metrics Collector](https://docs.datastax.com/en/monitoring/doc/monitoring/opsUseMetricsCollector.html) is a relatively new monitoring solution from DataStax that is used to monitor DSE cluster metrics (including OS metrics). It is part of DSE software package and was introduced in DSE verion 6.7 (enabled by default) and backported on DSE 6.0.5+ and DSE 5.1.14+ (disabled by default).
 
@@ -16,7 +16,7 @@ The combination of Prometheus and [Grafana](https://grafana.com/) is a very popu
 * Configuration templates for collecting DSE MC metrics from a DSE cluster
 * A full suite of pre-built Grafana dashboards to view DSE server and OS metrics of a DSE cluster.
 
-# Introduction 
+## (Fully) Automate the Integration 
 
 Although the DataStax has already simplified the integration of DSE MC with Prometheus and Grafna, the [procedure](https://docs.datastax.com/en/monitoring/doc/monitoring/metricsCollector/mcExportMetricsDocker.html) involved still has many work involved. For example,
 
@@ -26,8 +26,31 @@ Although the DataStax has already simplified the integration of DSE MC with Prom
 
 This repository aims to fully automate the DSE MC integration procedure with (container based) Prometheus and Grafana servers. All the above mentioned manual steps are fully taken care of and it is also able to detect DSE cluster specific information (e.g. DSE cluster name; DSE node IP list) automatically.
 
-## Usage
+### Usage
+
+In order to use this repo.,
+
+First, update the **hosts** file correspondingly that matches your own situation. In particular, replace the host machine IP(s) under the two categories: *dse_server* and *metrics_server*
+
+```bash
+[dse_server]
+<DSE_Node_IP_1>
+<DSE_Node_IP_2>
+<DSE_Node_IP_3>
+...
+
+[metrics_server]
+<Prometheus_and_Grafana_Host_IP>
+```
+
+Second, simply run the following Ansible playbook. Please make sure the required SSH access for Ansible is pre-configured properly.
 
 ```bash
 ansible-playbook -i ./hosts dse_metrics_collector.yaml --private-key <ssh_private_key> -u <ssh_user>
+```
+
+Once the ansible playbook is successfully executed, you can view the DSE metrics dashboard by accessing the following address:
+
+```bash
+http://<Prometheus_and_Grafana_Host_IP>:3000
 ```
