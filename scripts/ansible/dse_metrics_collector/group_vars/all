@@ -3,16 +3,33 @@
 #   - mc_xxx 
 #
 # (packaged DSE install) collectd config directory
-mc_collectd_dir: /etc/dse/collectd
+dse_mc_collectd_dir: /etc/dse/collectd
 # (tarball DSE install) collectd config directory
-#mc_collectd_dir: <DSE_tarball_HOMEDIR>/resources/dse/collectd/etc/collectd/
+#dse_mc_collectd_dir: <DSE_tarball_HOMEDIR>/resources/dse/collectd/etc/collectd/
 
 # collectd listening port
 collectd_listening_port: 9103
 
-# DSE service user
+# DSE service and service user
+dse_svc: cassandra
 dse_svc_user: cassandra
 
-# Docker user
-docker_user: automaton
+# Docker compose version
+docker_compose_version: 1.26.2
 
+# Remote user
+remote_operator_user: automaton
+
+# DSE metrics collector GitHub code insall/unpack home directory
+dse_mc_code_download_homedir: /home/automaton/dse_mc_download
+dse_mc_name: dse-metric-reporter-dashboards
+dse_mc_master_branch_name: "{{ dse_mc_name }}-master"
+dse_mc_master_branch_zipfile_name: "{{ dse_mc_master_branch_name }}.zip"
+
+# URL links
+url_docker_debian_pkg: https://download.docker.com/linux/ubuntu
+url_docker_compose_linux_download: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+url_dse_mc_code_zip: https://github.com/datastax/{{ dse_mc_name }}/archive/master.zip
+
+# DSE Prometheus Configuration file
+dse_prom_conf_file: prometheus.conf

@@ -10,6 +10,7 @@
     - curl
     - gnupg-agent
     - software-properties-common
+    - unzip
 
 - name: Add Docker's official GPG key
   apt_key:
@@ -34,7 +35,7 @@
 
 - name: Add Docker's Debian Repository
   apt_repository:
-    repo: "deb https://download.docker.com/linux/ubuntu {{ os_sub_type }} stable"
+    repo: "deb {{ url_docker_debian_pkg }} {{ os_sub_type }} stable"
     state: present
 
 - name: Install Docker (latest version)
@@ -43,14 +44,14 @@
     update_cache: yes
     state: latest
 
-- name: Add remote user {{ docker_user }} to "docker" group
+- name: Add remote user "{{ remote_operator_user }} to "docker" group
   user:
-    name: "{{ docker_user }}"
+    name: "{{ remote_operator_user }}"
     group: "docker"
     append: yes
 
-- name: Install docker-compose
+- name: Install docker-compose (version {{ docker_compose_version }})
   get_url: 
-    url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
+    url : "{{ url_docker_compose_linux_download }}"
     dest: /usr/local/bin/docker-compose
     mode: '+x'

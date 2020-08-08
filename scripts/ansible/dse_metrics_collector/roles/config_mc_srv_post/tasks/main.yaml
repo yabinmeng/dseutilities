@@ -1,0 +1,11 @@
+---
+- name: Extract DSE metrics collector zip file to "/opt" diretory
+  shell: "sudo unzip {{ dse_mc_code_download_homedir }}/{{ dse_mc_master_branch_zipfile_name }} -d /opt"
+
+- name: Recursively change ownership of directory {{ dse_mc_code_install_homedir }} to "{{ remote_operator_user }}"
+  file:
+    path: "/opt/{{ dse_mc_master_branch_name }}"
+    state: directory
+    recurse: yes
+    owner: "{{ remote_operator_user }}"
+    group: "{{ remote_operator_user }}"

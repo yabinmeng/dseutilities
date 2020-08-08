@@ -1,0 +1,19 @@
+---
+- name: Create the directory (if it does not exist) as the home directory to store DSE metrics collector zip file
+  file:
+    path: "{{ dse_mc_code_download_homedir }}"
+    state: directory
+    mode: '0755'
+
+- name: Download DSE metrics collector bundle zip file
+  get_url: 
+    url: "{{ url_dse_mc_code_zip }}"
+    dest: "{{ dse_mc_code_download_homedir }}"
+ 
+- name: Recursively change ownership of directory {{ dse_mc_code_install_homedir }} to "{{ remote_operator_user }}"
+  file:
+    path: "{{ dse_mc_code_download_homedir }}"
+    state: directory
+    recurse: yes
+    owner: "{{ remote_operator_user }}"
+    group: "{{ remote_operator_user }}"

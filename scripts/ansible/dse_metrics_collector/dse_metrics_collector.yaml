@@ -1,12 +1,25 @@
 ---
-# Install Docker on the "metrics server"
+# Install Docker on the "Metrics Server" and other pre-configuration
 - hosts: metrics_server
   any_errors_fatal: true
   become: true
   become_method: sudo
-  tasks:
-  - name: Get the current timestamp
-    shell: 'date +%Y%m%d%H%M%S'
-    register: current_timestamp
   roles:
   - { role: install_docker_debian }
+  - { role: config_mc_srv_pre }
+
+# Configuration on DSE servers
+- hosts: dse_server
+  any_errors_fatal: true
+  become: true
+  become_method: sudo
+  roles:
+  - { role: config_dse_srv }
+
+# Post-configuration on the "Metrics Server"
+- hosts: metrics_server
+  any_errors_fatal: true
+  become: true
+  become_method: sudo
+  roles:
+  - { role: config_mc_srv_post }

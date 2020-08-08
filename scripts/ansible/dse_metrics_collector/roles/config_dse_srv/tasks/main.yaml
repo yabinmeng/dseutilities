@@ -1,0 +1,58 @@
+---
+- name: Create folder for "collectd"
+  file:
+    path: "{{ dse_mc_collectd_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ dse_svc_user }}"
+    group: "{{ dse_svc_user }}"
+
+- name: Create prometheus.conf file within "collectd" directory
+  copy:
+    dest: "{{ dse_mc_collectd_dir }}/{{ dse_prom_conf_file }}"
+    owner: "{{ dse_svc_user }}"
+    group: "{{ dse_svc_user }}"
+    content: |
+        LoadPlugin write_prometheus
+        
+        <Plugin write_prometheus>
+          Port "{{ collectd_listening_port }}"
+        </Plugin>
+
+- name: Get PID information the running running DSE service
+  shell: "ps -ef | grep cassandra | grep -v grep | grep -v collectd | awk '{print $2}'"
+  register: dse_process_shell_output
+
+- name: Set DSE PID to a variable
+  set_fact: dse_pid="{{ dse_process_shell_output.stdout }}"
+
+#- debug: msg="{{ dse_pid }}"
+
+- name: Stop proceeding further if there is no active DSE service
+  fail: msg="DSE is not running. Please start DSE first!"
+  when: "dse_pid|length == 0"
+
+#
+## Disable and re-enable DSE metrics collector in order to make effective collectd prometheus configruation changes
+#
+- name: Disable DSE metrics collector
+  shell: dsetool insights_config --mode DISABLED
+
+- name: Enable DSE metrics collector
+  shell: dsetool insights_config --mode ENABLED_WITH_LOCAL_STORAGE
+
+#
+# Check if DSE metrics collector is listening on port "{{ collectd_listening_port }}"
+#
+- name: Get DSE metrics collector listening port information
+  shell: "netstat -ntlp | grep 9103 | awk -F':' '{print $4}' | sed 's/ //g'"
+  register: listening_port_shell_output
+
+- name: Set DSE metrics collector listening port to a variable
+  set_fact: detected_listening_port="{{ listening_port_shell_output.stdout }}"
+
+#- debug: msg="{{ detected_listening_port }}"
+
+- name: Stop proceeding further if there is no proper DSE metrics collector listening port
+  fail: msg="DSE metrics collector is detected listening on port {{ detected_listening_port }} (expecting port {{ collectd_listening_port }})!"
+  when: detected_listening_port|int != collectd_listening_port|int
