@@ -33,3 +33,6 @@ url_dse_mc_code_zip: https://github.com/datastax/{{ dse_mc_name }}/archive/maste
 
 # DSE Prometheus Configuration file
 dse_prom_conf_file: prometheus.conf
+
+# Dummy DSE cluster name (will be replaced dynamically)
+dse_cluster_name: DUMMY

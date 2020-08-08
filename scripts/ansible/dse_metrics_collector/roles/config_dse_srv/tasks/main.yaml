@@ -56,3 +56,16 @@
 - name: Stop proceeding further if there is no proper DSE metrics collector listening port
   fail: msg="DSE metrics collector is detected listening on port {{ detected_listening_port }} (expecting port {{ collectd_listening_port }})!"
   when: detected_listening_port|int != collectd_listening_port|int
+
+- name: Get DSE cluster name information
+  run_once: true
+  shell: |
+    nodetool describecluster | head -2 | tail -1 | awk -F': ' '{print $2}'
+  register: nt_desc_cluster_info
+
+#- debug: msg={{ nt_desc_cluster_info }}
+#  run_once: true
+
+- name: Set DSE cluster name to a global variable
+  run_once: true
+  set_fact: dse_cluster_name="{{ nt_desc_cluster_info.stdout }}"
