@@ -1,7 +1,7 @@
 [dse_server]
-10.101.32.252
-10.101.33.166
-10.101.33.229
+<DSE_server1_IP>
+<DSE_server2_IP>
+<DSE_server2_IP>
 
 [metrics_server]
-10.101.32.252
+<DSE_server1_IP>
