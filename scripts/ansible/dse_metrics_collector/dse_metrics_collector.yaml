@@ -5,8 +5,8 @@
   become: true
   become_method: sudo
   roles:
-  #- { role: install_docker_debian }
-  #- { role: config_mc_srv_pre }
+  - { role: install_docker_debian }
+  - { role: config_mc_srv_pre }
 
 # Configuration on DSE servers
 - hosts: dse_server

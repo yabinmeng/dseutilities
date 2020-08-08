@@ -23,18 +23,22 @@
 - name: Configure Prometheus {{ prom_tg_dse_json_file }} file 
   shell: |
     cat "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}" | \
-      jq '{{ cluster_key }} = "{{ dse_cluster_name }}"' > \
-         "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}.tmp"
-  
-    mv "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}.tmp" \
-       "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}"
-  
-    cat "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}" | \
+      jq '{{ cluster_key }} = "{{ dse_cluster_name }}"' | \
+      jq '{{ targets_key }} = []' | \
       jq '{{ targets_key }} += [{{ dse_nodes_ips_with_mc_port }}]' > \ 
          "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}.tmp"
-   
+  
     mv "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}.tmp" \
        "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}"
   
     chown "{{ remote_operator_user }}:{{ remote_operator_user }}" \
        "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}"
+
+- name: Start docker container of Prometheus and Grafana servers 
+  docker_compose:
+    project_src: /opt/{{ dse_mc_master_branch_name }}
+    state: present
+  register: dc_output
+
+#- debug: 
+#    var: dc_output
