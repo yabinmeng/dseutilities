@@ -1,3 +1,3 @@
-targets_key: ".[0].targets[0]"
+targets_key: ".[0].targets"
 cluster_key: ".[0].labels.cluster"
 prom_tg_dse_json_file: "tg_dse.json"

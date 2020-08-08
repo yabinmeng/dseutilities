@@ -62,10 +62,13 @@
   shell: |
     nodetool describecluster | head -2 | tail -1 | awk -F': ' '{print $2}'
   register: nt_desc_cluster_info
-
 #- debug: msg={{ nt_desc_cluster_info }}
 #  run_once: true
 
 - name: Set DSE cluster name to a global variable
   run_once: true
   set_fact: dse_cluster_name="{{ nt_desc_cluster_info.stdout }}"
+
+- name: Get DSE node list with Metrics Collector listening port
+  run_once: true
+  set_fact: dse_nodes_ips_with_mc_port="{% for host in groups['dse_server'] %}"{{ hostvars[host].ansible_eth0.ipv4.address }}:{{ collectd_listening_port }}"{% if not loop.last %},{% endif %}{% endfor %}"

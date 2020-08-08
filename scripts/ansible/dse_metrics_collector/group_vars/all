@@ -34,5 +34,10 @@ url_dse_mc_code_zip: https://github.com/datastax/{{ dse_mc_name }}/archive/maste
 # DSE Prometheus Configuration file
 dse_prom_conf_file: prometheus.conf
 
-# Dummy DSE cluster name (will be replaced dynamically)
+# DSE cluster name (will be replaced dynamically)
+# - dummy value which will be replaced dynamically
 dse_cluster_name: DUMMY
+
+# All DSE nodes with Metrics Collector listenign port (9103)
+# - dummy value which will be replaced dynamically
+dse_nodes_ips_with_mc_port: DUMMY
