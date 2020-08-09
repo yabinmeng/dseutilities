@@ -18,7 +18,7 @@ The combination of Prometheus and [Grafana](https://grafana.com/) is a very popu
 
 ## 1.2. Automate the Integration 
 
-Although the DataStax has already simplified the integration of DSE MC with Prometheus and Grafna, the [procedure](https://docs.datastax.com/en/monitoring/doc/monitoring/metricsCollector/mcExportMetricsDocker.html) still has some manual work involved. For example,
+Although DataStax has already simplified the integration of DSE MC with Prometheus and Grafna, the [procedure](https://docs.datastax.com/en/monitoring/doc/monitoring/metricsCollector/mcExportMetricsDocker.html) still has some manual work involved. For example,
 
 * We still need to install docker and docker compose on the host machine where we intend to run Prometheus and Grafana (assuming we don't have existing Prometheus and Grafana servers)
 * We still need to configure "collectd" and DSE MC on each of DSE servers.
