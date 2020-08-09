@@ -24,13 +24,13 @@ Although the DataStax has already simplified the integration of DSE MC with Prom
 * We still need to configure "collectd" and DSE MC on each of DSE servers.
 * We still need to adjust Prometheus configuration per DSE cluster so it can monitor all DSE nodes within the cluster.
 
-The Ansible playbook in this repository aims to automate the DSE MC integration procedure with (container based) Prometheus and Grafana servers. All the above mentioned manual steps are taken care of and the Ansible playbook is also able to automatically detect and configure almost all DSE cluster specific information (e.g. DSE cluster name; DSE node IP list).
+The Ansible playbook in this repository aims to automate the DSE MC integration procedure with (container based) Prometheus and Grafana servers. All the above mentioned manual steps are taken care of and the Ansible playbook is also able to automatically detect and configure almost all DSE cluster specific information (e.g. DSE cluster name; DSE node IP list) as much as possible.
 
 ### 1.2.1. Usage
 
 #### 1.2.1.1. **hosts** file 
 
-In order to monitor a specific DSE cluster, we need to first update the **hosts** by adding the proper host machine IP(s) under the two categories: 
+In order to monitor a specific DSE cluster, we need to first update the **hosts** file by adding the proper host machine IP(s) under the two categories: 
 * *[dse_server]*: the list of IPs of the DSE servers in the cluster 
 * *[metrics_server]*: the host machine IP where the Prometheus and Grafana servers are running
 
@@ -45,11 +45,7 @@ In order to monitor a specific DSE cluster, we need to first update the **hosts*
 <Prometheus_and_Grafana_Host_IP>
 ```
 
-#### 1.2.1.2. Global Variables
-
-
-
-#### 1.2.1.3. Executing the Script
+#### 1.2.1.2. Executing the Script
 
 Running the Ansible playbook is simple, as below. Please make sure the required SSH access (with sudo privilege) for Ansible execution is pre-configured properly.
 

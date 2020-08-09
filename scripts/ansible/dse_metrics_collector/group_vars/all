@@ -1,43 +1,70 @@
 ---
-### DSE Metrics Collector configuration
-#   - mc_xxx 
-#
-# (packaged DSE install) collectd config directory
-dse_mc_collectd_dir: /etc/dse/collectd
-# (tarball DSE install) collectd config directory
-#dse_mc_collectd_dir: <DSE_tarball_HOMEDIR>/resources/dse/collectd/etc/collectd/
 
+### DSE collectd related configuration 
+#
+# (CAN BE CUSTOMIZED) 
+#
+# collectd config directory (packaged DSE install)
+dse_mc_collectd_dir: /etc/dse/collectd
+# collectd config directory ((tarball DSE install) )
+#dse_mc_collectd_dir: <DSE_tarball_HOMEDIR>/resources/dse/collectd/etc/collectd/
+#
 # collectd listening port
 collectd_listening_port: 9103
 
-# DSE service and service user
-dse_svc: cassandra
+
+### DSE service name 
+#
+# (CAN BE CUSTOMIZED)  
+#
+# DSE service user
 dse_svc_user: cassandra
-
-# Docker compose version
-docker_compose_version: 1.26.2
-
-# Remote user
+#
+# Remote user (that owns downloaded Metrics Collector codes)
 remote_operator_user: automaton
 
-# DSE metrics collector GitHub code insall/unpack home directory
+### DSE service name and 
+#
+# (CAN BE CUSTOMIZED)  
+#
+# DSE metrics collector GitHub code download home directory
 dse_mc_code_download_homedir: /home/automaton/dse_mc_download
+
+
+### Various Constants  
+#
+# (DO NOT change)
+# Various names related with DSE MC integration with Prometheus and Grafana
+#
 dse_mc_name: dse-metric-reporter-dashboards
 dse_mc_master_branch_name: "{{ dse_mc_name }}-master"
 dse_mc_master_branch_zipfile_name: "{{ dse_mc_master_branch_name }}.zip"
 
-# URL links
+#
+# (DO NOT change)
+# URL links for downloading docker, docker-compose, and DSE MC integration with Prometheus and Grafana
+#
+docker_compose_version: 1.26.2
 url_docker_debian_pkg: https://download.docker.com/linux/ubuntu
 url_docker_compose_linux_download: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
 url_dse_mc_code_zip: https://github.com/datastax/{{ dse_mc_name }}/archive/master.zip
 
+#
+# (DO NOT change)
 # DSE Prometheus Configuration file
+#
 dse_prom_conf_file: prometheus.conf
 
-# DSE cluster name (will be replaced dynamically)
+#
+# (DO NOT change)
+# DSE cluster name
 # - dummy value which will be replaced dynamically
+#
 dse_cluster_name: DUMMY
 
-# All DSE nodes with Metrics Collector listenign port (9103)
+# 
+# (DO NOT change)
+# All DSE nodes with Metrics Collector listening port (9103)
 # - dummy value which will be replaced dynamically
+#
 dse_nodes_ips_with_mc_port: DUMMY
