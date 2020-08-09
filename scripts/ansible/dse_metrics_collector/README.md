@@ -44,8 +44,14 @@ In order to monitor a specific DSE cluster, we need to first update the **hosts*
 [metrics_server]
 <Prometheus_and_Grafana_Host_IP>
 ```
+#### 1.2.1.2. Get DSE Server IP List
 
-#### 1.2.1.2. Executing the Script
+* For a DSE cluster (either single-DC or multi-DC), the following bash command can be used to get the IP list of all DSE servers within the cluster. 
+```
+$  nodetool status | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"
+```
+
+#### 1.2.1.3. Executing the Script
 
 Running the Ansible playbook is simple, as below. Please make sure the required SSH access (with sudo privilege) for Ansible execution is pre-configured properly.
 
