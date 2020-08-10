@@ -1,6 +1,6 @@
 ---
 # Install Docker on the "Metrics Server" and other pre-configuration
-- hosts: nosqlbench
+- hosts: nosqlbench_clnt
   any_errors_fatal: true
   become: true
   become_method: sudo
