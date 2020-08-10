@@ -9,8 +9,8 @@ dse_mc_collectd_dir: /etc/dse/collectd
 # collectd config directory ((tarball DSE install) )
 #dse_mc_collectd_dir: <DSE_tarball_HOMEDIR>/resources/dse/collectd/etc/collectd/
 #
-# collectd listening port
-collectd_listening_port: 9103
+# Prometheus listening port for collecting metrics from collectd (including DSE MC)
+prom_collectd_listening_port: 9103
 
 
 ### DSE service name 
@@ -48,6 +48,7 @@ docker_compose_version: 1.26.2
 url_docker_debian_pkg: https://download.docker.com/linux/ubuntu
 url_docker_compose_linux_download: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
 url_dse_mc_code_zip: https://github.com/datastax/{{ dse_mc_name }}/archive/master.zip
+url_nosqlbench: https://github.com/nosqlbench/nosqlbench/releases/download/nosqlbench-3.12.135/nb
 
 #
 # (DO NOT change)

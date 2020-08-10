@@ -4,6 +4,3 @@
 
 [metrics_server]
 10.101.32.252
-
-[nosqlbench]
-10.101.32.252

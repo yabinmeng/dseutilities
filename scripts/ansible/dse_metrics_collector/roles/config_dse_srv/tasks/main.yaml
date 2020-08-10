@@ -16,7 +16,7 @@
         LoadPlugin write_prometheus
         
         <Plugin write_prometheus>
-          Port "{{ collectd_listening_port }}"
+          Port "{{ prom_collectd_listening_port }}"
         </Plugin>
 
 - name: Get PID information the running running DSE service
@@ -42,7 +42,7 @@
   shell: dsetool insights_config --mode ENABLED_WITH_LOCAL_STORAGE
 
 #
-# Check if DSE metrics collector is listening on port "{{ collectd_listening_port }}"
+# Check if DSE metrics collector is listening on port "{{ prom_collectd_listening_port }}"
 #
 - name: Get DSE metrics collector listening port information
   shell: "netstat -ntlp | grep 9103 | awk -F':' '{print $4}' | sed 's/ //g'"
@@ -54,8 +54,8 @@
 #- debug: msg="{{ detected_listening_port }}"
 
 - name: Stop proceeding further if there is no proper DSE metrics collector listening port
-  fail: msg="DSE metrics collector is detected listening on port {{ detected_listening_port }} (expecting port {{ collectd_listening_port }})!"
-  when: detected_listening_port|int != collectd_listening_port|int
+  fail: msg="DSE metrics collector is detected listening on port {{ detected_listening_port }} (expecting port {{ prom_collectd_listening_port }})!"
+  when: detected_listening_port|int != prom_collectd_listening_port|int
 
 - name: Get DSE cluster name information
   run_once: true
@@ -76,6 +76,6 @@
 
 - name: Get DSE node list with Metrics Collector listening port
   run_once: true
-  set_fact: dse_nodes_ips_with_mc_port="{% for host in groups['dse_server'] %}"{{ hostvars[host].ansible_eth0.ipv4.address }}:{{ collectd_listening_port }}"{% if not loop.last %},{% endif %}{% endfor %}"
+  set_fact: dse_nodes_ips_with_mc_port="{% for host in groups['dse_server'] %}"{{ hostvars[host].ansible_eth0.ipv4.address }}:{{ prom_collectd_listening_port }}"{% if not loop.last %},{% endif %}{% endfor %}"
 #- debug: msg={{ dse_nodes_ips_with_mc_port }}
 #  run_once: true
