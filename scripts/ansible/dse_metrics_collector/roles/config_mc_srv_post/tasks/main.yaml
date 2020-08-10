@@ -38,11 +38,11 @@
     chown "{{ remote_operator_user }}:{{ remote_operator_user }}" \
        "/opt/{{ dse_mc_master_branch_name }}/prometheus/{{ prom_tg_dse_json_file }}"
 
-#- name: Start docker container of Prometheus and Grafana servers 
-#  docker_compose:
-#    project_src: /opt/{{ dse_mc_master_branch_name }}
-#    state: present
-#  register: dc_output
+- name: Start docker container of Prometheus and Grafana servers 
+  docker_compose:
+    project_src: /opt/{{ dse_mc_master_branch_name }}
+    state: present
+  register: dc_output
 
 #- debug: 
 #    var: dc_output
