@@ -65,10 +65,17 @@
 #- debug: msg={{ nt_desc_cluster_info }}
 #  run_once: true
 
+##
+# NOTE: set_fact is local! 
+#
 - name: Set DSE cluster name to a global variable
   run_once: true
   set_fact: dse_cluster_name="{{ nt_desc_cluster_info.stdout }}"
+#- debug: msg={{ dse_cluster_name }}
+#  run_once: true
 
 - name: Get DSE node list with Metrics Collector listening port
   run_once: true
   set_fact: dse_nodes_ips_with_mc_port="{% for host in groups['dse_server'] %}"{{ hostvars[host].ansible_eth0.ipv4.address }}:{{ collectd_listening_port }}"{% if not loop.last %},{% endif %}{% endfor %}"
+#- debug: msg={{ dse_nodes_ips_with_mc_port }}
+#  run_once: true
