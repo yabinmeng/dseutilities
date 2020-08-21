@@ -1,6 +1,7 @@
 [dse_server]
-10.101.33.166
-10.101.33.229
+<dse_server1_ip>
+<dse_server2_ip>
+<dse_server3_ip>
 
 [metrics_server]
-10.101.32.252
+<metrics_server_ip>
