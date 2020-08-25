@@ -1,0 +1,10 @@
+### Target mongodb version
+#target_ver_major: 4.4
+#target_ver_minor: 1
+target_ver_major: 4.2
+target_ver_minor: 9
+target_ver: "{{ target_ver_major }}.{{ target_ver_minor }}"
+
+### MongoDB main configuration file (and key items)
+main_cfg_file: /etc/mongod.conf
+binding_port: 27017

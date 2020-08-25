@@ -1,0 +1,51 @@
+---
+# Install standalone MongoDB server
+- hosts: standalone_mongodb_srv
+  any_errors_fatal: true
+  become: true
+  become_method: sudo
+  tasks: 
+  - name: Add a repository file that corresponds to the major MongoDB version
+    lineinfile:
+      name: "/etc/apt/sources.list.d/mongodb-org-{{ target_ver_major }}.list"
+      create: yes
+      mode: 0666
+      regexp: 'mongodb-org\/{{ target_ver_major }}'
+      line: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/{{ target_ver_major }} multiverse"
+      state: present
+  - name: Add the repository key
+    apt_key: 
+      url: "https://www.mongodb.org/static/pgp/server-{{ target_ver_major }}.asc"
+      state: present
+  - name: Install MongoDB community version
+    apt:
+      name: "{{ item }}={{ target_ver }}"
+      state: present
+      update_cache: yes
+    with_items:
+      - mongodb-org
+      - mongodb-org-server
+      - mongodb-org-shell
+      - mongodb-org-mongos
+      - mongodb-org-tools
+   - name: Modify main configuration items
+    lineinfile:
+      name: "{{ main_cfg_file }}"
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      owner: mongodb
+      group: mongodb
+      mode: 0644
+    with_items:
+      - { regexp: 'port\: 20717', line: "  port: {{ binding_port }}" }
+      - { regexp: 'bindIp\:', line: "  bindIp: 127.0.0.1, {{ ansible_default_ipv4.address }}" }
+  - name: Start MongoDB service
+    service:
+      name: mongod
+      state: restarted
+  - name: Verify MongoDB service is fully up
+    wait_for:
+      host: "{{ ansible_default_ipv4.address }}"
+      port: "{{ binding_port }}"
+      delay: 10
+      state: started
