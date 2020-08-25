@@ -1,0 +1,10 @@
+---
+# Install Docker on the "Metrics Server" and other pre-configuration
+- hosts: metrics_server
+  any_errors_fatal: true
+  become: true
+  become_method: sudo
+  roles:
+  - { role: install_prometheus }
+  - { role: install_grafana }
+  - { role: config_prom_grafana }
