@@ -5,10 +5,13 @@ clear
 # Kafka version
 VERSION="2.6.0"
 
+# Node IP
+NODE_IP=$(hostname -i)
+
 # Kafka binary source
 KAFKA_BIN_SRC=kafka_2.13-2.6.0.tgz
 
-# Kafka folder
+# Kafka folders
 KAFKA_HOMEDIR=/opt/kafka
 KAFKA_DATA_DIR=$KAFKA_HOMEDIR/data/kafka-logs
 ZOOKEEPER_DATA_DIR=$KAFKA_HOMEDIR/data/zookeeper
@@ -45,9 +48,16 @@ sudo chown -R kafka:kafka $KAFKA_HOMEDIR
 echo
 
 #--------------------------------------------
-echo "3. Customize Kafka and zookeeper data directories"
-sudo sed -i "s/^log.dirs=.*/log.dirs=$KD_REP_STR/" $KAFKA_HOMEDIR/config/server.properties
+echo "3. Customize Kafka and zookeeper data directories. Modify Kafka listener properties"
 sudo sed -i "s/^dataDir=.*/dataDir=$ZK_REP_STR/" $KAFKA_HOMEDIR/config/zookeeper.properties
+sudo sed -i "s/^#listeners=.*/listeners=PLAINTEXT\:\/\/$NODE_IP\:9092/" $KAFKA_HOMEDIR/config/server.properties
+sudo sed -i "s/^#advertised\.listeners=.*/advertised\.listeners=PLAINTEXT\:\/\/$NODE_IP\:9092/" $KAFKA_HOMEDIR/config/server.properties
+
+#- append a line "advertised.host.name = $NODE_IP" in the file only if doesn't exist
+grep -qxF "advertised.host.name = $NODE_IP" $KAFKA_HOMEDIR/config/server.properties || \
+  echo "advertised.host.name = $NODE_IP" | sudo tee -a  $KAFKA_HOMEDIR/config/server.properties > /dev/null
+
+echo
 
 #--------------------------------------------
 echo "4. Set up Zookeeper and Kafka systemd unit files"
@@ -88,7 +98,6 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-
 echo
 
 #--------------------------------------------
@@ -107,8 +116,17 @@ echo "   >>> MAKE SURE to pick up PATH environment change using \"source\" comma
 PROFILE_PATH_STR="\$HOME/bin:\$HOME/.local/bin:\$PATH"
 PROFILE_PATH_REP_STR=${PROFILE_PATH_STR//\//\\/}
 sudo sed -i "s/^PATH=.*/PATH=$PROFILE_PATH_REP_STR\:$KB_REP_STR/" $HOME/.profile
+echo
 
 #--------------------------------------------
 echo "7. Add the current user to \"kafka\" group"
 echo "   >>> MAKE SURE to relogin the current user"
 sudo usermod -aG kafka $(whoami)
+
+
+#########
+# Start Kafka Producer:
+#    kafka-console-producer.sh --broker-list $(hostname -i):9092 --topic testTopic
+#
+# Start Kafka Consumer:
+#    kafka-console-consumer.sh --bootstrap-server $(hostname -i):9092 --topic testTopic --from-beginning
