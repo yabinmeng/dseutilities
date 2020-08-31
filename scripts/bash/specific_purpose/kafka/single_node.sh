@@ -62,7 +62,7 @@ echo
 #--------------------------------------------
 echo "4. Set up Zookeeper and Kafka systemd unit files"
 echo "   (reference: https://tecadmin.net/install-apache-kafka-ubuntu/)"
-cat << EOF | sudo tee /etc/systemd/system/zookeeper.service >/dev/null
+cat << EOF | sudo tee /etc/systemd/system/zookeeper.service > /dev/null
 [Unit]
 Description=Apache Zookeeper server
 Documentation=http://zookeeper.apache.org
@@ -80,7 +80,7 @@ Restart=on-abnormal
 WantedBy=multi-user.target
 EOF
 
-cat << EOF | sudo tee /etc/systemd/system/kafka.service >/dev/null
+cat << EOF | sudo tee /etc/systemd/system/kafka.service > /dev/null
 [Unit]
 Description=Apache Kafka Server
 Documentation=http://kafka.apache.org/documentation.html
