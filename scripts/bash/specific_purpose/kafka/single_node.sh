@@ -27,7 +27,7 @@ sudo useradd kafka
 echo
 
 #--------------------------------------------
-echo "2. Download kafka version $VERSION and extract it to \"/opt/kafka\" folder"
+echo "2. Download kafka version $VERSION and extract it to "/opt/kafka" folder"
 
 if [[ ! -f "/tmp/$KAFKA_BIN_SRC" ]]; then
   wget "http://apache.mirrors.pair.com/kafka/2.6.0/$KAFKA_BIN_SRC" -P /tmp
