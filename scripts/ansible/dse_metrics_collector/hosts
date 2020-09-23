@@ -1,7 +1,0 @@
-[dse_server]
-<dse_server1_ip>
-<dse_server2_ip>
-<dse_server3_ip>
-
-[metrics_server]
-<metrics_server_ip>
