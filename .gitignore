@@ -1,3 +1,7 @@
 dseutilities.code-workspace
 .gitignore
 scripts/.DS_Store
+.DS_Store
+scripts/.DS_Store
+scripts/bash/.DS_Store
+scripts/misc/.DS_Store
