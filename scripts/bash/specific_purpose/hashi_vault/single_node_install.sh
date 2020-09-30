@@ -82,7 +82,8 @@ cat << EOF | sudo tee $VAULT_BINDIR/startVault.sh > /dev/null
 $VAULT_BINDIR/vault server -config $VAULT_HOMEDIR/$VAULT_CFG_FILE
 EOF
 
-sudo chown -R $VAULT_SRV_USER:$VAULT_SRV_USER $VAULT_HOMEDIRG
+sudo chown -R $VAULT_SRV_USER:$VAULT_SRV_USER $VAULT_HOMEDIR
+sudo chmod -R 775 $VAULT_DATADIR
 sudo chmod 755 $VAULT_BINDIR/startVault.sh
 
 echo
