@@ -230,7 +230,7 @@ kube-system   kube-proxy-wvthg                                                 1
 kube-system   kube-scheduler-ip-10-101-36-132.srv101.dsinternal.org            1/1     Running             0          8m49s
 ```
 
-This is an indication that K8s Pod networking is not in place yet. In K8s, Pod networking is implemented through [CNI (Container Networking Interface)](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni) and there many different CNI providers available out there. In my testing, I'm using [ProjectCalico](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni). The command to execute is as this:
+This is an indication that K8s Pod networking is not in place yet. In K8s, Pod networking is implemented through [CNI (Container Networking Interface)](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni) and there are many different CNI providers available out there. In my testing, I'm using [ProjectCalico](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni). The command to execute is as this:
 
 ```bash
 $ kubectl apply -f https://docs.projectcalico.org/v3.15/manifests/calico.yaml
