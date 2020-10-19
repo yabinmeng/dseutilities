@@ -121,3 +121,56 @@ Then click "Confirm and Restart" button at the top to restart the Spark cluster.
 At this point, we're ready to run some code that runs on the Databricks Spark cluster to load the source sample data in CSV format and save it into the Astra database. Let's create a notebook for this:
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/create_notebook.png" width=600>
+
+In my testing, the code is Scala based has 2 main parts:
+
+* Read source CSV data into a Spark DataFrame
+
+```
+// Read source sample data
+val covid_trends = spark.read.format("csv")
+  .option("header", "true")
+  .option("inferSchema", "true")
+  .load("dbfs:/FileStore/tables/covid19_italy_national_trends.csv")
+
+covid_trends.printSchema()
+//covid_trends.show(1)
+```
+
+* Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table
+  
+```
+import com.datastax.spark.connector._
+import org.apache.spark.sql.cassandra._
+
+// Create a keyspace and table in Astra
+// ------------------------------------
+val tgtKsName = "testks"
+val tgtTblName = "covid_trends"
+
+// Check if the target Astra keyspace and table already exists
+val sysSchemaTableDF = spark.read
+  .cassandraFormat("tables", "system_schema")
+  .load()
+  .filter("table_name == '" + tgtTblName + "'")
+  .filter("keyspace_name == '" + tgtKsName + "'")
+val exists = sysSchemaTableDF.count()
+//println("Target table exists = " + exists)
+
+if ( exists == 0 ) {
+  // Create an Astra table using DataFrame functions
+  covid_trends.createCassandraTable(
+    tgtKsName,
+    tgtTblName,
+    partitionKeyColumns = Some(Seq("country", "date")))
+}
+
+// Save data in the Astra table that was jsut created
+
+covid_trends.write
+        .cassandraFormat(tgtTblName, tgtKsName)
+        .mode("append")
+        .save()
+```
+
+The running result can be found [here](resources/MyAstraTestNotebook.html).
