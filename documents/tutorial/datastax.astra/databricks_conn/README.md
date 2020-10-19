@@ -2,7 +2,7 @@
   - [1.1. Source Sample Data Set](#11-source-sample-data-set)
 - [2. Environment Setup](#2-environment-setup)
   - [2.1. Astra Database](#21-astra-database)
-    - [2.1.1. Get Astra Database Secure Connection Bundle (Driver based connection)](#211-get-astra-database-secure-connection-bundle-driver-based-connection)
+    - [2.1.1. Get Astra Database Secure Connect Bundle (Driver based connection)](#211-get-astra-database-secure-connect-bundle-driver-based-connection)
   - [2.2. Databricks Cluster](#22-databricks-cluster)
   - [2.3. Spark Cassandra Connector (SCC)](#23-spark-cassandra-connector-scc)
     - [2.3.1. Version Requirement](#231-version-requirement)
@@ -46,15 +46,15 @@ In order to create an Astra Database, we need:
 * Register an account with DataStax Astra
 * Sign in with the account and follow the procedure as described in [this document](https://docs.astra.datastax.com/docs/creating-your-astra-database).
 
-### 2.1.1. Get Astra Database Secure Connection Bundle (Driver based connection)
+### 2.1.1. Get Astra Database Secure Connect Bundle (Driver based connection)
 
 There are several ways to connect to an Astra DataBase, such as using Rest API, GraphQL API, or DataStax driver.
 
 In this repo, we're going to connect to an Astra database from a DCE notebook using [DataStax Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector) for read/write. This is a (java) driver based connection.
 
-For driver based connection to an Astra database, we need to download the secure connection bundle, as described in [this procedure](https://docs.astra.datastax.com/docs/obtaining-database-credentials).
+For driver based connection to an Astra database, we need to download the secure connect bundle, as described in [this procedure](https://docs.astra.datastax.com/docs/obtaining-database-credentials).
 
-In this repo, an Astra database named **MyAstraDB** is created and the corresponding downloaded secure connection bundle file is:
+In this repo, an Astra database named **MyAstraDB** is created and the corresponding downloaded secure connect bundle file is:
 
 * secure-connect-myastradb.zip
 
@@ -110,9 +110,10 @@ We also need to upload 2 files in Databricks cluster. One is the raw source samp
 
 As the last step of environment setup, we need to add several Spark configuration items that are needed by SCC (see [SCC reference doc](spark.cassandra.connection.config.cloud.path)):
 
-*  spark.cassandra.connection.config.cloud.path: Astra database secure connection bundle
-*  spark.cassandra.auth.username: Astra database connection username
-*  spark.cassandra.auth.password: Astra database connection password
+* spark.files Astra database secure connect bundle file path
+* spark.cassandra.connection.config.cloud.path: Astra database secure connect file name
+* spark.cassandra.auth.username: Astra database connection username
+* spark.cassandra.auth.password: Astra database connection password
 
 In order to do so, select the Databricks cluster and edit it. In the cluster editing page, enter the above configuration items in "Spark Config" field under "Spark" tab, as below:
 
@@ -208,16 +209,16 @@ var covid_new_cases = spark.read
         .cassandraFormat(tgtTblName, tgtKsName)
         .options(ReadConf.SplitSizeInMBParam.option(32))
         .load()
-        .select("date", "new_total_confirmed_cases")
+        .select("date", "new_current_confirmed_cases")
 
 spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
 covid_new_cases = covid_new_cases
          .withColumn("stats_dt", to_date(col("date"), "MM/dd/yyyy"))
          .drop("date")
          .filter($"stats_dt".geq(to_date(lit("2020-08-01"))))
-         .sort($"new_total_confirmed_cases".desc)
+         .sort($"new_current_confirmed_cases".desc)
 covid_new_cases.printSchema()
-covid_new_cases.show(10)
+covid_new_cases.show(5)
 ```
 
 At first, executing the above code in the notebook will fail with the following error:
