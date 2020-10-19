@@ -9,6 +9,8 @@
     - [2.3.2. Standard vs Shaded Assembly Jar](#232-standard-vs-shaded-assembly-jar)
     - [2.3.3. Install SCC as Databricks Cluster Library](#233-install-scc-as-databricks-cluster-library)
   - [2.4. Upload Data into Databricks Cluster](#24-upload-data-into-databricks-cluster)
+  - [2.5. Update Databricks Cluster Spark Configuration](#25-update-databricks-cluster-spark-configuration)
+- [3. Load Data using Databricks Spark and Save Data in Astra](#3-load-data-using-databricks-spark-and-save-data-in-astra)
 
 # 1. Overview
 
@@ -99,3 +101,21 @@ We also need to upload 2 files in Databricks cluster. One is the raw source samp
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.1.png" width=400>
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.2.png" width=500>
+
+## 2.5. Update Databricks Cluster Spark Configuration
+
+As the last step of environment setup, we need to add several Spark configuration items that are needed by SCC (see [SCC reference doc](spark.cassandra.connection.config.cloud.path)):
+
+*  spark.cassandra.connection.config.cloud.path: Astra database secure connection bundle
+*  spark.cassandra.auth.username: Astra database connection username
+*  spark.cassandra.auth.password: Astra database connection password
+
+In order to do so, select the Databricks cluster and edit it. In the cluster editing page, enter the above configuration items in "Spark Config" field under "Spark" tab, as below:
+
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/spark_config.png">
+
+Then click "Confirm and Restart" button at the top to restart the Spark cluster.
+
+# 3. Load Data using Databricks Spark and Save Data in Astra
+
+At this point, we're ready to run some code that runs on the Databricks Spark cluster to load the source sample data in CSV format and save it into the Astra database.
