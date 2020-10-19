@@ -1,9 +1,7 @@
 
 &#x1F4D9; **NOTE** &#x1F4D9;
 ---
-
 The procedure described in this repo is tested successfully on the following Databricks platforms:
-
 * Databricks Community Edition
 * Azure Databricks Service
 ---
@@ -16,8 +14,8 @@ The procedure described in this repo is tested successfully on the following Dat
   - [2.1. Astra Database](#21-astra-database)
     - [2.1.1. Get Astra Database Secure Connect Bundle (Driver based connection)](#211-get-astra-database-secure-connect-bundle-driver-based-connection)
   - [2.2. Spark Cluster](#22-spark-cluster)
-    - [Databricks Community Edition (DCE)](#databricks-community-edition-dce)
-    - [Azure Databricks Workspace](#azure-databricks-workspace)
+    - [2.2.1. Databricks Community Edition (DCE)](#221-databricks-community-edition-dce)
+    - [2.2.2. Azure Databricks Workspace](#222-azure-databricks-workspace)
   - [2.3. Spark Cassandra Connector (SCC)](#23-spark-cassandra-connector-scc)
     - [2.3.1. Version Requirement](#231-version-requirement)
     - [2.3.2. Standard vs Shaded Assembly Jar](#232-standard-vs-shaded-assembly-jar)
@@ -74,14 +72,14 @@ In this repo, an Astra database named **MyAstraDB** is created and the correspon
 
 ## 2.2. Spark Cluster
 
-### Databricks Community Edition (DCE)
+### 2.2.1. Databricks Community Edition (DCE)
 
 In order to create a Spark cluster in DCE, 
 
 * Register an account with Databricks: <https://databricks.com/try-databricks>
 * Sign in DCE with the account and follow the procedure as described in [this document](https://docs.databricks.com/clusters/create.html)
 
-### Azure Databricks Workspace
+### 2.2.2. Azure Databricks Workspace
 
 From Azure Portal, we need to
 
