@@ -112,10 +112,12 @@ As the last step of environment setup, we need to add several Spark configuratio
 
 In order to do so, select the Databricks cluster and edit it. In the cluster editing page, enter the above configuration items in "Spark Config" field under "Spark" tab, as below:
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/spark_config.png" width=800>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/spark_config.png" width=600>
 
 Then click "Confirm and Restart" button at the top to restart the Spark cluster.
 
 # 3. Load Data using Databricks Spark and Save Data in Astra
 
-At this point, we're ready to run some code that runs on the Databricks Spark cluster to load the source sample data in CSV format and save it into the Astra database.
+At this point, we're ready to run some code that runs on the Databricks Spark cluster to load the source sample data in CSV format and save it into the Astra database. Let's create a notebook for this:
+
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/create_notebook.png" width=600>
