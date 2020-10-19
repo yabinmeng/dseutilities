@@ -1,3 +1,14 @@
+
+&#x1F4D9; **NOTE**: The procedure described in this repo is tested successfully on the following Databricks platforms:
+
+* Databricks Community Edition
+* Azure Databricks Service
+
+---
+---
+
+<span style="font-size: 30px">**Table of Contents**</span>
+
 - [1. Overview](#1-overview)
   - [1.1. Source Sample Data Set](#11-source-sample-data-set)
 - [2. Environment Setup](#2-environment-setup)
