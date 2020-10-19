@@ -14,7 +14,7 @@
   - [3.1. Read source CSV data into a Spark DataFrame](#31-read-source-csv-data-into-a-spark-dataframe)
   - [3.2. Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table](#32-using-scc-create-an-astra-keyspace-and-table-if-not-exists-based-on-the-dataframe-schema-save-data-in-the-astra-table)
   - [3.3. Verfiy Data Writing in Astra](#33-verfiy-data-writing-in-astra)
-- [3. Read Data from Astra into a Spark DataFrame](#3-read-data-from-astra-into-a-spark-dataframe)
+- [4. Read Data from Astra into a Spark DataFrame](#4-read-data-from-astra-into-a-spark-dataframe)
 
 # 1. Overview
 
@@ -187,7 +187,7 @@ Now let's log into Astra and verify the data writing result. From the screenshot
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/astra_result.png" width=800>
 
  
-# 3. Read Data from Astra into a Spark DataFrame
+# 4. Read Data from Astra into a Spark DataFrame
 
 Now, let's read from Astra into Databricks Spark cluster. Say we want to find out the top 5 days that has the most daily new confirmed cases since August 2020. The code is as below:
 
