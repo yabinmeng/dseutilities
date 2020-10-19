@@ -1,11 +1,11 @@
 
-&#x1F4D9;&#x1F4D9; **NOTE** &#x1F4D9;&#x1F4D9;
+&#x1F4D9; **NOTE** &#x1F4D9;
+---
 
 The procedure described in this repo is tested successfully on the following Databricks platforms:
 
 * Databricks Community Edition
 * Azure Databricks Service
-
 ---
 
 <span style="font-size: 30px">**Table of Contents**</span>
