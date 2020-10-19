@@ -171,7 +171,6 @@ if ( exists == 0 ) {
 }
 
 // Save data in the Astra table that was jsut created
-
 covid_trends.write
         .cassandraFormat(tgtTblName, tgtKsName)
         .mode("append")
