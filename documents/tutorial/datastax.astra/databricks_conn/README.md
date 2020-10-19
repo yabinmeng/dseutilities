@@ -13,7 +13,8 @@
 - [3. Load Data using Databricks Spark and Save Data in Astra](#3-load-data-using-databricks-spark-and-save-data-in-astra)
   - [3.1. Read source CSV data into a Spark DataFrame](#31-read-source-csv-data-into-a-spark-dataframe)
   - [3.2. Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table](#32-using-scc-create-an-astra-keyspace-and-table-if-not-exists-based-on-the-dataframe-schema-save-data-in-the-astra-table)
-  - [3.3. Verfiy Result in Astra Database](#33-verfiy-result-in-astra-database)
+  - [3.3. Verfiy Data Writing in Astra](#33-verfiy-data-writing-in-astra)
+- [3. Read Data from Astra into a Spark DataFrame](#3-read-data-from-astra-into-a-spark-dataframe)
 
 # 1. Overview
 
@@ -179,8 +180,59 @@ covid_trends.write
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell2.png" width=800>
 
-## 3.3. Verfiy Result in Astra Database
+## 3.3. Verfiy Data Writing in Astra
 
-Now let's log into Astra and verify the result. From the screenshot below, we can see that the Astra table is succesfully created and data is loaded correctly.
+Now let's log into Astra and verify the data writing result. From the screenshot below, we can see that the Astra table is succesfully created and data is loaded correctly.
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/astra_result.png" width=800>
+
+ 
+# 3. Read Data from Astra into a Spark DataFrame
+
+Now, let's read from Astra into Databricks Spark cluster. Say we want to find out the top 5 days that has the most daily new confirmed cases since August 2020. The code is as below:
+
+```
+import com.datastax.spark.connector._
+import com.datastax.spark.connector.rdd.ReadConf
+import org.apache.spark.sql.cassandra._
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types.DateType
+
+import spark.sqlContext.implicits._
+
+// Read data from Astra
+val tgtKsName = "testks"
+val tgtTblName = "covid_trends"
+
+var covid_new_cases = spark.read
+        .cassandraFormat(tgtTblName, tgtKsName)
+        .options(ReadConf.SplitSizeInMBParam.option(32))
+        .load()
+        .select("date", "new_total_confirmed_cases")
+
+spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
+covid_new_cases = covid_new_cases
+         .withColumn("stats_dt", to_date(col("date"), "MM/dd/yyyy"))
+         .drop("date")
+         .filter($"stats_dt".geq(to_date(lit("2020-08-01"))))
+         .sort($"new_total_confirmed_cases".desc)
+covid_new_cases.printSchema()
+covid_new_cases.show(10)
+```
+
+At first, executing the above code in the notebook will fail with the following error:
+
+```
+org.apache.spark.SparkException: Job aborted due to stage failure: Task 3 in stage 26.0 failed 1 times, most recent failure: Lost task 3.0 in stage 26.0 (TID 29, ip-10-172-242-78.us-west-2.compute.internal, executor driver): java.io.IOException: Invalid request, too many continuous paging sessions are already running: 2. This error may be intermittent, if there are other applications using continuous paging wait for them to finish and re-execute. If the error persists adjust your DSE server setting `continuous_paging.max_concurrent_sessions` or lower the parallelism level of this job (reduce the number of executors and/or assigned cores) or disable continuous paging for this app with spark.dse.continuousPagingEnabled.
+  at com.datastax.bdp.spark.ContinuousPagingScanner.scan(ContinuousPagingScanner.scala:108)
+	at com.datastax.spark.connector.datasource.ScanHelper$.fetchTokenRange(ScanHelper.scala:79)
+  ... ...
+```
+
+This is related with Astra continuous reading with SCC. The workaround is to disable this feature which requires to add one more Spark SCC configuration item, as below:
+
+* spark.dse.continuousPagingEnabled false
+
+Add this new configuration and restart the Databricks cluster. Re-run the above code after the cluster is restarted. This time we see that the data is successfully read from Astra into a Spark DataFrame.
+
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell3.png" width=800>
