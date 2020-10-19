@@ -112,7 +112,7 @@ As the last step of environment setup, we need to add several Spark configuratio
 
 In order to do so, select the Databricks cluster and edit it. In the cluster editing page, enter the above configuration items in "Spark Config" field under "Spark" tab, as below:
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/spark_config.png">
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/spark_config.png" width=800>
 
 Then click "Confirm and Restart" button at the top to restart the Spark cluster.
 
