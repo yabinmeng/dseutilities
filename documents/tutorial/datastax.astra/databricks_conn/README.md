@@ -137,6 +137,8 @@ covid_trends.printSchema()
 //covid_trends.show(1)
 ```
 
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell1.png" width=600>
+
 * Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table
   
 ```
@@ -173,4 +175,4 @@ covid_trends.write
         .save()
 ```
 
-The running result can be found [here](resources/MyAstraTestNotebook.html).
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell2.png" width=600>
