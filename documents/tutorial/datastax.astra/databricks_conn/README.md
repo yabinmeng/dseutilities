@@ -67,9 +67,15 @@ https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector-
 
 ### Install SCC as Databricks Cluster Library
 
-We need to install SCC as a Databricks cluster library.
+We need to install SCC as a Databricks cluster library:
+
+* Select the target Databricks clsuter
+* On the "Libraries" tab, click "Install New"
+* On the "Install Library" window, choose to upload library Jar file from local machine and click "Install"
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/cluster.library.png" width=800>
+
+The uploaded library file will be stored in Databricks file system (DBFS)
 
 ## Upload Data into Databricks Cluster
 
