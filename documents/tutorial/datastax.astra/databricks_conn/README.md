@@ -224,9 +224,9 @@ At first, executing the above code in the notebook will fail with the following 
 
 ```
 org.apache.spark.SparkException: Job aborted due to stage failure: Task 3 in stage 26.0 failed 1 times, most recent failure: Lost task 3.0 in stage 26.0 (TID 29, ip-10-172-242-78.us-west-2.compute.internal, executor driver): java.io.IOException: Invalid request, too many continuous paging sessions are already running: 2. This error may be intermittent, if there are other applications using continuous paging wait for them to finish and re-execute. If the error persists adjust your DSE server setting `continuous_paging.max_concurrent_sessions` or lower the parallelism level of this job (reduce the number of executors and/or assigned cores) or disable continuous paging for this app with spark.dse.continuousPagingEnabled.
-  at com.datastax.bdp.spark.ContinuousPagingScanner.scan(ContinuousPagingScanner.scala:108)
-	at com.datastax.spark.connector.datasource.ScanHelper$.fetchTokenRange(ScanHelper.scala:79)
-  ... ...
+    at com.datastax.bdp.spark.ContinuousPagingScanner.scan(ContinuousPagingScanner.scala:108)
+    at com.datastax.spark.connector.datasource.ScanHelper$.fetchTokenRange(ScanHelper.scala:79)
+    ... ...
 ```
 
 This is related with Astra continuous reading with SCC. The workaround is to disable this feature which requires to add one more Spark SCC configuration item, as below:
