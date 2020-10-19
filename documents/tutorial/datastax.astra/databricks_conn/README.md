@@ -83,9 +83,9 @@ The uploaded library file will be stored in Databricks file system (DBFS), as be
 
 We also need to upload 2 files in Databricks cluster. One is the raw source sample data set (**covid19_italy_national_trends.csv**) and another is the Astra connection secure bundle file (**secure-connect-myastradb.zip**). Once uploaded, they will be stored in Databricks file system. The procedure of uploading these fiels are ase blow:
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.1.png" width=300>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.1.png" width=400>
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.2.png" width=600>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.2.png" width=500>
 
 
 
