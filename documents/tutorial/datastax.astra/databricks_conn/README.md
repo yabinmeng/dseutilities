@@ -11,9 +11,9 @@
   - [2.4. Upload Data into Databricks Cluster](#24-upload-data-into-databricks-cluster)
   - [2.5. Update Databricks Cluster Spark Configuration](#25-update-databricks-cluster-spark-configuration)
 - [3. Load Data using Databricks Spark and Save Data in Astra](#3-load-data-using-databricks-spark-and-save-data-in-astra)
-  - [Read source CSV data into a Spark DataFrame](#read-source-csv-data-into-a-spark-dataframe)
-  - [Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table](#using-scc-create-an-astra-keyspace-and-table-if-not-exists-based-on-the-dataframe-schema-save-data-in-the-astra-table)
-  - [Verfiy Result in Astra Database](#verfiy-result-in-astra-database)
+  - [3.1. Read source CSV data into a Spark DataFrame](#31-read-source-csv-data-into-a-spark-dataframe)
+  - [3.2. Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table](#32-using-scc-create-an-astra-keyspace-and-table-if-not-exists-based-on-the-dataframe-schema-save-data-in-the-astra-table)
+  - [3.3. Verfiy Result in Astra Database](#33-verfiy-result-in-astra-database)
 
 # 1. Overview
 
@@ -127,7 +127,7 @@ At this point, we're ready to run some code that runs on the Databricks Spark cl
 
 In my testing, the code is Scala based has 2 main parts:
 
-## Read source CSV data into a Spark DataFrame
+## 3.1. Read source CSV data into a Spark DataFrame
 
 ```
 // Read source sample data
@@ -142,7 +142,7 @@ covid_trends.printSchema()
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell1.png" width=800>
 
-## Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table
+## 3.2. Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table
   
 ```
 import com.datastax.spark.connector._
@@ -180,7 +180,7 @@ covid_trends.write
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell2.png" width=800>
 
-## Verfiy Result in Astra Database
+## 3.3. Verfiy Result in Astra Database
 
 Now let's log into Astra and verify the result. From the screenshot below, we can see that the Astra table is succesfully created and data is loaded correctly.
 
