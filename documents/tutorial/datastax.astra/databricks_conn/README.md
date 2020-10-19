@@ -98,9 +98,9 @@ The uploaded library file will be stored in Databricks file system (DBFS), as be
 
 We also need to upload 2 files in Databricks cluster. One is the raw source sample data set (**covid19_italy_national_trends.csv**) and another is the Astra connection secure bundle file (**secure-connect-myastradb.zip**). Once uploaded, they will be stored in Databricks file system. The procedure of uploading these fiels are ase blow:
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.1.png" width=400>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.1.png" width=600>
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.2.png" width=500>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.2.png" width=600>
 
 ## 2.5. Update Databricks Cluster Spark Configuration
 
@@ -137,7 +137,7 @@ covid_trends.printSchema()
 //covid_trends.show(1)
 ```
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell1.png" width=600>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell1.png" width=800>
 
 * Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table
   
@@ -175,4 +175,4 @@ covid_trends.write
         .save()
 ```
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell2.png" width=600>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell2.png" width=800>
