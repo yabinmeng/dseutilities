@@ -134,10 +134,10 @@ We also need to upload 2 files in Databricks cluster. One is the raw source samp
 
 As the last step of environment setup, we need to add several Spark configuration items that are needed by SCC (see [SCC reference doc](spark.cassandra.connection.config.cloud.path)):
 
-* spark.files Astra database secure connect bundle file path
-* spark.cassandra.connection.config.cloud.path: Astra database secure connect file name
-* spark.cassandra.auth.username: Astra database connection username
-* spark.cassandra.auth.password: Astra database connection password
+* **spark.files**: Astra database secure connect bundle file path
+* **spark.cassandra.connection.config.cloud.path**: Astra database secure connect file name
+* **spark.cassandra.auth.username**: Astra database connection username
+* **spark.cassandra.auth.password**: Astra database connection password
 
 In order to do so, select the Databricks cluster and edit it. In the cluster editing page, enter the above configuration items in "Spark Config" field under "Spark" tab, as below:
 
