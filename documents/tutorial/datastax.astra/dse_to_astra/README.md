@@ -145,7 +145,11 @@ For most time, people use SCC for data migration/ETL related work between a C* c
 
 Spark 3.0 adds support for Catalog Plugin API [SPARK-31121](https://issues.apache.org/jira/browse/SPARK-31121) which is an umbrella ticket that includes many improvements related Apache Spark DataSource V2 API.
 
-Based on the improved functionalities/features of Spark DataSource V2 API, SCC 3.0 introduces the concept of Cassandra Catalog.
+Based on the improved functionalities/features of Spark DataSource V2 API, SCC 3.0 introduces the concept of Cassandra Catalog. Cassandra Catalog brings many advantages and greatly simplifies many tasks regarding Spark Cassandra connection. For example, using Cassandra Catalog, we can connect to multiple Cassandra clusters in one Spark session, as demonstrated below:
 
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/dse_to_astra/resources/screenshots/cassandra.catalog.png" width=600>
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/dse_to_astra/resources/screenshots/cassandra.catalog.png" width=400>
+
+For more detailed introduction of **Cassandra Catalog**, please refer to Russell Spitzer's 2020 Spark Summit [presentation](https://databricks.com/session_na20/datasource-v2-and-cassandra-a-whole-new-world) (the above screenshot is also taken from his presentation).
+
+
 
