@@ -147,5 +147,5 @@ Spark 3.0 adds support for Catalog Plugin API [SPARK-31121](https://issues.apach
 
 Based on the improved functionalities/features of Spark DataSource V2 API, SCC 3.0 introduces the concept of Cassandra Catalog.
 
-
+<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/dse_to_astra/resources/screenshots/cassandra.catalog.png" width=600>
 

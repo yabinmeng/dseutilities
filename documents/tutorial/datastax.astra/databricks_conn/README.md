@@ -259,5 +259,3 @@ This is related with Astra continuous reading with SCC. The workaround is to dis
 * spark.dse.continuousPagingEnabled false
 
 Add this new configuration and restart the Databricks cluster. Re-run the above code after the cluster is restarted. This time we see that the data is successfully read from Astra into a Spark DataFrame.
-
-<img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/dse_to_astra/resources/screenshots/cassandra.catalog.png" width=600>
