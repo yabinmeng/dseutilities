@@ -1,10 +1,23 @@
-# Overview
+<span style="font-size: 32px">**Table of Contents**</span>
+
+- [1. Overview](#1-overview)
+- [2. Environment Setup](#2-environment-setup)
+  - [2.1. Set up Azure Resources](#21-set-up-azure-resources)
+  - [2.2. Set up and Prepare DSE/C* Cluster](#22-set-up-and-prepare-dsec-cluster)
+  - [2.3. Set up and Prepare an Astra Database](#23-set-up-and-prepare-an-astra-database)
+  - [2.4. Set up and Prepare Databricks Spark Cluster](#24-set-up-and-prepare-databricks-spark-cluster)
+- [3. Migrate Data between tow C* based Clusters using SCC](#3-migrate-data-between-tow-c-based-clusters-using-scc)
+  - [3.1. Spark 3.0 + SCC 3.0: Cassandra Catalog](#31-spark-30--scc-30-cassandra-catalog)
+  - [3.2. Spark 2.4 + SCC 2.5: Multiple SCC connector](#32-spark-24--scc-25-multiple-scc-connector)
+
+
+# 1. Overview
 
 In my previous [tutorial](https://github.com/yabinmeng/dseutilities/tree/master/documents/tutorial/datastax.astra/databricks_conn), I demonstrated how to use Databricks Spark platform (e.g. Azure Databricks service) to load data from an external source (a CSV file) into a DataStax Astra database. 
 
 In this tutorial, I will demonstrate how to use Databricks Spark to load data from a stand-alone Cassandra (C*) cluster into a DataStax Atra database.
 
-# Environment Setup
+# 2. Environment Setup
 
 For testing purpose in this repo., we need a stand-alone C* cluster and a Databricks cluster and most importantly we need to make sure these two cluster can communicate with each other. In order to achieve this task, I'm taking the following approach:
 
@@ -12,7 +25,7 @@ For testing purpose in this repo., we need a stand-alone C* cluster and a Databr
 * Launch several Azure virtual machines and install a DSE clsuter on it
 * Make sure the launched Azure Databricks service and and the DSE virtual machines **belong to the same Azure virtual network**.
 
-## Set up Azure Resources
+## 2.1. Set up Azure Resources
 
 The detailed procedure of setting up Azure resources is beyond the scope of this tutorial. Please refer to Azure documenatation for it. In this repo., I will only list the Azure resources and relevant key characteristics that are needed by our testing in this repo. 
 
@@ -52,7 +65,7 @@ Also create and share a common SSH key pair among all the created VMs. All other
        * Name: MyAzureDbrksPrvSN
        * CIDR: 10.4.20.0/24 
 
-## Set up and Prepare DSE/C* Cluster
+## 2.2. Set up and Prepare DSE/C* Cluster
 
 On each of the launched VMs, do the following tasks:
 
@@ -81,7 +94,7 @@ cqlsh> select * from testks.testbl_dse ;
 (3 rows)
 ```
 
-## Set up and Prepare an Astra Database
+## 2.3. Set up and Prepare an Astra Database
 
 In this repo, I will use the same Astra database as in my [previous repo.](https://github.com/yabinmeng/dseutilities/tree/master/documents/tutorial/datastax.astra/databricks_conn).
 
@@ -108,7 +121,7 @@ cqlsh> select * from testks.testbl_astra ;
 ```
 
 
-## Set up and Prepare Databricks Spark Cluster
+## 2.4. Set up and Prepare Databricks Spark Cluster
 
 In the Azure Databricks workspace, create a Spark cluster with the following properties:
 
@@ -137,11 +150,11 @@ spark.cassandra.auth.username <astra_username>
 spark.cassandra.auth.password <astra_passwd>
 ```
 
-# Migrate Data between tow C* based Clusters using SCC
+# 3. Migrate Data between tow C* based Clusters using SCC
 
 For most time, people use SCC for data migration/ETL related work between a C* cluster and another non-C* system (e.g. an RDBMS, another NoSQL database, etc.). But SCC can also connect to multiple C* clusters and therefore makes possible data migration between 2 C* based clusters. In our testing in this repo, I will use Databricks cluster + SCC to migrate data from a DSE cluster to a Astra database.
 
-## Spark 3.0 + SCC 3.0: Cassandra Catalog
+## 3.1. Spark 3.0 + SCC 3.0: Cassandra Catalog
 
 Spark 3.0 adds support for Catalog Plugin API [SPARK-31121](https://issues.apache.org/jira/browse/SPARK-31121) which is an umbrella ticket that includes many improvements related Apache Spark DataSource V2 API.
 
@@ -243,7 +256,7 @@ The result output is as below:
 
 Looking at the program output, we can clearly see that the data is succesfully migrated from the DSE cluster and landed in Astra.
 
-## Spark 2.4 + SCC 2.5: Multiple SCC connector 
+## 3.2. Spark 2.4 + SCC 2.5: Multiple SCC connector 
 
 It has to be pointed out that before **Cassandra Catalog**, SCC is already able to connect to multiple C* clusters. 
 

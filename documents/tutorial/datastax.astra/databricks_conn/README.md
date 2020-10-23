@@ -6,7 +6,7 @@ The procedure described in this repo is tested successfully on the following Dat
 * Azure Databricks Service
 ---
 
-<span style="font-size: 30px">**Table of Contents**</span>
+<span style="font-size: 32px">**Table of Contents**</span>
 
 - [1. Overview](#1-overview)
   - [1.1. Source Sample Data Set](#11-source-sample-data-set)
