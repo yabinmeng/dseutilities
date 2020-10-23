@@ -59,18 +59,18 @@ On each of the launched VMs, do the following tasks:
 * Install OpenJDK 8 
 * Install latest DSE 6.8 release (6.8.5) binary ([procedure](https://docs.datastax.com/en/install/6.8/install/installDEBdse.html))
 * Make neccsary changes in cassandra.yaml to form one DSE/C* cluster
-* Create a C* keyspace (**testks**) and a table (**testbl_azure**) for testing purpose and insert some data in the table
+* Create a C* keyspace (**testks**) and a table (**testbl_dse**) for testing purpose and insert some data in the table
 
 ```
-cqlsh> desc table testks.testbl_azure ;
+cqlsh> desc table testks.testbl_dse ;
 
-CREATE TABLE testks.testbl_azure (
+CREATE TABLE testks.testbl_dse (
     cola int PRIMARY KEY,
     colb text
 )
 ... ...
 
-cqlsh> select * from testks.testbl_azure ;
+cqlsh> select * from testks.testbl_dse ;
 
  cola | colb
 ------+-------------
@@ -88,7 +88,7 @@ In this repo, I will use the same Astra database as in my [previous repo.](https
 Create a table (**testks.testbl_astra**) that has similar table structure as the one created above in the DSE clsuter.
 
 ```
-cqlsh> desc table testks.testbl_azure ;
+cqlsh> desc table testks.testbl_astra ;
 
 CREATE TABLE testks.testbl_astra (
     cola int PRIMARY KEY,
@@ -141,7 +141,7 @@ spark.cassandra.auth.password <astra_passwd>
 
 For most time, people use SCC for data migration/ETL related work between a C* cluster and another non-C* system (e.g. an RDBMS, another NoSQL database, etc.). But SCC can also connect to multiple C* clusters and therefore makes possible data migration between 2 C* based clusters. In our testing in this repo, I will use Databricks cluster + SCC to migrate data from a DSE cluster to a Astra database.
 
-## Cassandra Catalog (Spark 3.0 + SCC 3.0)
+## Spark 3.0 + SCC 3.0: Cassandra Catalog
 
 Spark 3.0 adds support for Catalog Plugin API [SPARK-31121](https://issues.apache.org/jira/browse/SPARK-31121) which is an umbrella ticket that includes many improvements related Apache Spark DataSource V2 API.
 
@@ -151,7 +151,7 @@ Based on the improved functionalities/features of Spark DataSource V2 API, SCC 3
 
 For more detailed introduction of **Cassandra Catalog**, please refer to Russell Spitzer's 2020 Spark Summit [presentation](https://databricks.com/session_na20/datasource-v2-and-cassandra-a-whole-new-world) (the above screenshot is also taken from his presentation).
 
-With Cassandra Catalog, the code to migrate from the DSE cluster to the Astra database is straightforward
+With Cassandra Catalog, the code to migrate from the DSE cluster to the Astra database is straightforward. **Note** the code below can be executed directly in a Databrics notebook.
 
 ```
 import com.datastax.spark.connector._
@@ -169,8 +169,8 @@ spark.conf.set(dseCatName + ".spark.cassandra.connection.host", dseSrvIp)
 spark.conf.set(dseCatName + ".spark.cassandra.connection.port", dseSrvPort)
 
 // -- read from DSE 
-val tblDf_d = spark.read.table(dseClusterAlias + ".testks.testbl_azure")
-println(">> [Step 1] Read from DSE: testks.testbl_azure")
+val tblDf_d = spark.read.table(dseClusterAlias + ".testks.testbl_dse")
+println(">> [Step 1] Read from DSE: testks.testbl_dse")
 tblDf_d.show()
 
 //--------------------------
@@ -208,14 +208,14 @@ tblDf_a.show()
 The result output is as below:
 
 ```
->> [Step 1] Read from DSE: testks.testbl_azure
-+----+-------------+
-|cola|         colb|
-+----+-------------+
-| 200|azure-row-200|
-| 100|azure-row-100|
-| 300|azure-row-300|
-+----+-------------+
+>> [Step 1] Read from DSE: testks.testbl_dse
++----+-----------+
+|cola|       colb|
++----+-----------+
+| 100|dse-row-100|
+| 300|dse-row-300|
+| 200|dse-row-200|
++----+-----------+
 
 >> [Step 2] Read from Astra: testks.testbl_astra
 +----+-----------+
@@ -229,18 +229,98 @@ The result output is as below:
 >> [Step 3] Write DSE data into Astra: testks.testbl_astra
 
 >> [Step 4] Read again from Astra: testks.testbl_astra
-+----+-------------+
-|cola|         colb|
-+----+-------------+
-|   1|  astra-row-1|
-|   0|  astra-row-0|
-|   2|  astra-row-2|
-| 200|azure-row-200|
-| 100|azure-row-100|
-| 300|azure-row-300|
-+----+-------------+
++----+-----------+
+|cola|       colb|
++----+-----------+
+|   1|astra-row-1|
+|   0|astra-row-0|
+|   2|astra-row-2|
+| 200|dse-row-200|
+| 100|dse-row-100|
+| 300|dse-row-300|
++----+-----------+
 ```
 
 Looking at the program output, we can clearly see that the data is succesfully migrated from the DSE cluster and landed in Astra.
 
-One thing that is worthy to mention is about "Step 4" where we actually do NOT issue another "spark.read" command in order to read data from Astra for the second time. The new **Cassandra Catalog** feature in SCC 3.0 is able to automatically detect C* side changes in Spark.
+## Spark 2.4 + SCC 2.5: Multiple SCC connector 
+
+It has to be pointed out that before **Cassandra Catalog**, SCC is already able to connect to multiple C* clusters. 
+
+Create a Databricks cluster based on Spark 2.4. The runtime version is 
+* 6.6 (Apache 2.4.5, Scala 2.11)
+
+Download the corresponding SCC 2.5.1 assembly jar file (spark-cassandra-connector-assembly_2.11-2.5.1.jar) from [here](https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector-assembly_2.11/2.5.1)
+
+Without **Cassandra Catalog**, the code is a litte bit different (as below):
+
+```
+import com.datastax.spark.connector._
+import com.datastax.spark.connector.cql._
+
+//--------------------------
+// Catalog to the source DSE cluster
+val dseClusterAlias = "DseCluster"
+val dseSrvIp = "<dse_srv_ip>"
+val dseSrvPort = "9042"
+
+sqlContext.setConf(dseClusterAlias + "/spark.cassandra.connection.host", dseSrvIp)
+sqlContext.setConf(dseClusterAlias + "/spark.cassandra.connection.port", dseSrvPort)
+
+// -- read from DSE 
+val tblDf_d = sqlContext
+  .read
+  .format("org.apache.spark.sql.cassandra")
+  .options(Map( 
+    "cluster" -> dseClusterAlias,
+    "keyspace" -> "<astra_username>",
+    "table" -> "<astra_password>"
+    ))
+  .load
+println(">> [Step 1] Read from DSE: testks.testbl_dse")
+tblDf_d.show()
+
+//--------------------------
+// Catalog  to the target Astra cluster
+val astraClusterAlias = "AstraCluster"
+val astraSecureConnFilePath = "dbfs:/FileStore/tables/secure_connect_myastradb.zip"
+val astraSecureConnFileName = astraSecureConnFilePath.split("/").last
+val astraUserName = "ymeng"
+val astraPassword = "yabin123"
+
+sqlContext.setConf(astraClusterAlias + "/spark.cassandra.connection.config.cloud.path", astraSecureConnFileName)
+sqlContext.setConf(astraClusterAlias + "/spark.cassandra.auth.username", astraUserName)
+sqlContext.setConf(astraClusterAlias + "/spark.cassandra.auth.password", astraPassword)
+
+// -- read from Astra 
+val tblDf_a = sqlContext
+  .read
+  .format("org.apache.spark.sql.cassandra")
+  .options(Map( 
+    "cluster" -> astraClusterAlias,
+    "keyspace" -> "testks",
+    "table" -> "testbl_astra"
+    ))
+  .load
+println(">> [Step 2] Read from Astra: testks.testbl_astra")
+tblDf_a.show()
+
+//--------------------------
+// -- Write to Astra
+println(">> [Step 3] Write DSE data into Astra: testks.testbl_astra")
+println
+tblDf_d.write
+  .format("org.apache.spark.sql.cassandra")
+  .options(Map( 
+    "cluster" -> astraClusterAlias,
+    "keyspace" -> "testks",
+    "table" -> "testbl_astra"
+    ))
+  .mode("append")  
+  .save
+
+//--------------------------
+// -- Read from Astra again
+println(">> [Step 4] Read again from Astra: testks.testbl_astra")
+tblDf_a.show()
+```
