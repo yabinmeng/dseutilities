@@ -126,7 +126,7 @@ cqlsh> select * from testks.testbl_astra ;
 In the Azure Databricks workspace, create a Spark cluster with the following properties:
 
 * Cluster Name: the name of the created cluster, e.g. MyDbrksSparkCluster
-* Cluster Mode: standard
+* Cluster Mode: High Concurrency
 * Databricks Runtimes: 7.3 LTS (Scala 2.12, Spark 3.0.1)
 
 Once the Spark cluster is created, 
@@ -196,7 +196,6 @@ val astraUserName = "<astra_username>"
 val astraPassword = "<astra_password>"
 
 spark.conf.set(astraCatName, "com.datastax.spark.connector.datasource.CassandraCatalog")
-//spark.conf.set(astraCatName + ".spark.files", astraSecureConnFilePath)
 spark.conf.set(astraCatName + ".spark.cassandra.connection.config.cloud.path", astraSecureConnFileName)
 spark.conf.set(astraCatName + ".spark.cassandra.auth.username", astraUserName)
 spark.conf.set(astraCatName + ".spark.cassandra.auth.password", astraPassword)
