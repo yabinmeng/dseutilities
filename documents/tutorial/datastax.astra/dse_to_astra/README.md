@@ -264,7 +264,7 @@ Create a Databricks cluster based on Spark 2.4. The runtime version is
 
 Download the corresponding SCC 2.5.1 assembly jar file (spark-cassandra-connector-assembly_2.11-2.5.1.jar) from [here](https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector-assembly_2.11/2.5.1)
 
-Without **Cassandra Catalog**, the code is a litte bit different. The main difference is through "cluster" option, as below:
+Without **Cassandra Catalog**, the code is a litte bit different. The main difference is doing read/write by specifying "cluster" option, as below:
 
 ```
 ... ...
