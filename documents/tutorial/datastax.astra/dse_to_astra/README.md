@@ -264,22 +264,15 @@ Create a Databricks cluster based on Spark 2.4. The runtime version is
 
 Download the corresponding SCC 2.5.1 assembly jar file (spark-cassandra-connector-assembly_2.11-2.5.1.jar) from [here](https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector-assembly_2.11/2.5.1)
 
-Without **Cassandra Catalog**, the code is a litte bit different (as below):
+Without **Cassandra Catalog**, the code is a litte bit different. The main difference is through "cluster" option, as below:
 
 ```
-import com.datastax.spark.connector._
-import com.datastax.spark.connector.cql._
+... ...
 
-//--------------------------
-// Catalog to the source DSE cluster
-val dseClusterAlias = "DseCluster"
-val dseSrvIp = "<dse_srv_ip>"
-val dseSrvPort = "9042"
-
+// -- read from DSE cluster
 sqlContext.setConf(dseClusterAlias + "/spark.cassandra.connection.host", dseSrvIp)
 sqlContext.setConf(dseClusterAlias + "/spark.cassandra.connection.port", dseSrvPort)
 
-// -- read from DSE 
 val tblDf_d = sqlContext
   .read
   .format("org.apache.spark.sql.cassandra")
@@ -289,22 +282,13 @@ val tblDf_d = sqlContext
     "table" -> "<astra_password>"
     ))
   .load
-println(">> [Step 1] Read from DSE: testks.testbl_dse")
-tblDf_d.show()
 
-//--------------------------
-// Catalog  to the target Astra cluster
-val astraClusterAlias = "AstraCluster"
-val astraSecureConnFilePath = "dbfs:/FileStore/tables/secure_connect_myastradb.zip"
-val astraSecureConnFileName = astraSecureConnFilePath.split("/").last
-val astraUserName = "ymeng"
-val astraPassword = "yabin123"
+... ... 
 
+// -- read from Astra 
 sqlContext.setConf(astraClusterAlias + "/spark.cassandra.connection.config.cloud.path", astraSecureConnFileName)
 sqlContext.setConf(astraClusterAlias + "/spark.cassandra.auth.username", astraUserName)
 sqlContext.setConf(astraClusterAlias + "/spark.cassandra.auth.password", astraPassword)
-
-// -- read from Astra 
 val tblDf_a = sqlContext
   .read
   .format("org.apache.spark.sql.cassandra")
@@ -314,13 +298,10 @@ val tblDf_a = sqlContext
     "table" -> "testbl_astra"
     ))
   .load
-println(">> [Step 2] Read from Astra: testks.testbl_astra")
-tblDf_a.show()
 
-//--------------------------
+.... 
+
 // -- Write to Astra
-println(">> [Step 3] Write DSE data into Astra: testks.testbl_astra")
-println
 tblDf_d.write
   .format("org.apache.spark.sql.cassandra")
   .options(Map( 
@@ -331,8 +312,5 @@ tblDf_d.write
   .mode("append")  
   .save
 
-//--------------------------
-// -- Read from Astra again
-println(">> [Step 4] Read again from Astra: testks.testbl_astra")
-tblDf_a.show()
+... ... 
 ```
