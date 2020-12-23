@@ -25,16 +25,16 @@ The procedure described in this repo is tested successfully on the following Dat
 - [3. Load Data using Databricks Spark and Save Data in Astra](#3-load-data-using-databricks-spark-and-save-data-in-astra)
   - [3.1. Read source CSV data into a Spark DataFrame](#31-read-source-csv-data-into-a-spark-dataframe)
   - [3.2. Using SCC, create an Astra keyspace and table (if not exists) based on the DataFrame schema; Save data in the Astra table](#32-using-scc-create-an-astra-keyspace-and-table-if-not-exists-based-on-the-dataframe-schema-save-data-in-the-astra-table)
-  - [3.3. Verfiy Data Writing in Astra](#33-verfiy-data-writing-in-astra)
+  - [3.3. Verify Data Writing in Astra](#33-verify-data-writing-in-astra)
 - [4. Read Data from Astra into a Spark DataFrame](#4-read-data-from-astra-into-a-spark-dataframe)
 
 # 1. Overview
 
-[DataStax Astra (Astra)](https://astra.datastax.com) is a database-as-a-service offering from DataStax that is based on Apache Cassandra (C*) active-everywhere NoSQL database. It eliminates the overhead to install and operate C* and can be deployed on common cloud platoforms like AWS, GCP, and Azure by just clicking a few buttons.
+[DataStax Astra (Astra)](https://astra.datastax.com) is a database-as-a-service offering from DataStax that is based on Apache Cassandra (C*) active-everywhere NoSQL database. It eliminates the overhead to install and operate C* and can be deployed on common cloud platforms like AWS, GCP, and Azure by just clicking a few buttons.
 
 DataStax Astra has a free tier plus a few other [paid service tiers options](https://docs.astra.datastax.com/docs/service-tier-options)
 
-[DataBricks Community Edition (DCE)](https://community.cloud.databricks.com/) is the free version of [DataBrick's Unified Data Analytics Platform](https://databricks.com/product/unified-data-analytics-platform) that allows people to run various Apache Spark based tasks without the need to install and manage an Apache Spark cluster explicitly.
+[DataBricks Community Edition (DCE)](https://community.cloud.databricks.com/) is the free version of [DataBricks Unified Data Analytics Platform](https://databricks.com/product/unified-data-analytics-platform) that allows people to run various Apache Spark based tasks without the need to install and manage an Apache Spark cluster explicitly.
 
 **Objective**
 
@@ -44,7 +44,7 @@ In this repo, I'm going to demonstrate how to use DCE to load data from an CSV f
 
 The source sample data set (in CSV format) is exported from GCP's public dataset regarding COVID-19 cases in Italy. For more details of the data set structure, you can
 
-* Vew it from GCP BigQuery(BQ), with BQ dataset name as <span style="color:lightblue">**bigquery-public-data.covid19_italy)**</span>, or
+* View it from GCP BigQuery(BQ), with BQ dataset name as <span style="color:lightblue">**bigquery-public-data.covid19_italy)**</span>, or
 * Check it from Kaggle website at: <https://www.kaggle.com/bigquery/covid19-italy>
 
 To simplify the data loading process into DCE (which is not the focus of this repo), I exported the sample dataset from GCP BQ into a CSV file.
@@ -60,7 +60,7 @@ In order to create an Astra Database, we need:
 
 ### 2.1.1. Get Astra Database Secure Connect Bundle (Driver based connection)
 
-There are several ways to connect to an Astra DataBase, such as using Rest API, GraphQL API, or DataStax driver.
+There are several ways to connect to an Astra DataBase, such as using the Rest API, GraphQL API, or DataStax driver.
 
 In this repo, we're going to connect to an Astra database from a DCE notebook using [DataStax Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector) for read/write. This is a (java) driver based connection.
 
@@ -99,11 +99,11 @@ In this repo, the Spark cluster is based on the following runtime version:
 
 In order to connect to an Astra database using SCC, we need at least version 2.5.1 which starts to support Astra.
 
-Since the DCE cluster created ealier is based on Spark version 3.0.1, we need to use **version 3.0** which is compatible with Spark 3.x. Please check SCC compatibility [here](https://github.com/datastax/spark-cassandra-connector#version-compatibility)
+Since the DCE cluster created earlier is based on Spark version 3.0.1, we need to use **version 3.0** which is compatible with Spark 3.x. Please check SCC compatibility [here](https://github.com/datastax/spark-cassandra-connector#version-compatibility)
 
 ### 2.3.2. Standard vs Shaded Assembly Jar
 
-In order to use SCC in a Databricks cluster properly, we <span style="color:lightblue">**MUST**</span> use **SCC shaded assembly jar** which includes all the required depencies with some conflicting libraries being shaded out. Otherwise, there might have some library conflicts between OSS Spark library and SCC library.
+In order to use SCC in a Databricks cluster properly, we <span style="color:lightblue">**MUST**</span> use **SCC shaded assembly jar** which includes all the required dependencies with some conflicting libraries being shaded out. Otherwise, there might be some library conflicts between OSS Spark library and SCC library.
 
 Download the SCC assembly jar from the following Maven Repository:
 <https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector-assembly_2.12/3.0.0>
@@ -112,7 +112,7 @@ Download the SCC assembly jar from the following Maven Repository:
 
 We need to install SCC as a Databricks cluster library:
 
-* Select the target Databricks clsuter
+* Select the target Databricks cluster
 * On the "Libraries" tab, click "Install New"
 * On the "Install Library" window, choose to upload library Jar file from local machine and click "Install"
 
@@ -124,7 +124,7 @@ The uploaded library file will be stored in Databricks file system (DBFS), as be
 
 ## 2.4. Upload Data into Databricks Cluster
 
-We also need to upload 2 files in Databricks cluster. One is the raw source sample data set (**covid19_italy_national_trends.csv**) and another is the Astra connection secure bundle file (**secure-connect-myastradb.zip**). Once uploaded, they will be stored in Databricks file system. The procedure of uploading these fiels are ase blow:
+We also need to upload 2 files in the Databricks cluster. One is the raw source sample data set (**covid19_italy_national_trends.csv**) and another is the Astra connection secure bundle file (**secure-connect-myastradb.zip**). Once uploaded, they will be stored in the Databricks file system. The procedure of uploading these files are ase blow:
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/add.data.1.png" width=600>
 
@@ -143,7 +143,7 @@ In order to do so, select the Databricks cluster and edit it. In the cluster edi
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/spark_config.png" width=600>
 
-Then click "Confirm and Restart" button at the top to restart the Spark cluster.
+Then click the "Confirm and Restart" button at the top to restart the Spark cluster.
 
 # 3. Load Data using Databricks Spark and Save Data in Astra
 
@@ -205,16 +205,16 @@ covid_trends.write
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/notebook_cell2.png" width=800>
 
-## 3.3. Verfiy Data Writing in Astra
+## 3.3. Verify Data Writing in Astra
 
-Now let's log into Astra and verify the data writing result. From the screenshot below, we can see that the Astra table is succesfully created and data is loaded correctly.
+Now let's log into Astra and verify the data writing result. From the screenshot below, we can see that the Astra table is successfully created and data is loaded correctly.
 
 <img src="https://github.com/yabinmeng/dseutilities/blob/master/documents/tutorial/datastax.astra/databricks_conn/resources/screenshots/astra_result.png" width=800>
 
  
 # 4. Read Data from Astra into a Spark DataFrame
 
-Now, let's read from Astra into Databricks Spark cluster. Say we want to find out the top 5 days that has the most daily new confirmed cases since August 2020. The code is as below:
+Now, let's read from Astra into Databricks Spark cluster. Say we want to find out the top 5 days that have the most daily new confirmed cases since August 2020. The code is as below:
 
 ```
 import com.datastax.spark.connector._
@@ -254,7 +254,7 @@ org.apache.spark.SparkException: Job aborted due to stage failure: Task 3 in sta
     ... ...
 ```
 
-This is related with Astra continuous reading with SCC. The workaround is to disable this feature which requires to add one more Spark SCC configuration item, as below:
+This is related to Astra continuous reading with SCC. The workaround is to disable this feature which requires to add one more Spark SCC configuration item, as below:
 
 * spark.dse.continuousPagingEnabled false
 

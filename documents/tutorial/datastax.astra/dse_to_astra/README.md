@@ -6,7 +6,7 @@
   - [2.2. Set up and Prepare DSE/C* Cluster](#22-set-up-and-prepare-dsec-cluster)
   - [2.3. Set up and Prepare an Astra Database](#23-set-up-and-prepare-an-astra-database)
   - [2.4. Set up and Prepare Databricks Spark Cluster](#24-set-up-and-prepare-databricks-spark-cluster)
-- [3. Migrate Data between tow C* based Clusters using SCC](#3-migrate-data-between-tow-c-based-clusters-using-scc)
+- [3. Migrate Data between two C* based Clusters using SCC](#3-migrate-data-between-two-c-based-clusters-using-scc)
   - [3.1. Spark 3.0 + SCC 3.0: Cassandra Catalog](#31-spark-30--scc-30-cassandra-catalog)
   - [3.2. Spark 2.4 + SCC 2.5: Multiple SCC connector](#32-spark-24--scc-25-multiple-scc-connector)
 
@@ -19,15 +19,15 @@ In this tutorial, I will demonstrate how to use Databricks Spark to load data fr
 
 # 2. Environment Setup
 
-For testing purpose in this repo., we need a stand-alone C* cluster and a Databricks cluster and most importantly we need to make sure these two cluster can communicate with each other. In order to achieve this task, I'm taking the following approach:
+For testing purpose in this repo., we need a stand-alone C* cluster and a Databricks cluster and most importantly we need to make sure these two clusters can communicate with each other. In order to achieve this task, I'm taking the following approach:
 
-* Lauch a Databricks service on Azure using Azure Databricks service
-* Launch several Azure virtual machines and install a DSE clsuter on it
+* Launch a Databricks service on Azure using Azure Databricks service
+* Launch several Azure virtual machines and install a DSE cluster on it
 * Make sure the launched Azure Databricks service and and the DSE virtual machines **belong to the same Azure virtual network**.
 
 ## 2.1. Set up Azure Resources
 
-The detailed procedure of setting up Azure resources is beyond the scope of this tutorial. Please refer to Azure documenatation for it. In this repo., I will only list the Azure resources and relevant key characteristics that are needed by our testing in this repo. 
+The detailed procedure of setting up Azure resources is beyond the scope of this tutorial. Please refer to Azure   for it. In this repo., I will only list the Azure resources and relevant key characteristics that are needed by our testing in this repo. 
 
 In the testing, all Azure resources are created in the same Azure region: **Central US**
 
@@ -43,14 +43,14 @@ In the testing, all Azure resources are created in the same Azure region: **Cent
      * Name: MyAstraDtbrksVN-Workload-SN
      * CIDR: 10.4.10.0/24
 
-3. Create serveral Azure virtual machines (VM). When creating the VMs, make sure to explicitly specify the following key properties:
+3. Create several Azure virtual machines (VM). When creating the VMs, make sure to explicitly specify the following key properties:
 
    * Resource group: the RG that was created earlier (e.g. MyAstraDtbrksRG)
    * Size: Azure instance type (e.g. Standard_D4s_v3, 16 Gib memory)
    * Virtual Network: the VN that was created earlier (e.g. MyAstraDtbrksVN)
    * Subnet: the SN that was created earlier (e.g. MyAstraDtbrksVN-Workload-SN)
   
-Also create and share a common SSH key pair among all the created VMs. All other properperties can be left as default
+Also create and share a common SSH key pair among all the created VMs. All other properties can be left as default
 
 4. Create an Azure Databricks Workspace (ADW), make sure to explicitly specify the following key properties:
 
@@ -58,10 +58,10 @@ Also create and share a common SSH key pair among all the created VMs. All other
    * Pricing Tier: (e.g. Standard)
    * Deploy Azure Databricks workspace in your own Virtual Network (VNet): Yes
      * Virtual Network: the VN that was created earlier (e.g. MyAstraDtbrksVN)
-     * Public Subnet Name and CIDR. Make sure the CIDR range is alinged with the VN CIDR range that was specified earlier and not overlapping with the existing subnet for VMs, e.g.
+     * Public Subnet Name and CIDR. Make sure the CIDR range is aligned with the VN CIDR range that was specified earlier and not overlapping with the existing subnet for VMs, e.g.
        * Name: MyAzureDbrksPubSN
        * CIDR: 10.4.255.0/24
-    * Public Subnet Name and CIDR. Make sure the CIDR range is alinged with the VN CIDR range that was specified earlier, e.g.
+    * Public Subnet Name and CIDR. Make sure the CIDR range is aligned with the VN CIDR range that was specified earlier, e.g.
        * Name: MyAzureDbrksPrvSN
        * CIDR: 10.4.20.0/24 
 
@@ -71,7 +71,7 @@ On each of the launched VMs, do the following tasks:
 
 * Install OpenJDK 8 
 * Install latest DSE 6.8 release (6.8.5) binary ([procedure](https://docs.datastax.com/en/install/6.8/install/installDEBdse.html))
-* Make neccsary changes in cassandra.yaml to form one DSE/C* cluster
+* Make necessary changes in cassandra.yaml to form one DSE/C* cluster
 * Create a C* keyspace (**testks**) and a table (**testbl_dse**) for testing purpose and insert some data in the table
 
 ```
@@ -98,7 +98,7 @@ cqlsh> select * from testks.testbl_dse ;
 
 In this repo, I will use the same Astra database as in my [previous repo.](https://github.com/yabinmeng/dseutilities/tree/master/documents/tutorial/datastax.astra/databricks_conn).
 
-Create a table (**testks.testbl_astra**) that has similar table structure as the one created above in the DSE clsuter.
+Create a table (**testks.testbl_astra**) that has similar table structure as the one created above in the DSE cluster.
 
 ```
 cqlsh> desc table testks.testbl_astra ;
@@ -150,7 +150,7 @@ spark.cassandra.auth.username <astra_username>
 spark.cassandra.auth.password <astra_passwd>
 ```
 
-# 3. Migrate Data between tow C* based Clusters using SCC
+# 3. Migrate Data between two C* based Clusters using SCC
 
 For most time, people use SCC for data migration/ETL related work between a C* cluster and another non-C* system (e.g. an RDBMS, another NoSQL database, etc.). But SCC can also connect to multiple C* clusters and therefore makes possible data migration between 2 C* based clusters. In our testing in this repo, I will use Databricks cluster + SCC to migrate data from a DSE cluster to a Astra database.
 
@@ -164,7 +164,7 @@ Based on the improved functionalities/features of Spark DataSource V2 API, SCC 3
 
 For more detailed introduction of **Cassandra Catalog**, please refer to Russell Spitzer's 2020 Spark Summit [presentation](https://databricks.com/session_na20/datasource-v2-and-cassandra-a-whole-new-world) (the above screenshot is also taken from his presentation).
 
-With Cassandra Catalog, the code to migrate from the DSE cluster to the Astra database is straightforward. **Note** the code below can be executed directly in a Databrics notebook.
+With Cassandra Catalog, the code to migrate from the DSE cluster to the Astra database is straightforward. **Note** the code below can be executed directly in a Databricks notebook.
 
 ```
 import com.datastax.spark.connector._
@@ -253,7 +253,7 @@ The result output is as below:
 +----+-----------+
 ```
 
-Looking at the program output, we can clearly see that the data is succesfully migrated from the DSE cluster and landed in Astra.
+Looking at the program output, we can clearly see that the data is successfully migrated from the DSE cluster and landed in Astra.
 
 ## 3.2. Spark 2.4 + SCC 2.5: Multiple SCC connector 
 
@@ -264,7 +264,7 @@ Create a Databricks cluster based on Spark 2.4. The runtime version is
 
 Download the corresponding SCC 2.5.1 assembly jar file (spark-cassandra-connector-assembly_2.11-2.5.1.jar) from [here](https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector-assembly_2.11/2.5.1)
 
-Without **Cassandra Catalog**, the code is a litte bit different. The main difference is doing read/write by specifying "cluster" option, as below:
+Without **Cassandra Catalog**, the code is a little bit different. The main difference is doing read/write by specifying "cluster" option, as below:
 
 ```
 ... ...
